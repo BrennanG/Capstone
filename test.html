@@ -5,13 +5,13 @@
         <title>Cytoscape Web example</title>
         
         <!-- JSON support for IE (needed to use JS API) -->
-        <script type="text/javascript" src="/cytoscape_web/js/min/json2.min.js"></script>
+        <script type="text/javascript" src="/json2.min.js"></script>
         
         <!-- Flash embedding utility (needed to embed Cytoscape Web) -->
-        <script type="text/javascript" src="/cytoscape_web/js/min/AC_OETags.min.js"></script>
+        <script type="text/javascript" src="AC_OETags.min.js"></script>
         
         <!-- Cytoscape Web JS API (needed to reference org.cytoscapeweb.Visualization) -->
-        <script type="text/javascript" src="/cytoscape_web/js/min/cytoscapeweb.min.js"></script>
+        <script type="text/javascript" src="cytoscapeweb.min.js"></script>
         
         <script type="text/javascript">
             window.onload=function() {
@@ -29,9 +29,9 @@
                 // initialization options
                 var options = {
                     // where you have the Cytoscape Web SWF
-                    swfPath: "/swf/CytoscapeWeb",
+                    swfPath: "CytoscapeWeb",
                     // where you have the Flash installer SWF
-                    flashInstallerPath: "/swf/playerProductInstall"
+                    flashInstallerPath: "playerProductInstall"
                 };
                 
                 // init and draw
