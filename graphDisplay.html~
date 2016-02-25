@@ -110,7 +110,7 @@
             var layout = vis.layout();
             $("input, select").attr("disabled", false);
             
-            vis.addContextMenuItem("Edit Label", "nodes", function(evt) {
+            vis.addContextMenuItem("Change Label", "nodes", function(evt) {
                 vis.updateData([evt.target], { label: "1234567890"});
             })
             vis.addContextMenuItem("Delete node", "nodes", function(evt) {
@@ -119,7 +119,7 @@
             .addContextMenuItem("Delete edge", "edges", function(evt) {
                 vis.removeEdge(evt.target.data.id, true);
             })
-            vis.addContextMenuItem("Edit Label", "edges", function(evt) {
+            vis.addContextMenuItem("Change Label", "edges", function(evt) {
                 vis.updateData([evt.target], { label: "LABEL"});
             })
             .addContextMenuItem("Add new node", function(evt) {
