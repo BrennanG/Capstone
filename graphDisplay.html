@@ -11,16 +11,12 @@
 
     <script type="text/javascript">
       window.onload = function() {
-        $("#content").html('<div class="tools"><button id="reapplyLayout">Reapply layout</button><small>You can use the right-clik context menu to add and remove elements</small></div><div id="cytoscapeweb" width="*">Cytoscape Web will replace the contents of this div with your graph...</div>');
+        $("#content").html('<div class="tools"><small>You can use the right-clik context menu to add and remove elements</small></div><div id="cytoscapeweb" width="*">Cytoscape Web will replace the contents of this div with your graph...</div>');
 
         var div_id = "cytoscapeweb";
         var vis;
 
         // options used for Cytoscape Web
-        var widthMapper = { attrName: "label", 
-                            entries: [ { attrValue: "1234567890", value: 200 },
-                                       { attrValue: "T", value: 10 } ] 
-        };
         var options = {
             nodeTooltipsEnabled: true,
             edgeTooltipsEnabled: true,
@@ -35,9 +31,9 @@
                 nodes: {
                     shape: "RECTANGLE",
                     compoundShape: "RECTANGLE",
+                    color: "#ffffb3",
                     opacity: 0.9,
                     height: 70,
-                    width: { defaultValue: 120, discreteMapper: widthMapper },
                     borderWidth: 2,
                     borderColor: "#707070",
                     compoundBorderColor: "#abcfd6",
@@ -45,13 +41,14 @@
                     labelFontSize: 12,
                     labelFontWeight: "bold",
                     labelHorizontalAnchor: "center",
+                    labelFontName: "Courier",
                     selectionGlowOpacity: 0,
                     selectionBorderColor: "ff0000",
                     hoverBorderWidth: 4
                 },
                 edges: {
                 	  color: "#0b94b1",
-                    width: { defaultValue: 5, continuousMapper: { attrName: "weight",  minValue: 2, maxValue: 8 } },
+                    width: 7,
                     opacity: 0.7,
                     labelFontSize: 12,
                     labelFontWeight: "bold",
@@ -71,12 +68,13 @@
                   data: {
                     nodes: [ { id: "1", label: "1234567890" },
                              { id: "2", label: "T" },
-                             { id: "3" },
-                             { id: "4" },
-                             { id: "5" },
-                             { id: "6" },
-                             { id: "7" },
-                             { id: "8" },
+                             { id: "3", label: "Here's a test" },
+                             { id: "4", label: "Other Biology Term" },
+                             { id: "5", label: "AND ANOTHER TEST. HOW'S IT WORKING?" },
+                             { id: "6", label: "WWWWWWWWWWWW" },
+                             { id: "7", label: "Chromosome" },
+                             { id: "8", label: "WWWWWWWWW" },
+                             { id: "9", label: "Hey, what's up. How's it going? I'm great" },
                            ],
                     edges: [ 
                              { source: "5", target: "3", directed: true, label: "TESTING123 TESTINGTESTINGTESTING a b c" },
@@ -88,6 +86,7 @@
 
 			          options.layout = { name: "CompoundSpringEmbedder" };
             	  options.network = networ_json;
+                options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
 
             	  vis.draw(options);
         }
@@ -105,24 +104,38 @@
 
         // init and draw
         vis = new org.cytoscapeweb.Visualization(div_id, { swfPath: "CytoscapeWeb", flashInstallerPath: "playerProductInstall" });
+
+        vis["customNodeWidth"] = function (data) {
+          var labelLength = data['label'].length;
+          var extraWidth = ( labelLength > 12 ? (labelLength-12) * 7 : 0)
+          return 120 + extraWidth;
+        };
         
         vis.ready(function() {
             var layout = vis.layout();
             $("input, select").attr("disabled", false);
             
+            // Right click on a node
+            vis.addContextMenuItem("Add new edge", "nodes", function(evt) {
+            	_srcId = evt.target.data.id;
+                vis.removeListener("click", "nodes", clickNodeToAddEdge);
+                vis.addListener("click", "nodes", clickNodeToAddEdge);
+            })
             vis.addContextMenuItem("Edit Label", "nodes", function(evt) {
                 vis.updateData([evt.target], { label: "1234567890"});
             })
             vis.addContextMenuItem("Delete node", "nodes", function(evt) {
                 vis.removeNode(evt.target.data.id, true);
             })
-            .addContextMenuItem("Delete edge", "edges", function(evt) {
-                vis.removeEdge(evt.target.data.id, true);
-            })
+            // Right click on an edge
             vis.addContextMenuItem("Edit Label", "edges", function(evt) {
                 vis.updateData([evt.target], { label: "LABEL"});
             })
-            .addContextMenuItem("Add new node", function(evt) {
+            vis.addContextMenuItem("Delete edge", "edges", function(evt) {
+                vis.removeEdge(evt.target.data.id, true);
+            })
+            // Right click on open area
+            vis.addContextMenuItem("Add new node", function(evt) {
                 var x = evt.mouseX;
                 var y = evt.mouseY;
                 var parentId;
@@ -137,12 +150,7 @@
                 n.data.label = n.data.id;
                 vis.updateData([n]);
             })
-            .addContextMenuItem("Add new edge", "nodes", function(evt) {
-            	_srcId = evt.target.data.id;
-                vis.removeListener("click", "nodes", clickNodeToAddEdge);
-                vis.addListener("click", "nodes", clickNodeToAddEdge);
-            })
-            .addContextMenuItem("Delete selected", function(evt) {
+            vis.addContextMenuItem("Delete selected", function(evt) {
                 var items = vis.selected();
                 if (items.length > 0) { vis.removeElements(items, true); }
             });
