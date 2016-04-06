@@ -1,0 +1,10 @@
+students
+  { name, email, [documents*], [courses*] }
+professors
+  { name, email, [courses*] }
+courses
+  { [assignments*], [professors+], [students*] }
+assignments
+  { name, description, dueDate, strictDate (bool), [documents*] }
+documents
+  { name, version, student, [assignments*] }
