@@ -1,5 +1,6 @@
 var app = angular.module('flapperNews', ['ui.router']);
 
+///////////////////// STATES /////////////////////////////
 app.config(['$stateProvider', '$urlRouterProvider',
 function($stateProvider, $urlRouterProvider) {
 
@@ -21,11 +22,31 @@ function($stateProvider, $urlRouterProvider) {
         return posts.getPost($stateParams.id);
       }]
     }
-	});
+	}).state('newMain', {
+		url : '/newMain',
+		templateUrl : '/newMain.html',
+		controller : 'NewMainCtrl',
+    resolve: {
+      postPromise : ['documents', function(documents) {
+			  return documents.getAll();
+			}]
+    }
+	}).state('documents', {
+		url : '/documents/{id}',
+		templateUrl : '/documents.html',
+		controller : 'DocumentsCtrl',
+    resolve: {
+      document: ['$stateParams', 'documents', function($stateParams, documents) {
+        return documents.getDocument($stateParams.id);
+      }]
+    }
+  });
 
 	$urlRouterProvider.otherwise('home');
 }]);
+///////////////////// END STATES /////////////////////////////
 
+///////////////////// FACTORIES /////////////////////////////
 app.factory('posts', ['$http',
 function($http) {
 	var o = {
@@ -71,6 +92,47 @@ function($http) {
 	return o;
 }]);
 
+app.factory('documents', ['$http',
+function($http) {
+	var o = {
+		documents: []
+	};
+
+  o.getAll = function() {
+		return $http.get('/documents')
+      .success(function(data) {
+			  angular.copy(data, o.documents);
+		});
+	};
+  o.getDocument = function(id) {
+    return $http.get('/documents/' + id).then(function(res) {
+      return res.data; // res.data is what we do for get post, not sure why
+    });
+  };
+  o.addDocument = function(title, graphData) {
+    return $http.post('/graphs', graphData)
+      .success(function(graph) {
+        var doc = { title: title, graph: graph._id };
+        return $http.post('/documents', doc)
+          .success(function(document) {
+            o.documents.push(document);
+            return document;
+          });
+      });
+  };
+  o.updateNetworkData = function(document, data) {
+    return $http.put('/graphs/' + document.graph._id + '/network/data', data)
+      .success(function(returnedData) {
+        document.graph.network.data = returnedData;
+        return returnedData;
+      });
+  };
+
+	return o;
+}]);
+///////////////////// END FACTORIES ////////////////////////////
+
+///////////////////// CONTROLLERS /////////////////////////////
 app.controller('MainCtrl', ['$scope', 'posts',
 function($scope, posts) {
 	$scope.posts = posts.posts;
@@ -110,7 +172,48 @@ function($scope, posts, post) {
 
   // Increment the upvotes of a comment in PostFactory
   $scope.upvoteComment = function(comment) {
-    posts.upvoteComment(comment);
+    posts.upvoteComment(post, comment);
   };
 
 }]);
+
+app.controller('NewMainCtrl', ['$scope', 'documents',
+function($scope, documents) {
+	$scope.documents = documents.documents;
+  
+  $scope.addDocument = function() {
+    // TODO: remove place-holders
+    if ($scope.title === '') { return; }
+    var graph = { network: 
+                  {
+                    dataSchema:
+                     {
+                       nodes: [{ name: "label", type: "string" }],
+                       edges: [{ name: "label", type: "string" }]
+                     }, 
+                    data:
+                     {
+                       nodes: [{ id: "1", label: "1" },{ id: "2", label: "2" }],
+                       edges: [{ source: "1", target: "2", directed: true, label: "edge" }]
+                     }
+                  }
+                };
+    documents.addDocument($scope.title, graph);
+    $scope.title = '';
+  };
+
+}]);
+
+app.controller('DocumentsCtrl', ['$scope', 'documents', 'document',
+function($scope, documents, document) {
+	$scope.document = document;
+
+  $scope.updateNetworkData = function(doc) {
+    // TODO: remove place-holders
+    var data = { nodes: [{ id: "31", label: "31" },{ id: "32", label: "32" }],
+                        edges: [{ source: "31", target: "32", directed: true, label: "brennan" }] };
+    documents.updateNetworkData(doc, data);
+  }
+
+}]);
+///////////////////// END CONTROLLERS /////////////////////////////

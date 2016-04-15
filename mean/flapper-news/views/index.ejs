@@ -100,5 +100,54 @@
       </form>
     </script>
 
+    <!-- NewMain Template -->
+    <script type="text/ng-template" id="/newMain.html">
+      <div class="page-header">
+        <h1>Your Documents</h1>
+      </div>
+
+      <!-- List documents -->
+      <div ng-repeat="document in documents">
+
+        <!-- Link to Document -->
+        <span>
+          <a href="#/documents/{{document._id}}">{{document.title}}</a>
+        </span>
+
+      </div>
+
+      <form ng-submit="addDocument()" style="margin-top:30px;">
+
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Title" ng-model="title"></input>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Document</button>
+      </form>
+    </script>
+
+    <!-- Documents Template -->
+    <script type="text/ng-template" id="/documents.html">
+      <div class="page-header">
+        <h1>{{document.title}}</h1>
+      </div>
+      <div>
+        Nodes: 
+        <div ng-repeat="node in nodes">
+          label: {{node.label}}, id: {{node.id}}
+        </div>
+      </div>
+      <div>
+        Edges: 
+        <div ng-repeat="edge in edges">
+          label: {{edge.label}}, from: {{edge.source}}, to: {{edge.target}}
+        </div>
+      </div>
+
+      <form ng-submit="updateNetworkData(document)" style="margin-top:30px;">
+        <button type="submit" class="btn btn-primary">Update Data</button>
+      </form>
+    </script>
+
   </body>
 </html>
