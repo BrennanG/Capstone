@@ -1,6 +1,11 @@
 <html>
   <head>
     <title>Flapper News</title>
+    <!-- import Cytoscape Web stuff-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/javascript" src="json2.min.js"></script>
+    <script type="text/javascript" src="AC_OETags.min.js"></script>
+    <script type="text/javascript" src="cytoscapeweb.min.js"></script>
     <!-- import Twitter stylesheet -->
     <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- import Angular js version 1.3.10 -->
@@ -11,6 +16,16 @@
     <script src="/javascripts/angularApp.js"></script>
     <!-- set cursor to pointer on thumbs-up icon -->
     <style> .glyphicon-thumbs-up { cursor:pointer } </style>
+
+    <style>
+              * { margin: 0; padding: 0; font-family: Helvetica, Arial, Verdana, sans-serif; }
+              html, body { height: 100%; width: 100%; padding: 0; margin: 0; background-color: #f0f0f0; }
+              body { line-height: 1.5; color: #000000; font-size: 14px; }
+              /* The Cytoscape Web container must have its dimensions set. */
+              #cytoscapeweb { width: 100%; height: 100%; }
+              #content { width: 100%; height: 90%; }
+    </style>
+
   </head>
   <body ng-app="flapperNews">
     <div class="row">
@@ -128,25 +143,11 @@
 
     <!-- Documents Template -->
     <script type="text/ng-template" id="/documents.html">
-      <div class="page-header">
-        <h1>{{document.title}}</h1>
+      <p onClick='loadCytoScape()'>BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB</p>
+      
+      <div id="content" class="half_and_half">
+        Cytoscape Web will replace the contents of this div with your graph.
       </div>
-      <div>
-        Nodes: 
-        <div ng-repeat="node in document.graph.network.data.nodes">
-          label: {{node.label}}, id: {{node.id}}
-        </div>
-      </div>
-      <div>
-        Edges: 
-        <div ng-repeat="edge in document.graph.network.data.edges">
-          label: {{edge.label}}, from: {{edge.source}}, to: {{edge.target}}
-        </div>
-      </div>
-
-      <form ng-submit="updateNetworkData(document)" style="margin-top:30px;">
-        <button type="submit" class="btn btn-primary">Update Data</button>
-      </form>
     </script>
 
   </body>
