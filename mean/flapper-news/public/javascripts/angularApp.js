@@ -7,25 +7,7 @@ function($stateProvider, $urlRouterProvider) {
 	$stateProvider.state('home', {
 		url : '/home',
 		templateUrl : '/home.html',
-		controller : 'MainCtrl',
-		resolve : {
-			postPromise : ['posts', function(posts) {
-				return posts.getAll();
-			}]
-		}
-	}).state('posts', {
-		url : '/posts/{id}',
-		templateUrl : '/posts.html',
-		controller : 'PostsCtrl',
-    resolve: {
-      post: ['$stateParams', 'posts', function($stateParams, posts) {
-        return posts.getPost($stateParams.id);
-      }]
-    }
-	}).state('newMain', {
-		url : '/newMain',
-		templateUrl : '/newMain.html',
-		controller : 'NewMainCtrl',
+		controller : 'HomeCtrl',
     resolve: {
       postPromise : ['documents', function(documents) {
 			  return documents.getAll();
@@ -47,51 +29,6 @@ function($stateProvider, $urlRouterProvider) {
 ///////////////////// END STATES /////////////////////////////
 
 ///////////////////// FACTORIES /////////////////////////////
-app.factory('posts', ['$http',
-function($http) {
-	var o = {
-		posts: []
-	};
-
-  o.getPost = function(id) {
-    return $http.get('/posts/' + id).then(function(res) {
-      return res.data;
-    });
-  };
-	o.getAll = function() {
-		return $http.get('/posts')
-      .success(function(data) {
-			  angular.copy(data, o.posts);
-		});
-	};
-  o.addPost = function(post) {
-    return $http.post('/posts', post)
-      .success(function(data) {
-        o.posts.push(data);
-    });
-  };
-  o.upvotePost = function(post) {
-    return $http.put('/posts/' + post._id + '/upvote')
-      .success(function(data) {
-        post.upvotes += 1;
-    });
-  };
-  o.addComment = function(post, comment) {
-    return $http.post('/posts/' + post._id + '/comments', comment)
-      .success(function(comment) {
-        post.comments.push(comment);
-    });
-  };
-  o.upvoteComment = function(post, comment) {
-    return $http.put('/posts/' + post._id + '/comments/'+ comment._id + '/upvote')
-      .success(function(data) {
-        comment.upvotes += 1;
-    });
-  };
-
-	return o;
-}]);
-
 app.factory('documents', ['$http',
 function($http) {
 	var o = {
@@ -128,7 +65,7 @@ function($http) {
         return returnedData;
       });
   };
-  o.loadCytoScape = function(graph) {
+  o.loadCytoScape = function(document) {
     $("#content").html('<div id="cytoscapeweb" width="*">Cytoscape Web will replace the contents of this div with your graph.</div>');
 
         var div_id = "cytoscapeweb";
@@ -178,9 +115,15 @@ function($http) {
         
         function draw() {
         	$("input, select").attr("disabled", true);
-
+          options.network = {
+                dataSchema: {
+                    nodes: [ { name: "label", type: "string" } ],
+                    edges: [ { name: "label", type: "string" } ]
+                },
+                data: {}
+          };
 			    options.layout = { name: "CompoundSpringEmbedder" };
-          options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
+          options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };       
 
           vis.draw(options);
         }
@@ -205,7 +148,36 @@ function($http) {
           return 120 + extraWidth;
         };
 
+        var loadGraph = function(graph) {
+            var nodes = graph.nodes;
+            for (var j = 0; j < nodes.length; j++) {
+              var node = JSON.parse(nodes[j].replace(/\\/g, ""));
+              var newNode = vis.addNode(node.x, node.y, { id: node.data.id, label: node.data.label }, true);
+            }
+
+            var edges = graph.edges;
+            for (var k = 0; k < edges.length; k++) {
+              var edge = JSON.parse(edges[k].replace(/\\/g, ""));
+              var newEdge = vis.addEdge({ id: edge.data.id, label: edge.data.label, source: edge.data.source, target: edge.data.target, directed: true });
+            }
+        };
         
+        var saveGraph = function() {
+            var nodes = vis.nodes();
+            var newNodes = [];
+            for (var i = 0; i < nodes.length; i++) {
+              newNodes[i] = JSON.stringify(nodes[i]);
+            }
+
+            var edges = vis.edges();
+            var newEdges = [];
+            for (var i = 0; i < edges.length; i++) {
+              newEdges[i] = JSON.stringify(edges[i]);
+            }
+
+            o.updateNetworkData(document, {nodes: newNodes, edges: newEdges});
+        };        
+
         vis.ready(function() {
             var layout = vis.layout();
             $("input, select").attr("disabled", false);
@@ -249,10 +221,16 @@ function($http) {
                 var items = vis.selected();
                 if (items.length > 0) { vis.removeElements(items, true); }
             });
+            
+            vis.addContextMenuItem("Save Graph", function(evt) {
+              saveGraph();
+            });
+
+            loadGraph(document.graph);
         });
         
         vis.addListener("error", function(err) {
-		    alert(err.value.msg);
+		      alert(err.value.msg);
         });
 
         // Register control liteners:
@@ -260,18 +238,6 @@ function($http) {
             var layout = vis.layout();
             vis.layout(layout);
         });
-
-        var loadNode = function(json) {
-            var node = JSON.parse();
-            var newNode = vis.addNode(node.x, node.y, { id: node.data.id, label: node.data.label }, true);
-            vis.updateData([newNode]);
-        };
-
-        loadNode('{"group":"nodes","borderWidth":4,"visible":true,"y":60.35,"size":124,"opacity":0.8984375,"shape":"RECTANGLE","zIndex":6,"color":"ffffb3","x":120.25,"rawX":120.25,"nodesCount":0,"data":{"id":"1","label":"1234567890","parent":null},"borderColor":"#707070","width":124,"height":74,"rawY":60.35}');
-
-        //graph.nodes.forEach(function(node) {
-          //loadNode(node);
-        //});
 
         draw();
   };
@@ -281,59 +247,14 @@ function($http) {
 ///////////////////// END FACTORIES ////////////////////////////
 
 ///////////////////// CONTROLLERS /////////////////////////////
-app.controller('MainCtrl', ['$scope', 'posts',
-function($scope, posts) {
-	$scope.posts = posts.posts;
-
-	$scope.title = '';
-
-  // Add a new post to posts in PostFactory
-  $scope.addPost = function() {
-    if($scope.title === '') { return; }
-    posts.addPost({
-      title: $scope.title,
-      link: $scope.link,
-      upvotes: 0,
-      comments: []
-    });
-    $scope.title = '';
-    $scope.link = '';
-  };
-
-  // Increment the upvotes of a post in PostFactory
-  $scope.upvotePost = function(post) {
-    posts.upvotePost(post);
-  };
-
-}]);
-
-app.controller('PostsCtrl', ['$scope', 'posts', 'post',
-function($scope, posts, post) {
-	$scope.post = post;
-
-  // Add a comment to a post in PostsFactory
-  $scope.addComment = function() {
-    if ($scope.body === '') { return; }
-    posts.addComment(post, { body: $scope.body, author: 'user', upvotes: 0 });
-    $scope.body = '';
-  };
-
-  // Increment the upvotes of a comment in PostFactory
-  $scope.upvoteComment = function(comment) {
-    posts.upvoteComment(post, comment);
-  };
-
-}]);
-
-app.controller('NewMainCtrl', ['$scope', 'documents',
+app.controller('HomeCtrl', ['$scope', 'documents',
 function($scope, documents) {
 	$scope.documents = documents.documents;
   
   $scope.addDocument = function() {
     // TODO: remove place-holders
     if ($scope.title === '') { return; }
-    var graph = { nodes: ['{"group":"nodes","borderWidth":4,"visible":true,"y":60.35,"size":124,"opacity":0.8984375,"shape":"RECTANGLE","zIndex":6,"color":"ffffb3","x":120.25,"rawX":120.25,"nodesCount":0,"data":{"id":"1","label":"1234567890","parent":null},"borderColor":"#707070","width":124,"height":74,"rawY":60.35}'],
-                  edges: ['{ source: "1", target: "2", directed: true, label: "edge" }'] };
+    var graph = { nodes: [], edges: [] };
     documents.addDocument($scope.title, graph);
     $scope.title = '';
   };
@@ -346,14 +267,7 @@ function($scope, documents, document) {
   $scope.nodes = document.graph.nodes;
   $scope.edges = document.graph.edges;
 
-  documents.loadCytoScape(document.graph);
-
-  $scope.updateNetworkData = function(doc) {
-    // TODO: remove place-holders
-    var data = { nodes: ['{ id: "31", label: "31" },{ id: "32", label: "32" }'],
-                 edges: ['{ source: "31", target: "32", directed: true, label: "brennan" }'] };
-    documents.updateNetworkData(doc, data);
-  }
+  documents.loadCytoScape(document);
 
 }]);
 ///////////////////// END CONTROLLERS /////////////////////////////
