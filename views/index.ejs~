@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <title>Biology Graphing App</title>
+    <!-- import Cytoscape Web stuff-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/javascript" src="json2.min.js"></script>
+    <script type="text/javascript" src="AC_OETags.min.js"></script>
+    <script type="text/javascript" src="cytoscapeweb.min.js"></script>
+    <!-- import Twitter stylesheet -->
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- import Angular js version 1.3.10 -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+    <!-- import Angular ui-router -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
+    <!-- import angular js file -->
+    <script src="/javascripts/angularApp.js"></script>
+    <!-- set cursor to pointer on thumbs-up icon -->
+    <style> .glyphicon-thumbs-up { cursor:pointer } </style>
+
+    <style>
+              * { margin: 0; padding: 0; font-family: Helvetica, Arial, Verdana, sans-serif; }
+              html, body { height: 100%; width: 100%; padding: 0; margin: 0; background-color: #f0f0f0; }
+              body { line-height: 1.5; color: #000000; font-size: 14px; }
+              /* The Cytoscape Web container must have its dimensions set. */
+              #cytoscapeweb { width: 100%; height: 100%; }
+              #content { width: 100%; height: 90%; }
+    </style>
+
+  </head>
+  <body ng-app="biologyGraphingApp">
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <ui-view></ui-view>
+      </div>
+    </div>
+
+    <!-- Home Template -->
+    <script type="text/ng-template" id="/home.html">
+      <div class="page-header">
+        <h1>Your Documents</h1>
+      </div>
+
+      <!-- List documents -->
+      <div ng-repeat="document in documents">
+
+        <!-- Link to Document -->
+        <span>
+          <a href="#/documents/{{document._id}}">{{document.title}}</a>
+        </span>
+        <span>
+          <button ng-click="deleteDocument(document)" class="btn btn-danger" style="height:12px;width:12px;padding:0px;font-size:8">X</button>
+        </span>
+      </div>
+
+      <form ng-submit="addDocument()" style="margin-top:30px;">
+
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Title" ng-model="newDocTitle"></input>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Document</button>
+      </form>
+    </script>
+
+    <!-- Documents Template -->
+    <script type="text/ng-template" id="/documents.html">      
+      <div id="content" class="half_and_half">
+        Cytoscape Web will replace the contents of this div with your graph.
+      </div>
+    </script>
+
+  </body>
+</html>

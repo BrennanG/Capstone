@@ -53,7 +53,7 @@ function($http) {
           doc._id = deletedDocument._id;
         }), 1);
 
-        $http.delete('/graphs/' + document.graph);
+        $http.delete('/graphs/' + document.graph._id);
 
         return deletedDocument;
       });

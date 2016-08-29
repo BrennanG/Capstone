@@ -109,7 +109,7 @@ router.put('/graphs/:graph/network/data', function(req, res, next) {
 
 // DELETE a graph by ID
 router.delete('/graphs/:graph', function(req, res, next) {
-  Graph.findOneAndRemove({_id: req.graph}, function(err, graph) {
+  Graph.findOneAndRemove({_id: req.graph._id}, function(err, graph) {
     if (err) { return next(err); }
 
     res.json(graph);
