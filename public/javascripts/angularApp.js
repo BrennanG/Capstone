@@ -43,13 +43,22 @@ function($http) {
 	};
   o.getDocument = function(id) {
     return $http.get('/documents/' + id).then(function(res) {
-      return res.data; // res.data is what we do for get post, not sure why
+      return res.data;
     });
   };
-  o.addDocument = function(title, graphData) {
+  o.deleteDocument = function(document) {
+    return $http.delete('/documents/' + document._id)
+      .success(function(deletedDocument) {
+        o.documents.splice(o.documents.findIndex(function(doc) {
+          doc._id = deletedDocument._id;
+        }), 1);
+        return deletedDocument;
+      });
+  };
+  o.addDocument = function(newDocTitle, graphData) {
     return $http.post('/graphs', graphData)
       .success(function(graph) {
-        var doc = { title: title, graph: graph._id };
+        var doc = { title: newDocTitle, graph: graph._id };
         return $http.post('/documents', doc)
           .success(function(document) {
             o.documents.push(document);
@@ -252,11 +261,14 @@ function($scope, documents) {
 	$scope.documents = documents.documents;
   
   $scope.addDocument = function() {
-    // TODO: remove place-holders
-    if ($scope.title === '') { return; }
+    if ($scope.newDocTitle === '') { return; }
     var graph = { nodes: [], edges: [] };
-    documents.addDocument($scope.title, graph);
-    $scope.title = '';
+    documents.addDocument($scope.newDocTitle, graph);
+    $scope.newDocTitle = '';
+  };
+
+  $scope.deleteDocument = function(document) {
+    documents.deleteDocument(document);
   };
 
 }]);

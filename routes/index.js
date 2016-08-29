@@ -54,6 +54,22 @@ router.get('/documents/:document', function(req, res, next) {
   });
 });
 
+// DELETE a document by ID and its graph
+router.delete('/documents/:document', function(req, res, next) {
+  var docId = req.document._id;
+  var graphId = req.document.graph._id;
+  var returnDoc;
+
+  Graph.findOneAndRemove({_id: graphId}, function(err, graph) {
+      if (err) { return next(err); }
+  });
+
+  Document.findOneAndRemove({_id: docId}, function(err, document) {
+    if (err) { return next(err); }
+    res.json(returnDoc);
+  });
+});
+
 ///////////// GRAPHS /////////////////
 
 // GET all graphs

@@ -47,13 +47,15 @@
         <span>
           <a href="#/documents/{{document._id}}">{{document.title}}</a>
         </span>
-
+        <span>
+          <button ng-click="deleteDocument(document)" class="btn btn-danger" style="height:12px;width:12px;padding:0px;font-size:8">X</button>
+        </span>
       </div>
 
       <form ng-submit="addDocument()" style="margin-top:30px;">
 
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Title" ng-model="title"></input>
+          <input type="text" class="form-control" placeholder="Title" ng-model="newDocTitle"></input>
         </div>
 
         <button type="submit" class="btn btn-primary">Add Document</button>
