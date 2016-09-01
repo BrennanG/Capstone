@@ -10,12 +10,14 @@ var app = express();
 var mongoose = require('mongoose');
 
 // Connect to mongoose
-mongoose.connect('mongodb://localhost/news');
+mongoose.connect('mongodb://localhost/biograph');
 
 require('./models/Documents');
 require('./models/Graphs');
 
 var routes = require('./routes/index');
+var documents = require('./routes/documents');
+var graphs = require('./routes/graphs');
 var users = require('./routes/users');
 
 // view engine setup
@@ -31,6 +33,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+app.use('/documents', documents);
+app.use('/graphs', graphs);
 app.use('/users', users);
 
 // catch 404 and forward to error handler

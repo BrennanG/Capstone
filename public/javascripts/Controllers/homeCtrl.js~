@@ -1,0 +1,26 @@
+angular.module('biologyGraphingApp').controller('HomeCtrl', ['$scope', 'documents',
+function($scope, documents) {
+	$scope.documents = documents.documents;
+  
+  $scope.addDocument = function() {
+    if ($scope.newDocTitle === '') { return; }
+    var graph = { nodes: [], edges: [] };
+    documents.addDocument($scope.newDocTitle, graph);
+    $scope.newDocTitle = '';
+  };
+
+  $scope.deleteDocument = function(document) {
+    documents.deleteDocument(document);
+  };
+
+}]);
+
+app.controller('DocumentsCtrl', ['$scope', 'documents', 'document',
+function($scope, documents, document) {
+	$scope.document = document;
+  $scope.nodes = document.graph.nodes;
+  $scope.edges = document.graph.edges;
+
+  documents.loadCytoScape(document);
+
+}]);
