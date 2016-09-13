@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
-
 var mongoose = require('mongoose');
 var Graph = mongoose.model('Graph');
+var jwt = require('express-jwt');
+var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
 // GET all graphs
-router.get('/', function(req, res, next) {
+router.get('/', auth, function(req, res, next) {
   Graph.find(function(err, graphs) {
     if (err) { return next(err); }
 
@@ -14,7 +15,7 @@ router.get('/', function(req, res, next) {
 });
 
 // POST a single graph
-router.post('/', function(req, res, next) {
+router.post('/', auth, function(req, res, next) {
   var graph = new Graph(req.body);
 
   graph.save(function(err, graph) {
@@ -38,7 +39,7 @@ router.param('graph', function(req, res, next, id) {
 });
 
 // PUT an updated graph network data
-router.put('/:graph/network/data', function(req, res, next) {
+router.put('/:graph/network/data', auth, function(req, res, next) {
   req.graph.updateNetwork(req.body, function(err, graph) {
     if (err) { return next(err); }
 
@@ -47,7 +48,7 @@ router.put('/:graph/network/data', function(req, res, next) {
 });
 
 // DELETE a graph by ID
-router.delete('/:graph', function(req, res, next) {
+router.delete('/:graph', auth, function(req, res, next) {
   Graph.findOneAndRemove({_id: req.graph}, function(err, graph) {
     if (err) { return next(err); }
 

@@ -10,8 +10,13 @@ function($stateProvider) {
     resolve: {
       document: ['$stateParams', 'documents', function($stateParams, documents) {
         return documents.getDocument($stateParams.id);
-      }]
-    }
+      }]},
+		onEnter : ['$state', 'auth',
+			function($state, auth) {
+				if (!auth.isLoggedIn()) {
+					$state.go('login');
+				}
+		}]
   });
 
 }]);

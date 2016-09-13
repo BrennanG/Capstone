@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
+//var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -14,6 +14,7 @@ mongoose.connect('mongodb://localhost/biograph');
 
 require('./models/Documents');
 require('./models/Graphs');
+require('./models/Users');
 
 var routes = require('./routes/index');
 var documents = require('./routes/documents');

@@ -1,23 +1,27 @@
-angular.module('biologyGraphingApp').factory('documents', ['$http',
-function($http) {
+angular.module('biologyGraphingApp').factory('documents', ['$http', 'auth',
+function($http, auth) {
 	var o = {
 		documents: []
 	};
 
   o.getAll = function() {
-		return $http.get('/documents')
-      .success(function(data) {
+		return $http.get('/documents', {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(data) {
 			  angular.copy(data, o.documents);
 		});
 	};
   o.getDocument = function(id) {
-    return $http.get('/documents/' + id).then(function(res) {
+    return $http.get('/documents/' + id, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).then(function(res) {
       return res.data;
     });
   };
   o.deleteDocument = function(document) {
-    return $http.delete('/documents/' + document._id)
-      .success(function(deletedDocument) {
+    return $http.delete('/documents/' + document._id, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(deletedDocument) {
         o.documents.splice(o.documents.findIndex(function(doc) {
           doc._id = deletedDocument._id;
         }), 1);
@@ -28,8 +32,9 @@ function($http) {
       });
   };
   o.addDocument = function(newDocTitle, graphData) {
-    return $http.post('/graphs', graphData)
-      .success(function(graph) {
+    return $http.post('/graphs', graphData, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(graph) {
         var doc = { title: newDocTitle, graph: graph._id };
         return $http.post('/documents', doc)
           .success(function(document) {
@@ -39,8 +44,9 @@ function($http) {
       });
   };
   o.updateNetworkData = function(document, data) {
-    return $http.put('/graphs/' + document.graph._id + '/network/data', data)
-      .success(function(returnedData) {
+    return $http.put('/graphs/' + document.graph._id + '/network/data', data, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(returnedData) {
         document.graph.nodes = returnedData.nodes;
         document.graph.edges = returnedData.edges;
         return returnedData;
@@ -91,9 +97,9 @@ function($http) {
                     selectionGlowOpacity: 0,
                     selectionColor: "ff0000"
                  }
-            }   
+            }
         };
-        
+
         function draw() {
         	$("input, select").attr("disabled", true);
           options.network = {
@@ -104,7 +110,7 @@ function($http) {
                 data: {}
           };
 			    options.layout = { name: "CompoundSpringEmbedder" };
-          options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };       
+          options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
 
           vis.draw(options);
         }
@@ -117,7 +123,7 @@ function($http) {
             	_srcId = null;
             }
         }
-        
+
         $("input").attr("disabled", true);
 
         // init and draw
@@ -142,7 +148,7 @@ function($http) {
               var newEdge = vis.addEdge({ id: edge.data.id, label: edge.data.label, source: edge.data.source, target: edge.data.target, directed: true });
             }
         };
-        
+
         var saveGraph = function() {
             var nodes = vis.nodes();
             var newNodes = [];
@@ -157,12 +163,12 @@ function($http) {
             }
 
             o.updateNetworkData(document, {nodes: newNodes, edges: newEdges});
-        };        
+        };
 
         vis.ready(function() {
             var layout = vis.layout();
             $("input, select").attr("disabled", false);
-            
+
             // Right click on a node
             vis.addContextMenuItem("Add new edge", "nodes", function(evt) {
             	_srcId = evt.target.data.id;
@@ -202,14 +208,14 @@ function($http) {
                 var items = vis.selected();
                 if (items.length > 0) { vis.removeElements(items, true); }
             });
-            
+
             vis.addContextMenuItem("Save Graph", function(evt) {
               saveGraph();
             });
 
             loadGraph(document.graph);
         });
-        
+
         vis.addListener("error", function(err) {
 		      alert(err.value.msg);
         });

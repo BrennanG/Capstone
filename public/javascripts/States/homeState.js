@@ -10,9 +10,14 @@ function($stateProvider, $urlRouterProvider) {
     resolve: {
       postPromise : ['documents', function(documents) {
 			  return documents.getAll();
-			}]
-    }
+			}]},
+		onEnter : ['$state', 'auth',
+			function($state, auth) {
+				if (!auth.isLoggedIn()) {
+					$state.go('login');
+				}
+		}]
 	});
 
-	$urlRouterProvider.otherwise('home');
+	$urlRouterProvider.otherwise('login');
 }]);
