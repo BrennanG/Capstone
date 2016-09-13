@@ -13,11 +13,12 @@ function($stateProvider, $urlRouterProvider) {
 			}]},
 		onEnter : ['$state', 'auth',
 			function($state, auth) {
+				console.log('Ctrl-Shift-J');
 				if (!auth.isLoggedIn()) {
 					$state.go('login');
 				}
 		}]
 	});
 
-	$urlRouterProvider.otherwise('login');
+	$urlRouterProvider.otherwise('home');
 }]);

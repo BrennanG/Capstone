@@ -5,9 +5,7 @@ function($http, auth) {
 	};
 
   o.getAll = function() {
-		return $http.get('/documents', {
-			headers: {Authorization: 'Bearer '+auth.getToken()}
-		}).success(function(data) {
+		return $http.get('/documents').success(function(data) {
 			  angular.copy(data, o.documents);
 		});
 	};

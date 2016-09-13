@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var app = express();
 
 var mongoose = require('mongoose');
+var passport = require('passport');
 
 // Connect to mongoose
 mongoose.connect('mongodb://localhost/biograph');
@@ -15,6 +16,7 @@ mongoose.connect('mongodb://localhost/biograph');
 require('./models/Documents');
 require('./models/Graphs');
 require('./models/Users');
+require('./config/passport');
 
 var routes = require('./routes/index');
 var documents = require('./routes/documents');
@@ -32,6 +34,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
 
 app.use('/', routes);
 app.use('/documents', documents);

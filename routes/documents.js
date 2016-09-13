@@ -6,7 +6,7 @@ var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
 // GET all documents
-router.get('/', auth, function(req, res, next) {
+router.get('/', function(req, res, next) {
   Document.find(function(err, documents) {
     if (err) { return next(err); }
 
