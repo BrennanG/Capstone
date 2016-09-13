@@ -1,5 +1,5 @@
-angular.module('biologyGraphingApp').factory('auth', ['$http', '$window',
-function($http, $window) {
+angular.module('biologyGraphingApp').factory('auth', ['$http', '$window', '$state',
+function($http, $window, $state) {
 	var auth = {};
 
 	auth.saveToken = function(token) {
@@ -32,19 +32,20 @@ function($http, $window) {
 	};
 
 	auth.register = function(user) {
-		return $http.post('/register', user).success(function(data) {
+		return $http.post('/users/register', user).success(function(data) {
 			auth.saveToken(data.token);
 		});
 	};
 
 	auth.logIn = function(user) {
-		return $http.post('/login', user).success(function(data) {
+		return $http.post('/users/login', user).success(function(data) {
 			auth.saveToken(data.token);
 		});
 	};
 
 	auth.logOut = function() {
 		$window.localStorage.removeItem('biograph-token');
+		$state.go('login');
 	};
 
 	return auth;

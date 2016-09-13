@@ -14,4 +14,10 @@ function($scope, documents, auth) {
     documents.deleteDocument(document);
   };
 
+	$scope.logout = function() {
+		if ($scope.isLoggedIn) {
+			auth.logOut();
+		}
+	};
+
 }]);

@@ -16,9 +16,14 @@
     <script src="/javascripts/angularApp.js"></script>
     <script src="/javascripts/States/homeState.js"></script>
     <script src="/javascripts/States/documentsState.js"></script>
+    <script src="/javascripts/States/loginState.js"></script>
+    <script src="/javascripts/States/registerState.js"></script>
     <script src="/javascripts/Factories/documentsFctry.js"></script>
+    <script src="/javascripts/Factories/authFctry.js"></script>
     <script src="/javascripts/Controllers/homeCtrl.js"></script>
     <script src="/javascripts/Controllers/documentsCtrl.js"></script>
+    <script src="/javascripts/Controllers/authCtrl.js"></script>
+    <script src="/javascripts/Controllers/navCtrl.js"></script>
     <!-- set cursor to pointer on thumbs-up icon -->
     <style> .glyphicon-thumbs-up { cursor:pointer } </style>
 
@@ -43,10 +48,13 @@
     <script type="text/ng-template" id="/home.html">
       <div class="page-header">
         <h1>Your Documents</h1>
+        <span>
+          <a ng-click="logout()">Logout</p>
+        </span>
       </div>
 
       <!-- List documents -->
-      <div ng-repeat="document in documents">
+      <div ng-repeat="document in documents" ng-show="isLoggedIn()">
 
         <!-- Link to Document -->
         <span>

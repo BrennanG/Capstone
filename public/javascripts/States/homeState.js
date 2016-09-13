@@ -13,7 +13,6 @@ function($stateProvider, $urlRouterProvider) {
 			}]},
 		onEnter : ['$state', 'auth',
 			function($state, auth) {
-				console.log('Ctrl-Shift-J');
 				if (!auth.isLoggedIn()) {
 					$state.go('login');
 				}
