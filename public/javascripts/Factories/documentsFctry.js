@@ -1,5 +1,5 @@
-angular.module('biologyGraphingApp').factory('documents', ['$http', 'auth',
-function($http, auth) {
+angular.module('biologyGraphingApp').factory('documents', ['$http', '$state', 'auth',
+function($http, $state, auth) {
 	var o = {
 		documents: []
 	};
@@ -25,6 +25,7 @@ function($http, auth) {
         }), 1);
 
         $http.delete('/graphs/' + document.graph);
+				$state.go($state.current, {}, {reload: true}); // reload the page
 
         return deletedDocument;
       });
@@ -34,8 +35,9 @@ function($http, auth) {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(graph) {
         var doc = { title: newDocTitle, graph: graph._id };
-        return $http.post('/documents', doc)
-          .success(function(document) {
+        return $http.post('/documents', doc, {
+					headers: {Authorization: 'Bearer '+auth.getToken()}
+				}).success(function(document) {
             o.documents.push(document);
             return document;
           });
