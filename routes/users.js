@@ -3,6 +3,8 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var passport = require('passport');
+var jwt = require('express-jwt');
+var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
 router.post('/register', function(req, res, next){
   if(!req.body.username || !req.body.password){
@@ -36,6 +38,10 @@ router.post('/login', function(req, res, next){
       return res.status(401).json(info);
     }
   })(req, res, next);
+});
+
+router.put('/documents/remove', auth, function(req, res, next){
+  User.update({username: req.body.user}, {$pull: {documents: ObjectId(req.body.documentId)}});
 });
 
 module.exports = router;

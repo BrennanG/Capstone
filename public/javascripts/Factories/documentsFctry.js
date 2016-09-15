@@ -22,11 +22,17 @@ function($http, $state, auth) {
     return $http.delete('/documents/' + document._id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(deletedDocument) {
+
         o.documents.splice(o.documents.findIndex(function(doc) {
           doc._id = deletedDocument._id;
         }), 1);
 
         $http.delete('/graphs/' + document.graph, {
+					headers: {Authorization: 'Bearer '+auth.getToken()}
+				});
+
+				var dataToSend = {user: auth.currentUserName(), documentId: document._id};
+				$http.put('/users/documents/remove', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				});
 
