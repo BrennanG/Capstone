@@ -5,7 +5,9 @@ function($http, $state, auth) {
 	};
 
   o.getAll = function() {
-		return $http.get('/documents').success(function(data) {
+		return $http.get('/documents', {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(data) {
 			  angular.copy(data, o.documents);
 		});
 	};
@@ -24,7 +26,10 @@ function($http, $state, auth) {
           doc._id = deletedDocument._id;
         }), 1);
 
-        $http.delete('/graphs/' + document.graph);
+        $http.delete('/graphs/' + document.graph, {
+					headers: {Authorization: 'Bearer '+auth.getToken()}
+				});
+
 				$state.go($state.current, {}, {reload: true}); // reload the page
 
         return deletedDocument;
@@ -35,7 +40,8 @@ function($http, $state, auth) {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(graph) {
         var doc = { title: newDocTitle, graph: graph._id };
-        return $http.post('/documents', doc, {
+				var dataToSend = { document: doc, user: auth.currentUserName()};
+        return $http.post('/documents', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				}).success(function(document) {
             o.documents.push(document);

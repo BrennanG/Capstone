@@ -22,7 +22,7 @@ function($http, $window, $state) {
 		}
 	};
 
-	auth.currentUser = function() {
+	auth.currentUserName = function() {
 		if (auth.isLoggedIn()) {
 			var token = auth.getToken();
 			var payload = JSON.parse($window.atob(token.split('.')[1]));

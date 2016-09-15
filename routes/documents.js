@@ -2,11 +2,12 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Document = mongoose.model('Document');
+var User = mongoose.model('User');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
 // GET all documents
-router.get('/', function(req, res, next) {
+router.get('/', auth, function(req, res, next) {
   Document.find(function(err, documents) {
     if (err) { return next(err); }
 
@@ -16,12 +17,21 @@ router.get('/', function(req, res, next) {
 
 // POST a single document
 router.post('/', auth, function(req, res, next) {
-  var document = new Document(req.body);
-
-  document.save(function(err, document) {
+  var document = new Document(req.body.document);
+  User.findOne({ username: req.body.user }).exec(function (err, user) {
     if (err) { return next(err); }
+    if (!user) { return next(new Error("can't find user")); }
 
-    res.json(document);
+    document.save(function(err, document) {
+      if (err) { return next(err); }
+
+      user.documents.push(document);
+      user.save(function(err, document) {
+        if (err) { return next(err); }
+
+        res.json(document);
+      });
+    });
   });
 });
 
