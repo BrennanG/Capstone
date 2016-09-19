@@ -41,7 +41,13 @@ router.post('/login', function(req, res, next){
 });
 
 router.put('/documents/remove', auth, function(req, res, next){
-  User.update({username: req.body.user}, {$pull: {documents: ObjectId(req.body.documentId)}});
+  User.findOneAndUpdate({username: req.body.user}, {$pull: {documents: req.body.documentId}}, function(err, data){
+    if(err) {
+      return res.status(500).json({'error' : 'error in deleting documentId'});
+    }
+
+    res.json(data);
+  });
 });
 
 module.exports = router;
