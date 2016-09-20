@@ -37,26 +37,28 @@ function($http, $state, auth) {
 				});
 
 				$state.go($state.current, {}, {reload: true}); // reload the page
-
         return deletedDocument;
       });
   };
   o.addDocument = function(newDocTitle, graphData) {
-    return $http.post('/graphs', graphData, {
+		var dataToSend = { graph: graphData };
+    return $http.post('/graphs', dataToSend, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(graph) {
         var doc = { title: newDocTitle, graph: graph._id };
-				var dataToSend = { document: doc, user: auth.currentUserName()};
+				var dataToSend = { document: doc };
         return $http.post('/documents', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				}).success(function(document) {
             o.documents.push(document);
+
+						$state.go($state.current, {}, {reload: true}); // reload the page
             return document;
           });
       });
   };
   o.updateNetworkData = function(document, data) {
-    return $http.put('/graphs/' + document.graph._id + '/network/data', data, {
+    return $http.put('/graphs/' + document.graph._id + '/network', data, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(returnedData) {
         document.graph.nodes = returnedData.nodes;
@@ -167,7 +169,7 @@ function($http, $state, auth) {
 
           vis.draw(options);
         }
-				
+
 
 
         $("input").attr("disabled", true);

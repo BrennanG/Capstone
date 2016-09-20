@@ -6,13 +6,13 @@ function($stateProvider) {
 	$stateProvider.state('login', {
 		url : '/login',
 		templateUrl : '/login.html',
-		controller : 'AuthCtrl',
+		controller : 'AuthCtrl'/*,
 		onEnter : ['$state', 'auth',
 			function($state, auth) {
 				if (auth.isLoggedIn()) {
 					$state.go('home');
 				}
-		}]
+		}]*/
 	});
 
 }]);
