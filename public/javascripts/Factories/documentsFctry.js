@@ -114,7 +114,7 @@ function($http, $state, auth) {
 
 
 				/****** TEST DRAW FUNCTION ******/
-				/*function draw() {
+		function draw() {
         	$("input, select").attr("disabled", true);
                 var networ_json = {
                   dataSchema: {
@@ -149,10 +149,10 @@ function($http, $state, auth) {
                 options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
 
             	vis.draw(options);
-        }*/
+        }
 
 
-
+        /*
         function draw() {
         	$("input, select").attr("disabled", true);
           options.network = {
@@ -166,7 +166,7 @@ function($http, $state, auth) {
           options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
 
           vis.draw(options);
-        }
+        }*/
 				
 
 
@@ -206,51 +206,84 @@ function($http, $state, auth) {
             o.updateNetworkData(docArg, {nodes: newNodes, edges: newEdges});
         };
 
-				/*****************************************/
-				/***** Node Re-sizing based on label *****/
-				/*****************************************/
-				vis["customNodeWidth"] = function (data) {
-					var labelLength = data['label'].length;
-					var extraWidth = ( labelLength > 12 ? (labelLength-12) * 7 : 0)
-					return 120 + extraWidth;
-				};
+		/*****************************************/
+		/***** Node Re-sizing based on label *****/
+		/*****************************************/
+		vis["customNodeWidth"] = function (data) {
+			var labelLength = data['label'].length;
+			var extraWidth = ( labelLength > 12 ? (labelLength-12) * 7 : 0)
+			return 120 + extraWidth;
+		};
+        
+        /***************************/
+        /***** ID Book-keeping *****/
+        /***************************/
+        var globalNode = 'n';
+        var globalNodeID;
+        var globalEdge = 'e';
+        var globalEdgeID;
+        
+        function incrementNodeID() {
+            var num = parseInt(globalNodeID.substring(1));
+            num++;
+            globalNodeID = "n" + num.toString();
+        }
+        
+        function incrementEdgeID() {
+            var num = parseInt(globalEdgeID.substring(1));
+            num++;
+            globalEdgeID = "e" + num.toString();
+        }
+        
 
-				/***************************/
-				/***** Add Edge Helper *****/
-				/***************************/
-				var _srcId;
-				var _targId;
+		/***************************/
+		/***** Add Edge Helper *****/
+		/***************************/
+		var _srcId;
+		var _targId;
 
-				function addEdgeHelper(src,targ, lab = "") {
-						var e = vis.addEdge({ source: src, target: targ, directed: true, label: lab}, true);
+                
+        // TODO: add arg to determine if it's undo or legit add, then handle ID's appropriately
+		function addEdgeHelper(src, targ, id, lab = "") {
+            if (id == "") {
+                var e = vis.addEdge({ source: src, target: targ, directed: true, label: lab}, true);
+            }
+            else {
+                var e = vis.addEdge({ source: src, target: targ, directed: true, label: lab, id: id}, true);
+            }
 
-						// Update nodes' edgesTo and edgesFrom data fields
-						var srcNode = vis.node(src);
-						srcNode.data.edgesFrom.push(e.data.id);
-						vis.updateData([srcNode], { edgesFrom: srcNode.data.edgesFrom });
+			// Update nodes' edgesTo and edgesFrom data fields if the ID doesn't already exist
+			var srcNode = vis.node(src);
+            if (srcNode.data.edgesFrom.indexOf(e.data.id) == -1) {
+                srcNode.data.edgesFrom.push(e.data.id);
+                vis.updateData([srcNode], { edgesFrom: srcNode.data.edgesFrom });
+            }
 
-						var targNode = vis.node(targ);
-						targNode.data.edgesTo.push(e.data.id);
-						vis.updateData([targNode], { edgesTo: targNode.data.edgesTo });
+			var targNode = vis.node(targ);
+            if (targNode.data.edgesTo.indexOf(e.data.id) == -1) {
+                targNode.data.edgesTo.push(e.data.id);
+                vis.updateData([targNode], { edgesTo: targNode.data.edgesTo });
+            }
 
-						return e;
-				}
+			return e;
+		}
 
-				function clickNodeToAddEdge(evt) {
-						if (_srcId != null) {
-								_targId = evt.target.data.id;
-							vis.removeListener("click", "nodes", clickNodeToAddEdge);
+		function clickNodeToAddEdge(evt) {
+			if (_srcId != null) {
+				_targId = evt.target.data.id;
+				vis.removeListener("click", "nodes", clickNodeToAddEdge);
 
-								var newEdge = addEdgeHelper(_srcId, _targId);
+                incrementEdgeID();
+				var newEdge = addEdgeHelper(_srcId, _targId, globalEdgeID);
 
-							_srcId = null;
-								_targId = null;
+                _srcId = null;
+				_targId = null;
 
-								// UNDO INFO
-								lastEvent = { type: "addEdge", target: JSON.stringify(newEdge) };
-								eventStack.push(lastEvent);
-						}
-				}
+				// UNDO INFO
+				lastEvent = { type: "addEdge", target: JSON.stringify(newEdge) };
+				eventStack.push(lastEvent);
+			}
+		}
 
 				/**********************/
 				/***** EDIT LABEL *****/
@@ -354,13 +387,13 @@ function($http, $state, auth) {
 				}
 
 
-	      /****************/
-	      /***** UNDO *****/
-	      /****************/
-	      var eventStack = new Array();
-	      var targ;
-	      var event;
-	      var lastEvent;
+	    /****************/
+	    /***** UNDO *****/
+	    /****************/
+	    var eventStack = new Array();
+	    var targ;
+	    var event;
+	    var lastEvent;
 
         function undo() {
             event = eventStack.pop();
@@ -381,14 +414,15 @@ function($http, $state, auth) {
 
                     var edges = JSON.parse(event.edges);
                     for (var i = 0; i < event.edges.length; i++) {
-                        addEdgeHelper(edges[i].data.source, edges[i].data.target);
+                        data = edges[i].data;
+                        addEdgeHelper(data.source, data.target, data.id, data.label);
                     }
-                    //vis.addElements(JSON.parse(event.edges),true); // attached edges
+                    
                     event.edges = [];
                     break;
                 case ("deleteEdge"):
-                    //vis.addEdge(targ,true);
-                    addEdgeHelper(targ.data.source, targ.data.target, targ.data.label);
+                    var data = targ.data;
+                    addEdgeHelper(data.source, data.target, data.id, data.label);
                     break;
                 case ("editLabel"):
                     vis.updateData([targ], { label: targ.data.label });
@@ -397,7 +431,7 @@ function($http, $state, auth) {
         }
 
 
-				/********************************************/
+		/********************************************/
         /***** Double click to edit nodes/edges *****/
         /********************************************/
         vis.addListener("dblclick", "nodes", function(evt) {
@@ -416,10 +450,13 @@ function($http, $state, auth) {
 
 		    /********************************/
 		    /****** CONTEXT MENU ITEMS ******/
-		    /********************************/
-				vis.ready(function() {
+		    /********************************/            
+			vis.ready(function() {
             var layout = vis.layout();
             $("input, select").attr("disabled", false);
+                
+            globalNodeID = globalNode.concat(vis.nodes().length.toString());
+            globalEdgeID = globalEdge.concat(vis.edges().length.toString());
 
             // NODE: ADD EDGE
             vis.addContextMenuItem("Add new edge", "nodes", function(evt) {
@@ -507,7 +544,8 @@ function($http, $state, auth) {
                     x += Math.random() * (evt.target.width/3) * (Math.round(Math.random()*100)%2==0 ? 1 : -1);
                     y += Math.random() * (evt.target.height/3) * (Math.round(Math.random()*100)%2==0 ? 1 : -1);
                 }
-                var n = vis.addNode(x, y, { parent: parentId }, true);
+                incrementNodeID();
+                var n = vis.addNode(x, y, { parent: parentId, id: globalNodeID }, true);
                 vis.updateData([n]);
 
                 // UNDO INFO
@@ -524,10 +562,47 @@ function($http, $state, auth) {
             // CANVAS: DELETE SELECTED
             vis.addContextMenuItem("Delete selected", function(evt) {
                 var items = vis.selected();
-                if (items.length > 0) {
-                    vis.removeElements(items, true);
-                    //alert(JSON.stringify(items));
+                
+                if (items.length > 0) {                    
+                    
+                    // Loop through items and get all attached edges
+                    var attachedEdges = [];
+                    var selectedEdgesIDs = [];
+                    var len = items.length;
+                    
+                    // Populate array of selected edges
+                    for (var i = 0; i < len; i++) {
+                        if (items[i].group == "edges") {
+                            selectedEdgesIDs.push(items[i].data.id);
+                        }
+                    }
+                    
+                    // Loop through the selected items
+                    for (var i = 0; i < len; i++) {
+                    
+                         // Only look at the nodes
+                        if (items[i].group == "nodes") {
+                        
+                            // Populate array of all the node's edges
+                            var edgesF = items[i].data.edgesFrom;
+                            var edgesAll = edgesF.concat(items[i].data.edgesTo);
+                            
+                             // Loop through node's edges
+                            for (var j = 0; j < edgesAll.length; j++) {
+                        
+                                // Ensure the edge isn't already in the selected items array
+                                if (selectedEdgesIDs.indexOf(edgesAll[j]) == -1) {
+                                
+                                    // Pushing edge onto the items array
+                                    items.push(vis.edge(edgesAll[j]));
+                                }
+                                
+                            }
+                        }
+                    }
 
+                    vis.removeElements(items, true);
+                    
                     // UNDO INFO
                     lastEvent = { type: "deleteSelected", target: JSON.stringify(items) };
                     eventStack.push(lastEvent);
@@ -542,6 +617,12 @@ function($http, $state, auth) {
                     evts += "\n\n";
                 }
                 alert(evts);
+            });
+            
+            
+            // TEST FUNCTION: PRINT GLOBAL ID's
+            vis.addContextMenuItem("Print Global IDs", function(evt) {
+                alert("NODE: " + globalNodeID + "\nEDGE: " + globalEdgeID);
             });
 
             // TEST FUNCTION: Print the JSON information of an object
