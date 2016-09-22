@@ -16,12 +16,14 @@ mongoose.connect('mongodb://localhost/biograph');
 require('./models/Documents');
 require('./models/Graphs');
 require('./models/Users');
+require('./models/Teachers');
 require('./config/passport');
 
 var routes = require('./routes/index');
 var documents = require('./routes/documents');
 var graphs = require('./routes/graphs');
 var users = require('./routes/users');
+var teachers = require('./routes/teachers');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -37,9 +39,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 
 app.use('/', routes);
-app.use('/documents', documents);
-app.use('/graphs', graphs);
 app.use('/users', users);
+app.use('/users/documents', documents);
+app.use('/users/graphs', graphs);
+app.use('/teachers', teachers);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

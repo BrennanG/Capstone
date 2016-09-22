@@ -5,21 +5,21 @@ function($http, $state, auth) {
 	};
 
   o.getAll = function() {
-		return $http.get('/documents', {
+		return $http.get('/users/documents', {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(data) {
 			  angular.copy(data, o.documents);
 		});
 	};
   o.getDocument = function(id) {
-    return $http.get('/documents/' + id, {
+    return $http.get('/users/documents/' + id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).then(function(res) {
       return res.data;
     });
   };
   o.deleteDocument = function(document) {
-    return $http.delete('/documents/' + document._id, {
+    return $http.delete('/users/documents/' + document._id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(deletedDocument) {
 
@@ -27,7 +27,7 @@ function($http, $state, auth) {
           doc._id = deletedDocument._id;
         }), 1);
 
-        $http.delete('/graphs/' + document.graph, {
+        $http.delete('/users/graphs/' + document.graph, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				});
 
@@ -42,12 +42,12 @@ function($http, $state, auth) {
   };
   o.addDocument = function(newDocTitle, graphData) {
 		var dataToSend = { graph: graphData };
-    return $http.post('/graphs', dataToSend, {
+    return $http.post('/users/graphs', dataToSend, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(graph) {
         var doc = { title: newDocTitle, graph: graph._id };
 				var dataToSend = { document: doc };
-        return $http.post('/documents', dataToSend, {
+        return $http.post('/users/documents', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				}).success(function(document) {
             o.documents.push(document);
@@ -58,7 +58,7 @@ function($http, $state, auth) {
       });
   };
   o.updateNetworkData = function(document, data) {
-    return $http.put('/graphs/' + document.graph._id + '/network', data, {
+    return $http.put('/users/graphs/' + document.graph._id + '/network', data, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(returnedData) {
         document.graph.nodes = returnedData.nodes;
