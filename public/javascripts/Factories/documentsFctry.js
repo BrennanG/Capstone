@@ -5,21 +5,21 @@ function($http, $state, auth) {
 	};
 
   o.getAll = function() {
-		return $http.get('/users/documents', {
+		return $http.get('/user/documents', {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(data) {
 			  angular.copy(data, o.documents);
 		});
 	};
   o.getDocument = function(id) {
-    return $http.get('/users/documents/' + id, {
+    return $http.get('/user/documents/' + id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).then(function(res) {
       return res.data;
     });
   };
   o.deleteDocument = function(document) {
-    return $http.delete('/users/documents/' + document._id, {
+    return $http.delete('/user/documents/' + document._id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(deletedDocument) {
 
@@ -27,12 +27,12 @@ function($http, $state, auth) {
           doc._id = deletedDocument._id;
         }), 1);
 
-        $http.delete('/users/graphs/' + document.graph, {
+        $http.delete('/user/graphs/' + document.graph, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				});
 
 				var dataToSend = {user: auth.currentUserName(), documentId: document._id};
-				$http.put('/users/documents/remove', dataToSend, {
+				$http.put('/user/documents/remove', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				});
 
@@ -42,12 +42,12 @@ function($http, $state, auth) {
   };
   o.addDocument = function(newDocTitle, graphData) {
 		var dataToSend = { graph: graphData };
-    return $http.post('/users/graphs', dataToSend, {
+    return $http.post('/user/graphs', dataToSend, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(graph) {
         var doc = { title: newDocTitle, graph: graph._id };
 				var dataToSend = { document: doc };
-        return $http.post('/users/documents', dataToSend, {
+        return $http.post('/user/documents', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				}).success(function(document) {
             o.documents.push(document);
@@ -58,7 +58,7 @@ function($http, $state, auth) {
       });
   };
   o.updateNetworkData = function(document, data) {
-    return $http.put('/users/graphs/' + document.graph._id + '/network', data, {
+    return $http.put('/user/graphs/' + document.graph._id + '/network', data, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(returnedData) {
         document.graph.nodes = returnedData.nodes;

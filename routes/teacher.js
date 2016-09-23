@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-var User = mongoose.model('User');
+var Teacher = mongoose.model('Teacher');
 var passport = require('passport');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
@@ -11,15 +11,15 @@ router.post('/register', function(req, res, next){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  var user = new User();
-  user.username = req.body.username;
-  user.setPassword(req.body.password);
-  user.documents = [];
+  var teacher = new Teacher();
+  teacher.username = req.body.username;
+  teacher.setPassword(req.body.password);
+  //teacher.documents = [];
 
-  user.save(function (err){
+  teacher.save(function (err){
     if(err){ return next(err); }
 
-    return res.json({token: user.generateJWT()})
+    return res.json({token: teacher.generateJWT()})
   });
 });
 
@@ -28,26 +28,15 @@ router.post('/login', function(req, res, next){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  console.log('calling passport)');
-  passport.authenticate('local', function(err, user, info){
+  passport.authenticate('teacher-local', function(err, teacher, info){
     if(err){ return next(err); }
 
-    if(user){
-      return res.json({token: user.generateJWT()});
+    if(teacher){
+      return res.json({token: teacher.generateJWT()});
     } else {
       return res.status(401).json(info);
     }
   })(req, res, next);
-});
-
-router.put('/documents/remove', auth, function(req, res, next){
-  User.findOneAndUpdate({username: req.body.user}, {$pull: {documents: req.body.documentId}}, function(err, data){
-    if(err) {
-      return res.status(500).json({'error' : 'error in deleting documentId'});
-    }
-
-    res.json(data);
-  });
 });
 
 module.exports = router;
