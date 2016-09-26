@@ -1,6 +1,7 @@
 angular.module('biologyGraphingApp').factory('auth', ['$http', '$window', '$state',
 function($http, $window, $state) {
 	var auth = {};
+	var type = "";
 
 	auth.saveToken = function(token) {
 		$window.localStorage['biograph-token'] = token;
@@ -31,21 +32,41 @@ function($http, $window, $state) {
 		}
 	};
 
-	auth.register = function(user) {
-		return $http.post('/users/register', user).success(function(data) {
+	auth.userRegister = function(user) {
+		return $http.post('/user/register', user).success(function(data) {
 			auth.saveToken(data.token);
+			type = "user";
 		});
 	};
 
-	auth.logIn = function(user) {
-		return $http.post('/users/login', user).success(function(data) {
+	auth.userLogIn = function(user) {
+		return $http.post('/user/login', user).success(function(data) {
 			auth.saveToken(data.token);
+			type = "user";
+		});
+	};
+
+	auth.teacherRegister = function(user) {
+		return $http.post('/teacher/register', user).success(function(data) {
+			auth.saveToken(data.token);
+			type = "teacher";
+		});
+	};
+
+	auth.teacherLogIn = function(user) {
+		return $http.post('/teacher/login', user).success(function(data) {
+			auth.saveToken(data.token);
+			type = "teacher";
 		});
 	};
 
 	auth.logOut = function() {
 		$window.localStorage.removeItem('biograph-token');
 		$state.go('login');
+	};
+
+	auth.accountType = function() {
+		return type;
 	};
 
 	return auth;
