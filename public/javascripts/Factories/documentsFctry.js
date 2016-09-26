@@ -37,26 +37,28 @@ function($http, $state, auth) {
 				});
 
 				$state.go($state.current, {}, {reload: true}); // reload the page
-
         return deletedDocument;
       });
   };
   o.addDocument = function(newDocTitle, graphData) {
-    return $http.post('/graphs', graphData, {
+		var dataToSend = { graph: graphData };
+    return $http.post('/graphs', dataToSend, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(graph) {
         var doc = { title: newDocTitle, graph: graph._id };
-				var dataToSend = { document: doc, user: auth.currentUserName()};
+				var dataToSend = { document: doc };
         return $http.post('/documents', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				}).success(function(document) {
             o.documents.push(document);
+
+						$state.go($state.current, {}, {reload: true}); // reload the page
             return document;
           });
       });
   };
   o.updateNetworkData = function(document, data) {
-    return $http.put('/graphs/' + document.graph._id + '/network/data', data, {
+    return $http.put('/graphs/' + document.graph._id + '/network', data, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(returnedData) {
         document.graph.nodes = returnedData.nodes;
@@ -166,8 +168,13 @@ function($http, $state, auth) {
           options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
 
           vis.draw(options);
+<<<<<<< HEAD
         }*/
 				
+=======
+        }
+
+>>>>>>> c3e10fa8c4c4d090a5133f9328e02820ae5bde90
 
 
         $("input").attr("disabled", true);
@@ -623,6 +630,7 @@ function($http, $state, auth) {
             // TEST FUNCTION: PRINT GLOBAL ID's
             vis.addContextMenuItem("Print Global IDs", function(evt) {
                 alert("NODE: " + globalNodeID + "\nEDGE: " + globalEdgeID);
+                alert(Date.now());
             });
 
             // TEST FUNCTION: Print the JSON information of an object
