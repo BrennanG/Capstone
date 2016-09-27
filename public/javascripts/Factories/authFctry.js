@@ -32,29 +32,29 @@ function($http, $window, $state) {
 		}
 	};
 
-	auth.userRegister = function(user) {
-		return $http.post('/user/register', user).success(function(data) {
+	auth.studentRegister = function(student) {
+		return $http.post('/student/register', student).success(function(data) {
 			auth.saveToken(data.token);
-			type = "user";
+			type = "student";
 		});
 	};
 
-	auth.userLogIn = function(user) {
-		return $http.post('/user/login', user).success(function(data) {
+	auth.studentLogIn = function(student) {
+		return $http.post('/student/login', student).success(function(data) {
 			auth.saveToken(data.token);
-			type = "user";
+			type = "student";
 		});
 	};
 
-	auth.teacherRegister = function(user) {
-		return $http.post('/teacher/register', user).success(function(data) {
+	auth.teacherRegister = function(teacher) {
+		return $http.post('/teacher/register', teacher).success(function(data) {
 			auth.saveToken(data.token);
 			type = "teacher";
 		});
 	};
 
-	auth.teacherLogIn = function(user) {
-		return $http.post('/teacher/login', user).success(function(data) {
+	auth.teacherLogIn = function(teacher) {
+		return $http.post('/teacher/login', teacher).success(function(data) {
 			auth.saveToken(data.token);
 			type = "teacher";
 		});

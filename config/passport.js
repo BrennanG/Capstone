@@ -1,35 +1,35 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongoose = require('mongoose');
-var User = mongoose.model('User');
+var Student = mongoose.model('Student');
 var Teacher = mongoose.model('Teacher');
 
-passport.use('user-local', new LocalStrategy(
+passport.use('student-local', new LocalStrategy(
   function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
+    Student.findOne({ username: username }, function (err, student) {
       if (err) { return done(err); }
-      if (!user) {
+      if (!student) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (!user.validPassword(password)) {
+      if (!student.validPassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
-      return done(null, user);
+      return done(null, student);
     });
   }
 ));
 
 passport.use('teacher-local', new LocalStrategy(
   function(username, password, done) {
-    Teacher.findOne({ username: username }, function (err, user) {
+    Teacher.findOne({ username: username }, function (err, teacher) {
       if (err) { return done(err); }
-      if (!user) {
+      if (!teacher) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (!user.validPassword(password)) {
+      if (!teacher.validPassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
-      return done(null, user);
+      return done(null, teacher);
     });
   }
 ));

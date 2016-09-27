@@ -1,4 +1,4 @@
-angular.module('biologyGraphingApp').controller('UserHomeCtrl', ['$scope', 'documents', 'auth',
+angular.module('biologyGraphingApp').controller('StudentHomeCtrl', ['$scope', 'documents', 'auth',
 function($scope, documents, auth) {
 	$scope.documents = documents.documents;
 	$scope.isLoggedIn = auth.isLoggedIn;
