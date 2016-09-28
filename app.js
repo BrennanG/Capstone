@@ -17,13 +17,15 @@ require('./models/Documents');
 require('./models/Graphs');
 require('./models/Students');
 require('./models/Teachers');
+require('./models/Sections');
 require('./config/passport');
 
 var routes = require('./routes/index');
-var documents = require('./routes/documents');
-var graphs = require('./routes/graphs');
 var student = require('./routes/student');
 var teacher = require('./routes/teacher');
+var documents = require('./routes/documents');
+var graphs = require('./routes/graphs');
+var sections = require('./routes/sections');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -43,6 +45,7 @@ app.use('/student', student);
 app.use('/student/documents', documents);
 app.use('/student/graphs', graphs);
 app.use('/teacher', teacher);
+app.use('/teacher/sections', sections);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

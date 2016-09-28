@@ -14,7 +14,7 @@ router.post('/register', function(req, res, next){
   var teacher = new Teacher();
   teacher.username = req.body.username;
   teacher.setPassword(req.body.password);
-  //teacher.documents = [];
+  teacher.sections = [];
 
   teacher.save(function (err){
     if(err){ return next(err); }

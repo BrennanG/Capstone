@@ -7,6 +7,10 @@ function($stateProvider, $urlRouterProvider) {
 		url : '/teacher/home',
 		templateUrl : '/teacher/home.html',
 		controller : 'TeacherHomeCtrl',
+    resolve: {
+      postPromise : ['sections', function(sections) {
+			  return sections.getAll();
+			}]},
 		onEnter : ['$state', 'auth',
 			function($state, auth) {
 				if (!auth.isLoggedIn() || auth.accountType() != "teacher") {
