@@ -115,46 +115,46 @@ function($http, $state, auth) {
         };
 
 
-				/****** TEST DRAW FUNCTION ******/
-				/*function draw() {
+		/****** TEST DRAW FUNCTION ******/
+		function draw() {
         	$("input, select").attr("disabled", true);
-                var networ_json = {
-                  dataSchema: {
-                    nodes: [ { name: "label",     type: "string" },
-                             { name: "edgesFrom", type: "object", defValue: [] },
-                             { name: "edgesTo",   type: "object", defValue: [] }
-                           ],
-                    edges: [ { name: "label", type: "string" } ]
-                  },
-                  data: {
-                    nodes: [
-                             { id: "n1", label: "1234567890", edgesFrom: [], edgesTo: [] },
-                             { id: "n2", label: "T", edgesFrom: [], edgesTo: ["e3"] },
-                             { id: "n3", label: "Here's a test", edgesFrom: [], edgesTo: ["e1","e2"] },
-                             { id: "n4", label: "Other Biology Term", edgesFrom: [], edgesTo: [] },
-                             { id: "n5", label: "AND ANOTHER.", edgesFrom: ["e1"], edgesTo: [] },
-                             { id: "n6", label: "WWWWWWWWWWWW", edgesFrom: [], edgesTo: [] },
-                             { id: "n7", label: "Chromosome", edgesFrom: ["e3"], edgesTo: [] },
-                             { id: "n8", label: "WWWWWWWWW", edgesFrom: ["e2"], edgesTo: [] },
-                             { id: "n9", label: "Hey, what's up", edgesFrom: [], edgesTo: [] }
-                           ],
-                    edges: [
-                             { source: "n5", target: "n3", directed: true, label: "TESTING123" },
-                             { source: "n8", target: "n3", directed: true },
-                             { source: "n7", target: "n2", directed: true }
-                           ]
-                  }
-                };
+            var networ_json = {
+              dataSchema: {
+                nodes: [ { name: "label",     type: "string" },
+                         { name: "edgesFrom", type: "object", defValue: [] },
+                         { name: "edgesTo",   type: "object", defValue: [] }
+                       ],
+                edges: [ { name: "label", type: "string" } ]
+              },
+              data: {
+                nodes: [
+                         { id: "n1", label: "1234567890", edgesFrom: [], edgesTo: [] },
+                         { id: "n2", label: "T", edgesFrom: [], edgesTo: ["e3"] },
+                         { id: "n3", label: "Here's a test", edgesFrom: [], edgesTo: ["e1","e2"] },
+                         { id: "n4", label: "Other Biology Term", edgesFrom: [], edgesTo: [] },
+                         { id: "n5", label: "AND ANOTHER.", edgesFrom: ["e1"], edgesTo: [] },
+                         { id: "n6", label: "WWWWWWWWWWWW", edgesFrom: [], edgesTo: [] },
+                         { id: "n7", label: "Chromosome", edgesFrom: ["e3"], edgesTo: [] },
+                         { id: "n8", label: "WWWWWWWWW", edgesFrom: ["e2"], edgesTo: [] },
+                         { id: "n9", label: "Hey, what's up", edgesFrom: [], edgesTo: [] }
+                       ],
+                edges: [
+                         { source: "n5", target: "n3", directed: true, label: "TESTING123" },
+                         { source: "n8", target: "n3", directed: true },
+                         { source: "n7", target: "n2", directed: true }
+                       ]
+              }
+            };
 
-			    options.layout = { name: "CompoundSpringEmbedder" };
-            	options.network = networ_json;
-                options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
+            options.layout = { name: "CompoundSpringEmbedder" };
+            options.network = networ_json;
+            options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
 
-            	vis.draw(options);
-        }*/
+            vis.draw(options);
+        }
 
 
-
+        /*
         function draw() {
         	$("input, select").attr("disabled", true);
           options.network = {
@@ -168,9 +168,7 @@ function($http, $state, auth) {
           options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
 
           vis.draw(options);
-        }
-
-
+        }*/
 
         $("input").attr("disabled", true);
 
@@ -208,165 +206,208 @@ function($http, $state, auth) {
             o.updateNetworkData(docArg, {nodes: newNodes, edges: newEdges});
         };
 
-				/*****************************************/
-				/***** Node Re-sizing based on label *****/
-				/*****************************************/
-				vis["customNodeWidth"] = function (data) {
-					var labelLength = data['label'].length;
-					var extraWidth = ( labelLength > 12 ? (labelLength-12) * 7 : 0)
-					return 120 + extraWidth;
-				};
+		/*****************************************/
+		/***** Node Re-sizing based on label *****/
+		/*****************************************/
+		vis["customNodeWidth"] = function (data) {
+			var labelLength = data['label'].length;
+			var extraWidth = ( labelLength > 12 ? (labelLength-12) * 7 : 0)
+			return 120 + extraWidth;
+		};
+        
+        /***************************/
+        /***** ID Book-keeping *****/
+        /***************************/
+        var globalNode = 'n';
+        var globalNodeID;
+        var globalEdge = 'e';
+        var globalEdgeID;
+        
+        function incrementNodeID() {
+            var num = parseInt(globalNodeID.substring(1));
+            num++;
+            globalNodeID = "n" + num.toString();
+        }
+        
+        function incrementEdgeID() {
+            var num = parseInt(globalEdgeID.substring(1));
+            num++;
+            globalEdgeID = "e" + num.toString();
+        }
+        
 
-				/***************************/
-				/***** Add Edge Helper *****/
-				/***************************/
-				var _srcId;
-				var _targId;
+		/***************************/
+		/***** Add Edge Helper *****/
+		/***************************/
+		var _srcId;
+		var _targId;
 
-				function addEdgeHelper(src,targ, lab = "") {
-						var e = vis.addEdge({ source: src, target: targ, directed: true, label: lab}, true);
+                
+        // TODO: add arg to determine if it's undo or legit add, then handle ID's appropriately
+		function addEdgeHelper(src, targ, id, lab = "") {
+            if (id == "") {
+                var e = vis.addEdge({ source: src, target: targ, directed: true, label: lab}, true);
+            }
+            else {
+                var e = vis.addEdge({ source: src, target: targ, directed: true, label: lab, id: id}, true);
+            }
 
-						// Update nodes' edgesTo and edgesFrom data fields
-						var srcNode = vis.node(src);
-						srcNode.data.edgesFrom.push(e.data.id);
-						vis.updateData([srcNode], { edgesFrom: srcNode.data.edgesFrom });
+			// Update nodes' edgesTo and edgesFrom data fields if the ID doesn't already exist
+			var srcNode = vis.node(src);
+            if (srcNode.data.edgesFrom.indexOf(e.data.id) == -1) {
+                srcNode.data.edgesFrom.push(e.data.id);
+                vis.updateData([srcNode], { edgesFrom: srcNode.data.edgesFrom });
+            }
 
-						var targNode = vis.node(targ);
-						targNode.data.edgesTo.push(e.data.id);
-						vis.updateData([targNode], { edgesTo: targNode.data.edgesTo });
+			var targNode = vis.node(targ);
+            if (targNode.data.edgesTo.indexOf(e.data.id) == -1) {
+                targNode.data.edgesTo.push(e.data.id);
+                vis.updateData([targNode], { edgesTo: targNode.data.edgesTo });
+            }
 
-						return e;
-				}
+			return e;
+		}
 
-				function clickNodeToAddEdge(evt) {
-						if (_srcId != null) {
-								_targId = evt.target.data.id;
-							vis.removeListener("click", "nodes", clickNodeToAddEdge);
+		function clickNodeToAddEdge(evt) {
+			if (_srcId != null) {
+				_targId = evt.target.data.id;
+				vis.removeListener("click", "nodes", clickNodeToAddEdge);
 
-								var newEdge = addEdgeHelper(_srcId, _targId);
+                incrementEdgeID();
+				var newEdge = addEdgeHelper(_srcId, _targId, globalEdgeID);
 
-							_srcId = null;
-								_targId = null;
+                _srcId = null;
+				_targId = null;
 
-								// UNDO INFO
-								lastEvent = { type: "addEdge", target: JSON.stringify(newEdge) };
-								eventStack.push(lastEvent);
-						}
-				}
+				// UNDO INFO
+				lastEvent = { type: "addEdge", target: JSON.stringify(newEdge) };
+				undoStack.push(lastEvent);
+                
+                // Clearing redo stack
+                redoStack = [];
+			}
+		}
 
-				/**********************/
-				/***** EDIT LABEL *****/
-				/**********************/
-				var elem = document.getElementById("content");///////////////////
-				var oldLabel;
-				var currString;
+        /**********************/
+        /***** EDIT LABEL *****/
+        /**********************/
+        var elem = document.getElementById("content");
+        var oldLabel;
+        var currString;
 
-				function editLabel(object,type,lastEvent) {
-						vis.deselect("nodes");
-						vis.deselect("edges");
-						vis.select([object]);
+        function editLabel(object,type,lastEvent) {
+            vis.deselect("nodes");
+            vis.deselect("edges");
+            vis.select([object]);
 
-						oldLabel = object.data.label; // save old label
+            oldLabel = object.data.label; // save old label
 
-						currString = "";
-						update(currString,object);
+            currString = "";
+            update(currString,object);
 
-						// update current string to be displayed
-						function update(str,object) { vis.updateData([object], { label: str }); }
+            // update current string to be displayed
+            function update(str,object) { vis.updateData([object], { label: str }); }
 
-						// left click: save label and add to event stack if not blank
-						function mouseListener(event) {
-								if (currString == "") { update(oldLabel,object); }
-								else { eventStack.push(lastEvent); }
-								elem.removeEventListener("keydown",returnKeyListener);
-								elem.removeEventListener("keydown",escKeyListener);
-								elem.removeEventListener("keydown",labelKeyListener);
-								elem.removeEventListener("mouseup",mouseListener);
-								elem.removeEventListener("contextmenu",contextMenuListener);
-								vis.deselect([object]);
-						}
+            // left click: save label and add to event stack if not blank
+            function mouseListener(event) {
+                if (currString == "") { update(oldLabel,object); }
+                else { undoStack.push(lastEvent); }
+                elem.removeEventListener("keydown",returnKeyListener);
+                elem.removeEventListener("keydown",escKeyListener);
+                elem.removeEventListener("keydown",labelKeyListener);
+                elem.removeEventListener("mouseup",mouseListener);
+                elem.removeEventListener("contextmenu",contextMenuListener);
+                vis.deselect([object]);
+            }
 
-						 // right click: save label and add to event stack if not blank
-						function contextMenuListener(event) {
-								if (currString == "") { update(oldLabel,object); }
-								else { eventStack.push(lastEvent); }
-								elem.removeEventListener("keydown",returnKeyListener);
-								elem.removeEventListener("keydown",escKeyListener);
-								elem.removeEventListener("keydown",labelKeyListener);
-								elem.removeEventListener("mouseup",mouseListener);
-								elem.removeEventListener("contextmenu",contextMenuListener);
-								vis.deselect([object]);
-						}
+             // right click: save label and add to event stack if not blank
+            function contextMenuListener(event) {
+                if (currString == "") { update(oldLabel,object); }
+                else { undoStack.push(lastEvent); }
+                elem.removeEventListener("keydown",returnKeyListener);
+                elem.removeEventListener("keydown",escKeyListener);
+                elem.removeEventListener("keydown",labelKeyListener);
+                elem.removeEventListener("mouseup",mouseListener);
+                elem.removeEventListener("contextmenu",contextMenuListener);
+                vis.deselect([object]);
+            }
 
-						// enter: save label
-						function returnKeyListener(event) {
-								if (event.keyCode == 13) {
-										eventStack.push(lastEvent);
-										elem.removeEventListener("keydown",returnKeyListener);
-										elem.removeEventListener("keydown",escKeyListener);
-										elem.removeEventListener("keydown",labelKeyListener);
-										elem.removeEventListener("mouseup",mouseListener);
-										elem.removeEventListener("contextmenu",contextMenuListener);
-										vis.deselect([object]);
-								}
-						}
+            // enter: save label
+            function returnKeyListener(event) {
+                if (event.keyCode == 13) {
+                    undoStack.push(lastEvent);
+                    elem.removeEventListener("keydown",returnKeyListener);
+                    elem.removeEventListener("keydown",escKeyListener);
+                    elem.removeEventListener("keydown",labelKeyListener);
+                    elem.removeEventListener("mouseup",mouseListener);
+                    elem.removeEventListener("contextmenu",contextMenuListener);
+                    vis.deselect([object]);
+                }
+            }
 
-						// escape: cancel label edit and assign old label
-						function escKeyListener(event) {
-								if (event.keyCode == 27) {
-										update(oldLabel,object);
-										elem.removeEventListener("keydown",returnKeyListener);
-										elem.removeEventListener("keydown",escKeyListener);
-										elem.removeEventListener("keydown",labelKeyListener);
-										elem.removeEventListener("mouseup",mouseListener);
-										elem.removeEventListener("contextmenu",contextMenuListener);
-										vis.deselect([object]);
-								}
-						}
+            // escape: cancel label edit and assign old label
+            function escKeyListener(event) {
+                if (event.keyCode == 27) {
+                    update(oldLabel,object);
+                    elem.removeEventListener("keydown",returnKeyListener);
+                    elem.removeEventListener("keydown",escKeyListener);
+                    elem.removeEventListener("keydown",labelKeyListener);
+                    elem.removeEventListener("mouseup",mouseListener);
+                    elem.removeEventListener("contextmenu",contextMenuListener);
+                    vis.deselect([object]);
+                }
+            }
 
-						// add character to label
-						function labelKeyListener(event) {
-								var currChar;
-								var code = event.keyCode;
-								switch (true) {
-										case ( ( code > 47 && code < 58 ) || ( code > 64 && code < 91 ) || ( code == 32 ) ):
-												newChar = String.fromCharCode(code);
-												currString += newChar;
-												update(currString,object);
-												break;
-										case ( code == 8 ):
-												currString = currString.substring(0,currString.length-1);
-												break;
-										case ( code == 186 ): currString += ';'; break;
-										case ( code == 187 ): currString += '='; break;
-										case ( code == 188 ): currString += ','; break;
-										case ( code == 189 ): currString += '-'; break;
-										case ( code == 190 ): currString += '.'; break;
-										case ( code == 191 ): currString += '/'; break;
-										case ( code == 222 ): currString += "'"; break;
-								}
-								update(currString,object);
-						}
+            // add character to label
+            function labelKeyListener(event) {
+                var currChar;
+                var code = event.keyCode;
+                switch (true) {
+                    case ( ( code > 47 && code < 58 ) || ( code > 64 && code < 91 ) || ( code == 32 ) ):
+                        newChar = String.fromCharCode(code);
+                        currString += newChar;
+                        update(currString,object);
+                        break;
+                    case ( code == 8 ):
+                        currString = currString.substring(0,currString.length-1);
+                        break;
+                    case ( code == 186 ): currString += ';'; break;
+                    case ( code == 187 ): currString += '='; break;
+                    case ( code == 188 ): currString += ','; break;
+                    case ( code == 189 ): currString += '-'; break;
+                    case ( code == 190 ): currString += '.'; break;
+                    case ( code == 191 ): currString += '/'; break;
+                    case ( code == 222 ): currString += "'"; break;
+                }
+                update(currString,object);
+            }
 
-						elem.addEventListener("keydown",returnKeyListener);
-						elem.addEventListener("keydown",escKeyListener);
-						elem.addEventListener("keydown",labelKeyListener);
-						elem.addEventListener("mouseup",mouseListener);
-						elem.addEventListener("contextmenu",contextMenuListener);
-				}
+            elem.addEventListener("keydown",returnKeyListener);
+            elem.addEventListener("keydown",escKeyListener);
+            elem.addEventListener("keydown",labelKeyListener);
+            elem.addEventListener("mouseup",mouseListener);
+            elem.addEventListener("contextmenu",contextMenuListener);
+        }
 
 
-	      /****************/
-	      /***** UNDO *****/
-	      /****************/
-	      var eventStack = new Array();
-	      var targ;
-	      var event;
-	      var lastEvent;
+	    /****************/
+	    /***** UNDO *****/
+	    /****************/
+	    var undoStack = new Array();
+        var lastEvent;
 
         function undo() {
-            event = eventStack.pop();
-            targ = JSON.parse(event.target);
+            var event = undoStack.pop();
+            var targ = JSON.parse(event.target);
+            
+            // Get current label for redo before undoing
+            if (event.type == "editLabel") {
+                var node = vis.node(targ.data.id);
+                event.label = node.data.label;
+            }            
+            
+            // Push to redo stack
+            redoStack.push(event);
 
             switch (event.type) {
                 case ("addNode"):
@@ -383,49 +424,94 @@ function($http, $state, auth) {
 
                     var edges = JSON.parse(event.edges);
                     for (var i = 0; i < event.edges.length; i++) {
-                        addEdgeHelper(edges[i].data.source, edges[i].data.target);
+                        data = edges[i].data;
+                        addEdgeHelper(data.source, data.target, data.id, data.label);
                     }
-                    //vis.addElements(JSON.parse(event.edges),true); // attached edges
+                    
                     event.edges = [];
                     break;
                 case ("deleteEdge"):
-                    //vis.addEdge(targ,true);
-                    addEdgeHelper(targ.data.source, targ.data.target, targ.data.label);
+                    var data = targ.data;
+                    addEdgeHelper(data.source, data.target, data.id, data.label);
                     break;
                 case ("editLabel"):
                     vis.updateData([targ], { label: targ.data.label });
                     break;
             }
         }
+        
+        /****************/
+        /***** REDO *****/
+        /****************/
+        var redoStack = new Array();
+        
+        function redo() {
+            event = redoStack.pop();
+            targ = JSON.parse(event.target);
+            
+            // Push to undo stack
+            undoStack.push(event);
+            
+            switch (event.type) {
+                case ("addNode"):
+                    vis.addElements([targ],true);
+                    break;
+                case ("addEdge"):
+                    vis.addElements([targ],true);
+                    break;
+                case ("deleteSelected"):
+                    vis.removeElements(targ,true);
+                    break;
+                case ("deleteNode"):
+                    vis.removeElements([targ],true);
+                    break;
+                case ("deleteEdge"):
+                    vis.removeElements([targ],true);
+                    breal;
+                case ("editLabel"):
+                    vis.updateData([targ], { label: event.label });//{ label: targ.data.label });
+                    break;
+            }
+            
+        }
 
 
-				/********************************************/
+		/********************************************/
         /***** Double click to edit nodes/edges *****/
         /********************************************/
         vis.addListener("dblclick", "nodes", function(evt) {
-            // UNDO INFO
+            // UNDO INFO (save target now so it has previous label for undo)
             lastEvent = { type: "editLabel", target: JSON.stringify(evt.target) };
+                
+            // Clearing redo stack
+            redoStack = [];
 
             editLabel(evt.target,'n',lastEvent);
         })
         vis.addListener("dblclick", "edges", function(evt) {
-            // UNDO INFO
+            // UNDO INFO (save target now so it has previous label for undo)
             lastEvent = { type: "editLabel", target: JSON.stringify(evt.target) };
+            
+            // Clearing redo stack
+            redoStack = [];
 
             editLabel(evt.target,'e',lastEvent);
         })
 
 
-		    /********************************/
-		    /****** CONTEXT MENU ITEMS ******/
-		    /********************************/
-				vis.ready(function() {
+		/********************************/
+		/****** CONTEXT MENU ITEMS ******/
+		/********************************/            
+		vis.ready(function() {
             var layout = vis.layout();
             $("input, select").attr("disabled", false);
+                    
+            globalNodeID = globalNode.concat(vis.nodes().length.toString());
+            globalEdgeID = globalEdge.concat(vis.edges().length.toString());
 
             // NODE: ADD EDGE
             vis.addContextMenuItem("Add new edge", "nodes", function(evt) {
-            	_srcId = evt.target.data.id;
+                _srcId = evt.target.data.id;
                 vis.removeListener("click", "nodes", clickNodeToAddEdge);
                 vis.addListener("click", "nodes", clickNodeToAddEdge);
             })
@@ -434,6 +520,9 @@ function($http, $state, auth) {
             vis.addContextMenuItem("Edit Label", "nodes", function(evt) {
                 // UNDO INFO
                 lastEvent = { type: "editLabel", target: JSON.stringify(evt.target) };
+                
+                // Clearing redo stack
+                redoStack = [];
 
                 editLabel(evt.target,'n',lastEvent);
             })
@@ -457,8 +546,8 @@ function($http, $state, auth) {
                 var index;
                 for (var i = 0; i < edgesF.length; i++) {
                     //alert(edgesF[i]);
-                    edge = vis.edge(edgesF[i]);///
-                    node = vis.node(edge.data.target);///
+                    edge = vis.edge(edgesF[i]);
+                    node = vis.node(edge.data.target);
 
                     index = node.data.edgesTo.indexOf(edgesF[i]);
                     node.data.edgesTo.splice(index,1);
@@ -475,7 +564,10 @@ function($http, $state, auth) {
 
                 // UNDO INFO
                 lastEvent = { type: "deleteNode", target: JSON.stringify(evt.target), edges: JSON.stringify(allEdges) };
-                eventStack.push(lastEvent);
+                undoStack.push(lastEvent);
+                
+                // Clearing redo stack
+                redoStack = [];
 
                 vis.removeNode(evt.target.data.id, true);
             })
@@ -484,6 +576,9 @@ function($http, $state, auth) {
             vis.addContextMenuItem("Edit Label", "edges", function(evt) {
                 // UNDO INFO
                 lastEvent = { type: "editLabel", target: JSON.stringify(evt.target) };
+                
+                // Clearing redo stack
+                redoStack = [];
 
                 editLabel(evt.target,'e',lastEvent);
             })
@@ -494,7 +589,10 @@ function($http, $state, auth) {
 
                 // UNDO INFO
                 lastEvent = { type: "deleteEdge", target: JSON.stringify(evt.target) };
-                eventStack.push(lastEvent);
+                undoStack.push(lastEvent);
+                
+                // Clearing redo stack
+                redoStack = [];
             })
 
             // CANVAS: ADD NODE
@@ -509,41 +607,99 @@ function($http, $state, auth) {
                     x += Math.random() * (evt.target.width/3) * (Math.round(Math.random()*100)%2==0 ? 1 : -1);
                     y += Math.random() * (evt.target.height/3) * (Math.round(Math.random()*100)%2==0 ? 1 : -1);
                 }
-                var n = vis.addNode(x, y, { parent: parentId }, true);
+                incrementNodeID();
+                var n = vis.addNode(x, y, { parent: parentId, id: globalNodeID }, true);
                 vis.updateData([n]);
 
                 // UNDO INFO
                 lastEvent = { type: "addNode", target: JSON.stringify(n) };
-                eventStack.push(lastEvent);
+                undoStack.push(lastEvent);
+                
+                // Clearing redo stack
+                redoStack = [];
             })
 
             // CANVAS: UNDO
             vis.addContextMenuItem("Undo event", function(evt) {
                 undo();
             });
+            
+            // CANVAS: REDO
+            vis.addContextMenuItem("Redo event", function(evt) {
+                redo();
+            });
 
 
             // CANVAS: DELETE SELECTED
             vis.addContextMenuItem("Delete selected", function(evt) {
                 var items = vis.selected();
-                if (items.length > 0) {
-                    vis.removeElements(items, true);
-                    //alert(JSON.stringify(items));
+                
+                if (items.length > 0) {                    
+                    
+                    // Loop through items and get all attached edges
+                    var attachedEdges = [];
+                    var selectedEdgesIDs = [];
+                    var len = items.length;
+                    
+                    // Populate array of selected edges
+                    for (var i = 0; i < len; i++) {
+                        if (items[i].group == "edges") {
+                            selectedEdgesIDs.push(items[i].data.id);
+                        }
+                    }
+                    
+                    // Loop through the selected items
+                    for (var i = 0; i < len; i++) {
+                    
+                         // Only look at the nodes
+                        if (items[i].group == "nodes") {
+                        
+                            // Populate array of all the node's edges
+                            var edgesF = items[i].data.edgesFrom;
+                            var edgesAll = edgesF.concat(items[i].data.edgesTo);
+                            
+                             // Loop through node's edges
+                            for (var j = 0; j < edgesAll.length; j++) {
+                        
+                                // Ensure the edge isn't already in the selected items array
+                                if (selectedEdgesIDs.indexOf(edgesAll[j]) == -1) {
+                                
+                                    // Pushing edge onto the items array
+                                    items.push(vis.edge(edgesAll[j]));
+                                }
+                                
+                            }
+                        }
+                    }
 
+                    vis.removeElements(items, true);
+                    
                     // UNDO INFO
                     lastEvent = { type: "deleteSelected", target: JSON.stringify(items) };
-                    eventStack.push(lastEvent);
+                    undoStack.push(lastEvent);
+                    
+                    // Clearing redo stack
+                    redoStack = [];
                 }
             });
 
             // TEST FUNCTION: PRINT UNDO STACK
             vis.addContextMenuItem("Print undo stack", function(evt) {
                 var evts = "";
-                for (var i = 0; i < eventStack.length; i++) {
-                    evts += JSON.stringify(eventStack[i]);
+                for (var i = 0; i < undoStack.length; i++) {
+                    evts += JSON.stringify(undoStack[i]);
                     evts += "\n\n";
                 }
                 alert(evts);
+            });
+            
+            
+            // TEST FUNCTION: PRINT GLOBAL ID's
+            vis.addContextMenuItem("Print Global IDs", function(evt) {
+                alert("NODE: " + globalNodeID + "\nEDGE: " + globalEdgeID);
+                
+                var d = new Date(Date.now());
+                alert((d.getMonth()+1) + "-" + d.getDate() + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
             });
 
             // TEST FUNCTION: Print the JSON information of an object
