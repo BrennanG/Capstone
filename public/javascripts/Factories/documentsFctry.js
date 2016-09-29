@@ -115,42 +115,42 @@ function($http, $state, auth) {
         };
 
 
-				/****** TEST DRAW FUNCTION ******/
+		/****** TEST DRAW FUNCTION ******/
 		function draw() {
         	$("input, select").attr("disabled", true);
-                var networ_json = {
-                  dataSchema: {
-                    nodes: [ { name: "label",     type: "string" },
-                             { name: "edgesFrom", type: "object", defValue: [] },
-                             { name: "edgesTo",   type: "object", defValue: [] }
-                           ],
-                    edges: [ { name: "label", type: "string" } ]
-                  },
-                  data: {
-                    nodes: [
-                             { id: "n1", label: "1234567890", edgesFrom: [], edgesTo: [] },
-                             { id: "n2", label: "T", edgesFrom: [], edgesTo: ["e3"] },
-                             { id: "n3", label: "Here's a test", edgesFrom: [], edgesTo: ["e1","e2"] },
-                             { id: "n4", label: "Other Biology Term", edgesFrom: [], edgesTo: [] },
-                             { id: "n5", label: "AND ANOTHER.", edgesFrom: ["e1"], edgesTo: [] },
-                             { id: "n6", label: "WWWWWWWWWWWW", edgesFrom: [], edgesTo: [] },
-                             { id: "n7", label: "Chromosome", edgesFrom: ["e3"], edgesTo: [] },
-                             { id: "n8", label: "WWWWWWWWW", edgesFrom: ["e2"], edgesTo: [] },
-                             { id: "n9", label: "Hey, what's up", edgesFrom: [], edgesTo: [] }
-                           ],
-                    edges: [
-                             { source: "n5", target: "n3", directed: true, label: "TESTING123" },
-                             { source: "n8", target: "n3", directed: true },
-                             { source: "n7", target: "n2", directed: true }
-                           ]
-                  }
-                };
+            var networ_json = {
+              dataSchema: {
+                nodes: [ { name: "label",     type: "string" },
+                         { name: "edgesFrom", type: "object", defValue: [] },
+                         { name: "edgesTo",   type: "object", defValue: [] }
+                       ],
+                edges: [ { name: "label", type: "string" } ]
+              },
+              data: {
+                nodes: [
+                         { id: "n1", label: "1234567890", edgesFrom: [], edgesTo: [] },
+                         { id: "n2", label: "T", edgesFrom: [], edgesTo: ["e3"] },
+                         { id: "n3", label: "Here's a test", edgesFrom: [], edgesTo: ["e1","e2"] },
+                         { id: "n4", label: "Other Biology Term", edgesFrom: [], edgesTo: [] },
+                         { id: "n5", label: "AND ANOTHER.", edgesFrom: ["e1"], edgesTo: [] },
+                         { id: "n6", label: "WWWWWWWWWWWW", edgesFrom: [], edgesTo: [] },
+                         { id: "n7", label: "Chromosome", edgesFrom: ["e3"], edgesTo: [] },
+                         { id: "n8", label: "WWWWWWWWW", edgesFrom: ["e2"], edgesTo: [] },
+                         { id: "n9", label: "Hey, what's up", edgesFrom: [], edgesTo: [] }
+                       ],
+                edges: [
+                         { source: "n5", target: "n3", directed: true, label: "TESTING123" },
+                         { source: "n8", target: "n3", directed: true },
+                         { source: "n7", target: "n2", directed: true }
+                       ]
+              }
+            };
 
-			    options.layout = { name: "CompoundSpringEmbedder" };
-            	options.network = networ_json;
-                options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
+            options.layout = { name: "CompoundSpringEmbedder" };
+            options.network = networ_json;
+            options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
 
-            	vis.draw(options);
+            vis.draw(options);
         }
 
 
@@ -168,14 +168,7 @@ function($http, $state, auth) {
           options.visualStyle.nodes.width = { defaultValue: 120, customMapper: { functionName: "customNodeWidth" } };
 
           vis.draw(options);
-<<<<<<< HEAD
         }*/
-				
-=======
-        }
-
->>>>>>> c3e10fa8c4c4d090a5133f9328e02820ae5bde90
-
 
         $("input").attr("disabled", true);
 
@@ -288,123 +281,133 @@ function($http, $state, auth) {
 
 				// UNDO INFO
 				lastEvent = { type: "addEdge", target: JSON.stringify(newEdge) };
-				eventStack.push(lastEvent);
+				undoStack.push(lastEvent);
+                
+                // Clearing redo stack
+                redoStack = [];
 			}
 		}
 
-				/**********************/
-				/***** EDIT LABEL *****/
-				/**********************/
-				var elem = document.getElementById("content");///////////////////
-				var oldLabel;
-				var currString;
+        /**********************/
+        /***** EDIT LABEL *****/
+        /**********************/
+        var elem = document.getElementById("content");
+        var oldLabel;
+        var currString;
 
-				function editLabel(object,type,lastEvent) {
-						vis.deselect("nodes");
-						vis.deselect("edges");
-						vis.select([object]);
+        function editLabel(object,type,lastEvent) {
+            vis.deselect("nodes");
+            vis.deselect("edges");
+            vis.select([object]);
 
-						oldLabel = object.data.label; // save old label
+            oldLabel = object.data.label; // save old label
 
-						currString = "";
-						update(currString,object);
+            currString = "";
+            update(currString,object);
 
-						// update current string to be displayed
-						function update(str,object) { vis.updateData([object], { label: str }); }
+            // update current string to be displayed
+            function update(str,object) { vis.updateData([object], { label: str }); }
 
-						// left click: save label and add to event stack if not blank
-						function mouseListener(event) {
-								if (currString == "") { update(oldLabel,object); }
-								else { eventStack.push(lastEvent); }
-								elem.removeEventListener("keydown",returnKeyListener);
-								elem.removeEventListener("keydown",escKeyListener);
-								elem.removeEventListener("keydown",labelKeyListener);
-								elem.removeEventListener("mouseup",mouseListener);
-								elem.removeEventListener("contextmenu",contextMenuListener);
-								vis.deselect([object]);
-						}
+            // left click: save label and add to event stack if not blank
+            function mouseListener(event) {
+                if (currString == "") { update(oldLabel,object); }
+                else { undoStack.push(lastEvent); }
+                elem.removeEventListener("keydown",returnKeyListener);
+                elem.removeEventListener("keydown",escKeyListener);
+                elem.removeEventListener("keydown",labelKeyListener);
+                elem.removeEventListener("mouseup",mouseListener);
+                elem.removeEventListener("contextmenu",contextMenuListener);
+                vis.deselect([object]);
+            }
 
-						 // right click: save label and add to event stack if not blank
-						function contextMenuListener(event) {
-								if (currString == "") { update(oldLabel,object); }
-								else { eventStack.push(lastEvent); }
-								elem.removeEventListener("keydown",returnKeyListener);
-								elem.removeEventListener("keydown",escKeyListener);
-								elem.removeEventListener("keydown",labelKeyListener);
-								elem.removeEventListener("mouseup",mouseListener);
-								elem.removeEventListener("contextmenu",contextMenuListener);
-								vis.deselect([object]);
-						}
+             // right click: save label and add to event stack if not blank
+            function contextMenuListener(event) {
+                if (currString == "") { update(oldLabel,object); }
+                else { undoStack.push(lastEvent); }
+                elem.removeEventListener("keydown",returnKeyListener);
+                elem.removeEventListener("keydown",escKeyListener);
+                elem.removeEventListener("keydown",labelKeyListener);
+                elem.removeEventListener("mouseup",mouseListener);
+                elem.removeEventListener("contextmenu",contextMenuListener);
+                vis.deselect([object]);
+            }
 
-						// enter: save label
-						function returnKeyListener(event) {
-								if (event.keyCode == 13) {
-										eventStack.push(lastEvent);
-										elem.removeEventListener("keydown",returnKeyListener);
-										elem.removeEventListener("keydown",escKeyListener);
-										elem.removeEventListener("keydown",labelKeyListener);
-										elem.removeEventListener("mouseup",mouseListener);
-										elem.removeEventListener("contextmenu",contextMenuListener);
-										vis.deselect([object]);
-								}
-						}
+            // enter: save label
+            function returnKeyListener(event) {
+                if (event.keyCode == 13) {
+                    undoStack.push(lastEvent);
+                    elem.removeEventListener("keydown",returnKeyListener);
+                    elem.removeEventListener("keydown",escKeyListener);
+                    elem.removeEventListener("keydown",labelKeyListener);
+                    elem.removeEventListener("mouseup",mouseListener);
+                    elem.removeEventListener("contextmenu",contextMenuListener);
+                    vis.deselect([object]);
+                }
+            }
 
-						// escape: cancel label edit and assign old label
-						function escKeyListener(event) {
-								if (event.keyCode == 27) {
-										update(oldLabel,object);
-										elem.removeEventListener("keydown",returnKeyListener);
-										elem.removeEventListener("keydown",escKeyListener);
-										elem.removeEventListener("keydown",labelKeyListener);
-										elem.removeEventListener("mouseup",mouseListener);
-										elem.removeEventListener("contextmenu",contextMenuListener);
-										vis.deselect([object]);
-								}
-						}
+            // escape: cancel label edit and assign old label
+            function escKeyListener(event) {
+                if (event.keyCode == 27) {
+                    update(oldLabel,object);
+                    elem.removeEventListener("keydown",returnKeyListener);
+                    elem.removeEventListener("keydown",escKeyListener);
+                    elem.removeEventListener("keydown",labelKeyListener);
+                    elem.removeEventListener("mouseup",mouseListener);
+                    elem.removeEventListener("contextmenu",contextMenuListener);
+                    vis.deselect([object]);
+                }
+            }
 
-						// add character to label
-						function labelKeyListener(event) {
-								var currChar;
-								var code = event.keyCode;
-								switch (true) {
-										case ( ( code > 47 && code < 58 ) || ( code > 64 && code < 91 ) || ( code == 32 ) ):
-												newChar = String.fromCharCode(code);
-												currString += newChar;
-												update(currString,object);
-												break;
-										case ( code == 8 ):
-												currString = currString.substring(0,currString.length-1);
-												break;
-										case ( code == 186 ): currString += ';'; break;
-										case ( code == 187 ): currString += '='; break;
-										case ( code == 188 ): currString += ','; break;
-										case ( code == 189 ): currString += '-'; break;
-										case ( code == 190 ): currString += '.'; break;
-										case ( code == 191 ): currString += '/'; break;
-										case ( code == 222 ): currString += "'"; break;
-								}
-								update(currString,object);
-						}
+            // add character to label
+            function labelKeyListener(event) {
+                var currChar;
+                var code = event.keyCode;
+                switch (true) {
+                    case ( ( code > 47 && code < 58 ) || ( code > 64 && code < 91 ) || ( code == 32 ) ):
+                        newChar = String.fromCharCode(code);
+                        currString += newChar;
+                        update(currString,object);
+                        break;
+                    case ( code == 8 ):
+                        currString = currString.substring(0,currString.length-1);
+                        break;
+                    case ( code == 186 ): currString += ';'; break;
+                    case ( code == 187 ): currString += '='; break;
+                    case ( code == 188 ): currString += ','; break;
+                    case ( code == 189 ): currString += '-'; break;
+                    case ( code == 190 ): currString += '.'; break;
+                    case ( code == 191 ): currString += '/'; break;
+                    case ( code == 222 ): currString += "'"; break;
+                }
+                update(currString,object);
+            }
 
-						elem.addEventListener("keydown",returnKeyListener);
-						elem.addEventListener("keydown",escKeyListener);
-						elem.addEventListener("keydown",labelKeyListener);
-						elem.addEventListener("mouseup",mouseListener);
-						elem.addEventListener("contextmenu",contextMenuListener);
-				}
+            elem.addEventListener("keydown",returnKeyListener);
+            elem.addEventListener("keydown",escKeyListener);
+            elem.addEventListener("keydown",labelKeyListener);
+            elem.addEventListener("mouseup",mouseListener);
+            elem.addEventListener("contextmenu",contextMenuListener);
+        }
 
 
 	    /****************/
 	    /***** UNDO *****/
 	    /****************/
-	    var eventStack = new Array();
-	    var targ;
-	    var event;
-	    var lastEvent;
+	    var undoStack = new Array();
+        var lastEvent;
 
         function undo() {
-            event = eventStack.pop();
-            targ = JSON.parse(event.target);
+            var event = undoStack.pop();
+            var targ = JSON.parse(event.target);
+            
+            // Get current label for redo before undoing
+            if (event.type == "editLabel") {
+                var node = vis.node(targ.data.id);
+                event.label = node.data.label;
+            }            
+            
+            // Push to redo stack
+            redoStack.push(event);
 
             switch (event.type) {
                 case ("addNode"):
@@ -436,38 +439,79 @@ function($http, $state, auth) {
                     break;
             }
         }
+        
+        /****************/
+        /***** REDO *****/
+        /****************/
+        var redoStack = new Array();
+        
+        function redo() {
+            event = redoStack.pop();
+            targ = JSON.parse(event.target);
+            
+            // Push to undo stack
+            undoStack.push(event);
+            
+            switch (event.type) {
+                case ("addNode"):
+                    vis.addElements([targ],true);
+                    break;
+                case ("addEdge"):
+                    vis.addElements([targ],true);
+                    break;
+                case ("deleteSelected"):
+                    vis.removeElements(targ,true);
+                    break;
+                case ("deleteNode"):
+                    vis.removeElements([targ],true);
+                    break;
+                case ("deleteEdge"):
+                    vis.removeElements([targ],true);
+                    breal;
+                case ("editLabel"):
+                    vis.updateData([targ], { label: event.label });//{ label: targ.data.label });
+                    break;
+            }
+            
+        }
 
 
 		/********************************************/
         /***** Double click to edit nodes/edges *****/
         /********************************************/
         vis.addListener("dblclick", "nodes", function(evt) {
-            // UNDO INFO
+            // UNDO INFO (save target now so it has previous label for undo)
             lastEvent = { type: "editLabel", target: JSON.stringify(evt.target) };
+                
+            // Clearing redo stack
+            redoStack = [];
 
             editLabel(evt.target,'n',lastEvent);
         })
         vis.addListener("dblclick", "edges", function(evt) {
-            // UNDO INFO
+            // UNDO INFO (save target now so it has previous label for undo)
             lastEvent = { type: "editLabel", target: JSON.stringify(evt.target) };
+            
+            // Clearing redo stack
+            redoStack = [];
 
             editLabel(evt.target,'e',lastEvent);
         })
 
 
-		    /********************************/
-		    /****** CONTEXT MENU ITEMS ******/
-		    /********************************/            
-			vis.ready(function() {
+		/********************************/
+		/****** CONTEXT MENU ITEMS ******/
+		/********************************/            
+		vis.ready(function() {
             var layout = vis.layout();
             $("input, select").attr("disabled", false);
-                
+                    
             globalNodeID = globalNode.concat(vis.nodes().length.toString());
             globalEdgeID = globalEdge.concat(vis.edges().length.toString());
 
             // NODE: ADD EDGE
             vis.addContextMenuItem("Add new edge", "nodes", function(evt) {
-            	_srcId = evt.target.data.id;
+                _srcId = evt.target.data.id;
                 vis.removeListener("click", "nodes", clickNodeToAddEdge);
                 vis.addListener("click", "nodes", clickNodeToAddEdge);
             })
@@ -476,6 +520,9 @@ function($http, $state, auth) {
             vis.addContextMenuItem("Edit Label", "nodes", function(evt) {
                 // UNDO INFO
                 lastEvent = { type: "editLabel", target: JSON.stringify(evt.target) };
+                
+                // Clearing redo stack
+                redoStack = [];
 
                 editLabel(evt.target,'n',lastEvent);
             })
@@ -499,8 +546,8 @@ function($http, $state, auth) {
                 var index;
                 for (var i = 0; i < edgesF.length; i++) {
                     //alert(edgesF[i]);
-                    edge = vis.edge(edgesF[i]);///
-                    node = vis.node(edge.data.target);///
+                    edge = vis.edge(edgesF[i]);
+                    node = vis.node(edge.data.target);
 
                     index = node.data.edgesTo.indexOf(edgesF[i]);
                     node.data.edgesTo.splice(index,1);
@@ -517,7 +564,10 @@ function($http, $state, auth) {
 
                 // UNDO INFO
                 lastEvent = { type: "deleteNode", target: JSON.stringify(evt.target), edges: JSON.stringify(allEdges) };
-                eventStack.push(lastEvent);
+                undoStack.push(lastEvent);
+                
+                // Clearing redo stack
+                redoStack = [];
 
                 vis.removeNode(evt.target.data.id, true);
             })
@@ -526,6 +576,9 @@ function($http, $state, auth) {
             vis.addContextMenuItem("Edit Label", "edges", function(evt) {
                 // UNDO INFO
                 lastEvent = { type: "editLabel", target: JSON.stringify(evt.target) };
+                
+                // Clearing redo stack
+                redoStack = [];
 
                 editLabel(evt.target,'e',lastEvent);
             })
@@ -536,7 +589,10 @@ function($http, $state, auth) {
 
                 // UNDO INFO
                 lastEvent = { type: "deleteEdge", target: JSON.stringify(evt.target) };
-                eventStack.push(lastEvent);
+                undoStack.push(lastEvent);
+                
+                // Clearing redo stack
+                redoStack = [];
             })
 
             // CANVAS: ADD NODE
@@ -557,12 +613,20 @@ function($http, $state, auth) {
 
                 // UNDO INFO
                 lastEvent = { type: "addNode", target: JSON.stringify(n) };
-                eventStack.push(lastEvent);
+                undoStack.push(lastEvent);
+                
+                // Clearing redo stack
+                redoStack = [];
             })
 
             // CANVAS: UNDO
             vis.addContextMenuItem("Undo event", function(evt) {
                 undo();
+            });
+            
+            // CANVAS: REDO
+            vis.addContextMenuItem("Redo event", function(evt) {
+                redo();
             });
 
 
@@ -612,15 +676,18 @@ function($http, $state, auth) {
                     
                     // UNDO INFO
                     lastEvent = { type: "deleteSelected", target: JSON.stringify(items) };
-                    eventStack.push(lastEvent);
+                    undoStack.push(lastEvent);
+                    
+                    // Clearing redo stack
+                    redoStack = [];
                 }
             });
 
             // TEST FUNCTION: PRINT UNDO STACK
             vis.addContextMenuItem("Print undo stack", function(evt) {
                 var evts = "";
-                for (var i = 0; i < eventStack.length; i++) {
-                    evts += JSON.stringify(eventStack[i]);
+                for (var i = 0; i < undoStack.length; i++) {
+                    evts += JSON.stringify(undoStack[i]);
                     evts += "\n\n";
                 }
                 alert(evts);
@@ -630,7 +697,9 @@ function($http, $state, auth) {
             // TEST FUNCTION: PRINT GLOBAL ID's
             vis.addContextMenuItem("Print Global IDs", function(evt) {
                 alert("NODE: " + globalNodeID + "\nEDGE: " + globalEdgeID);
-                alert(Date.now());
+                
+                var d = new Date(Date.now());
+                alert((d.getMonth()+1) + "-" + d.getDate() + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
             });
 
             // TEST FUNCTION: Print the JSON information of an object
