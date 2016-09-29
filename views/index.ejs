@@ -22,6 +22,7 @@
     <script src="/javascripts/States/registerState.js"></script>
     <script src="/javascripts/Factories/documentsFctry.js"></script>
     <script src="/javascripts/Factories/sectionsFctry.js"></script>
+    <script src="/javascripts/Factories/assignmentsFctry.js"></script>
     <script src="/javascripts/Factories/authFctry.js"></script>
     <script src="/javascripts/Controllers/studentHomeCtrl.js"></script>
     <script src="/javascripts/Controllers/teacherHomeCtrl.js"></script>
@@ -138,6 +139,24 @@
           {{student.username}}
         </span>
       </div>
+      <!-- List assignments -->
+      <h3>Assignments</h3>
+      <div ng-repeat="assignment in assignments" ng-show="isLoggedIn()">
+        <span>
+          {{assignment.title}} - {{assignment.description}}
+        </span>
+      </div>
+      <form ng-submit="addAssignment()" style="margin-top:30px;">
+
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Title" ng-model="newTitle"></input>
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Description" ng-model="newDescription"></input>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Assignment</button>
+      </form>
     </script>
 
     <!-- Register Template -->

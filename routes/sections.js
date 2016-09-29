@@ -39,12 +39,12 @@ router.post('/', auth, function(req, res, next) {
     if (err) { return next(err); }
     if (!teacher) { return next(new Error("can't find teacher")); }
 
-    var section = new Section({title: req.body.title, teachers: [teacher], students: []});
+    var section = new Section({title: req.body.title, teachers: [teacher], students: [], assignments: []});
     section.save(function(err, section) {
       if (err) { return next(err); }
 
       teacher.sections.push(section);
-      teacher.save(function(err, section) {
+      teacher.save(function(err, teacher) {
         if (err) { return next(err); }
 
         res.json(section);
@@ -65,8 +65,12 @@ router.get('/:section', auth, function(req, res, next) {
       section.populate('students', function(err, section) {
         if (err) { return next(err); }
 
-        res.json(section);
-      })
+        section.populate('assignments', function(err, section) {
+          if (err) { return next(err); }
+
+          res.json(section);
+        });
+      });
     });
 
   });

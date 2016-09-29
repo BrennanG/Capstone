@@ -13,11 +13,12 @@ var passport = require('passport');
 // Connect to mongoose
 mongoose.connect('mongodb://localhost/biograph');
 
-require('./models/Documents');
-require('./models/Graphs');
 require('./models/Students');
 require('./models/Teachers');
+require('./models/Documents');
+require('./models/Graphs');
 require('./models/Sections');
+require('./models/Assignments');
 require('./config/passport');
 
 var routes = require('./routes/index');
@@ -26,6 +27,7 @@ var teacher = require('./routes/teacher');
 var documents = require('./routes/documents');
 var graphs = require('./routes/graphs');
 var sections = require('./routes/sections');
+var assignments = require('./routes/assignments');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -46,6 +48,7 @@ app.use('/student/documents', documents);
 app.use('/student/graphs', graphs);
 app.use('/teacher', teacher);
 app.use('/teacher/sections', sections);
+app.use('/teacher/assignments', assignments);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
