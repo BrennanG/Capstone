@@ -19,7 +19,7 @@ router.param('section', function(req, res, next, id) {
   });
 });
 
-// GET all sections
+// GET all sections beloning to the teacher
 router.get('/', auth, function(req, res, next) {
   Teacher.findOne({ username: req.payload.username }).exec(function (err, teacher) {
     if (err) { return next(err); }

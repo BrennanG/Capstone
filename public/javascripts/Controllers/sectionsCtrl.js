@@ -11,5 +11,6 @@ function($scope, section, auth, assignments) {
     if ($scope.newTitle === '' || $scope.newDescription === '') { return; }
     assignments.addAssignment($scope.newTitle, $scope.newDescription, $scope.section);
     $scope.newTitle = '';
+    $scope.newDescription = '';
   };
 }]);
