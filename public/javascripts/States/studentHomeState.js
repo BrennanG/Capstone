@@ -3,17 +3,17 @@ angular.module('biologyGraphingApp')
 
 function($stateProvider, $urlRouterProvider) {
 
-	$stateProvider.state('userHome', {
-		url : '/user/home',
-		templateUrl : '/user/home.html',
-		controller : 'UserHomeCtrl',
+	$stateProvider.state('studentHome', {
+		url : '/student/home',
+		templateUrl : '/student/home.html',
+		controller : 'StudentHomeCtrl',
     resolve: {
       postPromise : ['documents', function(documents) {
 			  return documents.getAll();
 			}]},
 		onEnter : ['$state', 'auth',
 			function($state, auth) {
-				if (!auth.isLoggedIn() || auth.accountType() != "user") {
+				if (!auth.isLoggedIn() || auth.accountType() != "student") {
 					$state.go('login');
 				}
 		}]

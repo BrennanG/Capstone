@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Document = mongoose.model('Document');
-var User = mongoose.model('User');
+var Student = mongoose.model('Student');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -21,32 +21,37 @@ router.param('document', function(req, res, next, id) {
 
 // GET all documents
 router.get('/', auth, function(req, res, next) {
-  User.findOne({ username: req.payload.username }).exec(function (err, user) {
+  Student.findOne({ username: req.payload.username }).exec(function (err, student) {
     if (err) { return next(err); }
-    if (!user) { return next(new Error("can't find user")); }
+    if (!student) { return next(new Error("can't find student")); }
 
-    Document.find({
-        _id: { $in: user.documents }
-     }, function (err, docs) {
-       if (err) { return next(err); }
+    student.populate('documents', function(err, student) {
+      if (err) { return next(err); }
 
-       res.json(docs);
-     });
+      res.json(student.documents);
+    });
+    // Document.find({
+    //     _id: { $in: student.documents }
+    //  }, function (err, docs) {
+    //    if (err) { return next(err); }
+    //
+    //    res.json(docs);
+    //  });
   });
 });
 
 // POST a single document
 router.post('/', auth, function(req, res, next) {
   var document = new Document(req.body.document);
-  User.findOne({ username: req.payload.username }).exec(function (err, user) {
+  Student.findOne({ username: req.payload.username }).exec(function (err, student) {
     if (err) { return next(err); }
-    if (!user) { return next(new Error("can't find user")); }
+    if (!student) { return next(new Error("can't find student")); }
 
     document.save(function(err, document) {
       if (err) { return next(err); }
 
-      user.documents.push(document);
-      user.save(function(err, document) {
+      student.documents.push(document);
+      student.save(function(err, document) {
         if (err) { return next(err); }
 
         res.json(document);
@@ -57,9 +62,9 @@ router.post('/', auth, function(req, res, next) {
 
 // GET a single document by ID
 router.get('/:document', auth, function(req, res, next) {
-  User.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, user) {
+  Student.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, student) {
     if (err) { return next(err); }
-    if (!user) { return next(new Error("can't find user")); }
+    if (!student) { return next(new Error("can't find student")); }
 
     req.document.populate('graph', function(err, document) {
       if (err) { return next(err); }
@@ -71,9 +76,9 @@ router.get('/:document', auth, function(req, res, next) {
 
 // DELETE a document by ID
 router.delete('/:document', auth, function(req, res, next) {
-  User.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, user) {
+  Student.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, student) {
     if (err) { return next(err); }
-    if (!user) { return next(new Error("can't find user")); }
+    if (!student) { return next(new Error("can't find student")); }
 
     Document.findOneAndRemove({_id: req.document._id}, function(err, document) {
       if (err) { return next(err); }

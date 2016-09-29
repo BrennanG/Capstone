@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-var User = mongoose.model('User');
+var Student = mongoose.model('Student');
 var passport = require('passport');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
@@ -11,15 +11,15 @@ router.post('/register', function(req, res, next){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  var user = new User();
-  user.username = req.body.username;
-  user.setPassword(req.body.password);
-  user.documents = [];
+  var student = new Student();
+  student.username = req.body.username;
+  student.setPassword(req.body.password);
+  student.documents = [];
 
-  user.save(function (err){
+  student.save(function (err){
     if(err){ return next(err); }
 
-    return res.json({token: user.generateJWT()})
+    return res.json({token: student.generateJWT()})
   });
 });
 
@@ -28,11 +28,11 @@ router.post('/login', function(req, res, next){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  passport.authenticate('user-local', function(err, user, info){
+  passport.authenticate('student-local', function(err, student, info){
     if(err){ return next(err); }
 
-    if(user){
-      return res.json({token: user.generateJWT()});
+    if(student){
+      return res.json({token: student.generateJWT()});
     } else {
       return res.status(401).json(info);
     }
@@ -40,7 +40,7 @@ router.post('/login', function(req, res, next){
 });
 
 router.put('/documents/remove', auth, function(req, res, next){
-  User.findOneAndUpdate({username: req.body.user}, {$pull: {documents: req.body.documentId}}, function(err, data){
+  Student.findOneAndUpdate({username: req.body.student}, {$pull: {documents: req.body.documentId}}, function(err, data){
     if(err) {
       return res.status(500).json({'error' : 'error in deleting documentId'});
     }

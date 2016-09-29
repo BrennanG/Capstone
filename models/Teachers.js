@@ -6,7 +6,8 @@ var jwt = require('jsonwebtoken');
 var TeacherSchema = new mongoose.Schema({
   username: {type: String, lowercase: true, unique: true},
   hash: String,
-  salt: String
+  salt: String,
+  sections: [{type: mongoose.Schema.Types.ObjectId, ref: 'Section'}]
 });
 
 TeacherSchema.methods.generateJWT = function() {

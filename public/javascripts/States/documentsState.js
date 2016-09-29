@@ -13,7 +13,7 @@ function($stateProvider) {
       }]},
 		onEnter : ['$state', 'auth',
 			function($state, auth) {
-				if (!auth.isLoggedIn() || auth.accountType() != "user") {
+				if (!auth.isLoggedIn() || auth.accountType() != "student") {
 					$state.go('login');
 				}
 		}]

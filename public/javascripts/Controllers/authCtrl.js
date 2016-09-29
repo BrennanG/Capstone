@@ -12,10 +12,10 @@ function($scope, $state, auth) {
 			});
 		}
 		else {
-			auth.userRegister($scope.user).error(function(error) {
+			auth.studentRegister($scope.user).error(function(error) {
 				$scope.error = error;
 			}).then(function() {
-				$state.go('userHome');
+				$state.go('studentHome');
 			});
 		}
 	};
@@ -29,10 +29,10 @@ function($scope, $state, auth) {
 			});
 		}
 		else {
-			auth.userLogIn($scope.user).error(function(error) {
+			auth.studentLogIn($scope.user).error(function(error) {
 				$scope.error = error;
 			}).then(function() {
-				$state.go('userHome');
+				$state.go('studentHome');
 			});
 		}
 	};

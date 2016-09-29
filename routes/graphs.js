@@ -3,7 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Graph = mongoose.model('Graph');
 var Document = mongoose.model('Document');
-var User = mongoose.model('User');
+var Student = mongoose.model('Student');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -24,9 +24,9 @@ router.param('graph', function(req, res, next, id) {
 // POST a single graph
 router.post('/', auth, function(req, res, next) {
   var graph = new Graph(req.body.graph);
-  User.findOne({ username: req.payload.username }).exec(function (err, user) {
+  Student.findOne({ username: req.payload.username }).exec(function (err, student) {
     if (err) { return next(err); }
-    if (!user) { return next(new Error("can't find user")); }
+    if (!student) { return next(new Error("can't find student")); }
 
     graph.save(function(err, graph) {
       if (err) { return next(err); }
@@ -44,9 +44,9 @@ router.put('/:graph/network', auth, function(req, res, next) {
 
     return document;
   });
-  User.findOne({ username: req.payload.username, document: doc._id }).exec(function (err, user) {
+  Student.findOne({ username: req.payload.username, document: doc._id }).exec(function (err, student) {
     if (err) { return next(err); }
-    if (!user) { return next(new Error("can't find user")); }
+    if (!student) { return next(new Error("can't find student")); }
 
     req.graph.updateNetwork(req.body, function(err, graph) {
       if (err) { return next(err); }
@@ -64,9 +64,9 @@ router.delete('/:graph', auth, function(req, res, next) {
 
     return document;
   });
-  User.findOne({ username: req.payload.username, document: doc._id }).exec(function (err, user) {
+  Student.findOne({ username: req.payload.username, document: doc._id }).exec(function (err, student) {
     if (err) { return next(err); }
-    if (!user) { return next(new Error("can't find user")); }
+    if (!student) { return next(new Error("can't find student")); }
 
     Graph.findOneAndRemove({_id: req.graph}, function(err, graph) {
       if (err) { return next(err); }

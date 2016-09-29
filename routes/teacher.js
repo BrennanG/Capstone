@@ -14,7 +14,7 @@ router.post('/register', function(req, res, next){
   var teacher = new Teacher();
   teacher.username = req.body.username;
   teacher.setPassword(req.body.password);
-  //teacher.documents = [];
+  teacher.sections = [];
 
   teacher.save(function (err){
     if(err){ return next(err); }
@@ -37,6 +37,16 @@ router.post('/login', function(req, res, next){
       return res.status(401).json(info);
     }
   })(req, res, next);
+});
+
+router.put('/sections/remove', auth, function(req, res, next){
+  Teacher.findOneAndUpdate({username: req.body.teacher}, {$pull: {sections: req.body.sectionId}}, function(err, data){
+    if(err) {
+      return res.status(500).json({'error' : 'error in deleting secionId'});
+    }
+
+    res.json(data);
+  });
 });
 
 module.exports = router;
