@@ -39,4 +39,14 @@ router.post('/login', function(req, res, next){
   })(req, res, next);
 });
 
+router.put('/sections/remove', auth, function(req, res, next){
+  Teacher.findOneAndUpdate({username: req.body.teacher}, {$pull: {sections: req.body.sectionId}}, function(err, data){
+    if(err) {
+      return res.status(500).json({'error' : 'error in deleting secionId'});
+    }
+
+    res.json(data);
+  });
+});
+
 module.exports = router;

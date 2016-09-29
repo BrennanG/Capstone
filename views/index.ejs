@@ -17,6 +17,7 @@
     <script src="/javascripts/States/studentHomeState.js"></script>
     <script src="/javascripts/States/teacherHomeState.js"></script>
     <script src="/javascripts/States/documentsState.js"></script>
+    <script src="/javascripts/States/sectionsState.js"></script>
     <script src="/javascripts/States/loginState.js"></script>
     <script src="/javascripts/States/registerState.js"></script>
     <script src="/javascripts/Factories/documentsFctry.js"></script>
@@ -25,6 +26,7 @@
     <script src="/javascripts/Controllers/studentHomeCtrl.js"></script>
     <script src="/javascripts/Controllers/teacherHomeCtrl.js"></script>
     <script src="/javascripts/Controllers/documentsCtrl.js"></script>
+    <script src="/javascripts/Controllers/sectionsCtrl.js"></script>
     <script src="/javascripts/Controllers/authCtrl.js"></script>
     <script src="/javascripts/Controllers/navCtrl.js"></script>
     <!-- set cursor to pointer on thumbs-up icon -->
@@ -90,18 +92,13 @@
       <!-- List sections -->
       <div ng-repeat="section in sections" ng-show="isLoggedIn()">
 
-        <!-- Link to Document -->
+        <!-- Link to Section -->
         <span>
-          <!--
-          <a href="#/documents/{{document._id}}">{{document.title}}</a>
-          -->
-          {{section.title}}
+          <a href="#/sections/{{section._id}}">{{section.title}}</a>
         </span>
-        <!--
         <span>
-          <button ng-click="deleteDocument(document)" class="btn btn-danger" style="height:12px;width:12px;padding:0px;font-size:8">X</button>
+          <button ng-click="deleteSection(section)" class="btn btn-danger" style="height:12px;width:12px;padding:0px;font-size:8">X</button>
         </span>
-        -->
       </div>
 
       <form ng-submit="addSection()" style="margin-top:30px;">
@@ -118,6 +115,28 @@
     <script type="text/ng-template" id="/documents.html">
       <div id="content" class="half_and_half">
         Cytoscape Web will replace the contents of this div with your graph.
+      </div>
+    </script>
+
+    <!-- Sections Template -->
+    <script type="text/ng-template" id="/sections.html">
+      <div class="page-header">
+        <h1>{{title}}</h1>
+      </div>
+
+      <!-- List teachers -->
+      <h3>Teachers</h3>
+      <div ng-repeat="teacher in teachers" ng-show="isLoggedIn()">
+        <span>
+          {{teacher.username}}
+        </span>
+      </div>
+      <!-- List students -->
+      <h3>Students</h3>
+      <div ng-repeat="student in students" ng-show="isLoggedIn()">
+        <span>
+          {{student.username}}
+        </span>
       </div>
     </script>
 

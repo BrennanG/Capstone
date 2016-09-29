@@ -52,33 +52,38 @@ router.post('/', auth, function(req, res, next) {
     });
   });
 });
-/*
-// GET a single document by ID
-router.get('/:document', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, student) {
-    if (err) { return next(err); }
-    if (!student) { return next(new Error("can't find student")); }
 
-    req.document.populate('graph', function(err, document) {
+// GET a single section by ID
+router.get('/:section', auth, function(req, res, next) {
+  Teacher.findOne({ username: req.payload.username, sections: req.section }).exec(function (err, teacher) {
+    if (err) { return next(err); }
+    if (!teacher) { return next(new Error("can't find teacher")); }
+
+    req.section.populate('teachers', function(err, section) {
       if (err) { return next(err); }
 
-      res.json(document);
+      section.populate('students', function(err, section) {
+        if (err) { return next(err); }
+
+        res.json(section);
+      })
+    });
+
+  });
+});
+
+// DELETE a section by ID
+router.delete('/:section', auth, function(req, res, next) {
+  Teacher.findOne({ username: req.payload.username, sections: req.section }).exec(function (err, teacher) {
+    if (err) { return next(err); }
+    if (!teacher) { return next(new Error("can't find teacher")); }
+
+    Section.findOneAndRemove({_id: req.section._id}, function(err, section) {
+      if (err) { return next(err); }
+
+      res.json(section);
     });
   });
 });
 
-// DELETE a document by ID
-router.delete('/:document', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, student) {
-    if (err) { return next(err); }
-    if (!student) { return next(new Error("can't find student")); }
-
-    Document.findOneAndRemove({_id: req.document._id}, function(err, document) {
-      if (err) { return next(err); }
-
-      res.json(document);
-    });
-  });
-});
-*/
 module.exports = router;

@@ -9,8 +9,11 @@ function($scope, auth, sections) {
     $scope.newSectionTitle = '';
   };
 
+  $scope.deleteSection = function(section) {
+    sections.deleteSection(section);
+  };
+
 	$scope.logout = function() {
-		console.log("IN");
 		if ($scope.isLoggedIn) {
 			auth.logOut();
 		}
