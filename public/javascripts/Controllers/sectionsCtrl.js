@@ -1,5 +1,5 @@
-angular.module('biologyGraphingApp').controller('SectionsCtrl', ['$scope', 'section', 'auth', 'assignments',
-function($scope, section, auth, assignments) {
+angular.module('biologyGraphingApp').controller('SectionsCtrl', ['$scope', 'section', 'auth', 'assignments', 'sections',
+function($scope, section, auth, assignments, sections) {
 	$scope.section = section;
   $scope.title = section.title;
   $scope.teachers = section.teachers;
@@ -12,5 +12,11 @@ function($scope, section, auth, assignments) {
     assignments.addAssignment($scope.newTitle, $scope.newDescription, $scope.section);
     $scope.newTitle = '';
     $scope.newDescription = '';
+  };
+
+	$scope.addStudentToSection = function() {
+    if ($scope.studentUsername === '') { return; }
+    sections.addStudentToSection($scope.studentUsername, $scope.section);
+    $scope.studentUsername = '';
   };
 }]);

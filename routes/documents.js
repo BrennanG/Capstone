@@ -30,13 +30,6 @@ router.get('/', auth, function(req, res, next) {
 
       res.json(student.documents);
     });
-    // Document.find({
-    //     _id: { $in: student.documents }
-    //  }, function (err, docs) {
-    //    if (err) { return next(err); }
-    //
-    //    res.json(docs);
-    //  });
   });
 });
 

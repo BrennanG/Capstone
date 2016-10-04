@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Student = mongoose.model('Student');
+var Teacher = mongoose.model('Teacher');
 var passport = require('passport');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
@@ -39,6 +40,7 @@ router.post('/login', function(req, res, next){
   })(req, res, next);
 });
 
+// Remove a document from the student's documents list
 router.put('/documents/remove', auth, function(req, res, next){
   Student.findOneAndUpdate({username: req.body.student}, {$pull: {documents: req.body.documentId}}, function(err, data){
     if(err) {
@@ -46,6 +48,40 @@ router.put('/documents/remove', auth, function(req, res, next){
     }
 
     res.json(data);
+  });
+});
+
+// Add a section to the student's sections list
+router.put('/sections/add', auth, function(req, res, next) {
+  Teacher.findOne({ username: req.payload.username, sections: req.body.section._id }).exec(function (err, teacher) {
+    if (err) { return next(err); }
+    if (!teacher) { return res.status(400).json({message: "Can't find teacher"}); }
+
+    Student.findOne({ username: req.body.username }).exec(function (err, student) {
+      if (err) { return next(err); }
+      if (!student) { return res.status(400).json({message: "Can't find student"}); }
+
+      student.sections.push(req.body.section);
+      student.save(function(err, student) {
+        if (err) { return next(err); }
+
+        res.json(student);
+      });
+    });
+  });
+});
+
+// GET all sections belonging to the student
+router.get('/sections', auth, function(req, res, next) {
+  Student.findOne({ username: req.payload.username }).exec(function (err, student) {
+    if (err) { return next(err); }
+    if (!student) { return res.status(400).json({message: "Can't find student"}); }
+
+    student.populate('sections', function(err, student) {
+      if (err) { return next(err); }
+
+      res.json(student.sections);
+    });
   });
 });
 

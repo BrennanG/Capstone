@@ -3,6 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Section = mongoose.model('Section');
 var Teacher = mongoose.model('Teacher');
+var Student = mongoose.model('Student');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -19,7 +20,7 @@ router.param('section', function(req, res, next, id) {
   });
 });
 
-// GET all sections beloning to the teacher
+// GET all sections belonging to the teacher
 router.get('/', auth, function(req, res, next) {
   Teacher.findOne({ username: req.payload.username }).exec(function (err, teacher) {
     if (err) { return next(err); }
@@ -86,6 +87,27 @@ router.delete('/:section', auth, function(req, res, next) {
       if (err) { return next(err); }
 
       res.json(section);
+    });
+  });
+});
+
+// Add a student to the section's student list
+router.put('/:section/students/add', auth, function(req, res, next) {
+  Teacher.findOne({ username: req.payload.username, sections: req.section }).exec(function (err, teacher) {
+    if (err) { return next(err); }
+    if (!teacher) { return res.status(400).json({message: "Can't find teacher"}); }
+
+    Student.findOne({ username: req.body.username }).exec(function (err, student) {
+      if (err) { return next(err); }
+      if (!student) { return res.status(400).json({message: "Can't find student"}); }
+      //if (req.section.students.indexOf(student) != -1) { return res.status(400).json({message: "Section already contains that student"}); }
+
+      req.section.students.push(student);
+      req.section.save(function(err, section) {
+        if (err) { return next(err); }
+
+        res.json(section);
+      });
     });
   });
 });

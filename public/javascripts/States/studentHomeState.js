@@ -8,9 +8,13 @@ function($stateProvider, $urlRouterProvider) {
 		templateUrl : '/student/home.html',
 		controller : 'StudentHomeCtrl',
     resolve: {
-      postPromise : ['documents', function(documents) {
+			sectionsPromise : ['sections', function(sections) {
+				return sections.getAllForStudent();
+			}],
+      documentsPromise : ['documents', function(documents) {
 			  return documents.getAll();
-			}]},
+			}]
+		},
 		onEnter : ['$state', 'auth',
 			function($state, auth) {
 				if (!auth.isLoggedIn() || auth.accountType() != "student") {

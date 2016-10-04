@@ -7,7 +7,8 @@ var StudentSchema = new mongoose.Schema({
   username: {type: String, lowercase: true, unique: true},
   hash: String,
   salt: String,
-  documents: [{type: mongoose.Schema.Types.ObjectId, ref: 'Document'}]
+  documents: [{type: mongoose.Schema.Types.ObjectId, ref: 'Document'}],
+  sections: [{type: mongoose.Schema.Types.ObjectId, ref: 'Section'}]
 });
 
 StudentSchema.methods.generateJWT = function() {

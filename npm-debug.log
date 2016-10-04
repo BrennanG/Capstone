@@ -1,7 +1,7 @@
 0 info it worked if it ends with ok
 1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'start' ]
 2 info using npm@2.15.9
-3 info using node@v4.5.0
+3 info using node@v4.6.0
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
 5 info prestart biologyGraphingApp@0.0.0
 6 info start biologyGraphingApp@0.0.0
@@ -21,7 +21,7 @@
 11 verbose cwd /home/brennan/Capstone
 12 error Linux 3.8.0-44-generic
 13 error argv "/usr/bin/nodejs" "/usr/bin/npm" "start"
-14 error node v4.5.0
+14 error node v4.6.0
 15 error npm  v2.15.9
 16 error code ELIFECYCLE
 17 error biologyGraphingApp@0.0.0 start: `node ./bin/www`

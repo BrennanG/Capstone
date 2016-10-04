@@ -81,6 +81,15 @@
 
         <button type="submit" class="btn btn-primary">Add Document</button>
       </form>
+
+      <!-- List sections -->
+      <div ng-repeat="section in sections" ng-show="isLoggedIn()">
+
+        <!-- Link to Document -->
+        <span>
+          {{section.title}}
+        </span>
+      </div>
     </script>
 
     <!-- Teacher Home Template -->
@@ -149,6 +158,7 @@
         </span>
       </div>
       <br/><br/>
+      <!-- Add assignment -->
       <form ng-submit="addAssignment()" style="margin-top:30px;">
 
         <div class="form-group">
@@ -159,6 +169,16 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Add Assignment</button>
+      </form>
+      <br/><br/>
+      <!-- Add student -->
+      <form ng-submit="addStudentToSection()" style="margin-top:30px;">
+
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Student Username" ng-model="studentUsername"></input>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Student</button>
       </form>
     </script>
 

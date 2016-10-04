@@ -11,6 +11,13 @@ function($http, $state, auth) {
 			  angular.copy(data, o.sections);
 		});
 	};
+	o.getAllForStudent = function() {
+		return $http.get('/student/sections', {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(data) {
+			  angular.copy(data, o.sections);
+		});
+	};
   o.addSection = function(title) {
 		var dataToSend = { title: title };
     return $http.post('/teacher/sections', dataToSend, {
@@ -46,6 +53,22 @@ function($http, $state, auth) {
 				$state.go($state.current, {}, {reload: true}); // reload the page
         return deletedSection;
       });
+  };
+  o.addStudentToSection = function(studentUsername, section) {
+		var dataToSend = { username: studentUsername };
+    return $http.put('/teacher/sections/' + section._id + '/students/add', dataToSend, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(section) {
+
+			dataToSend = {username: studentUsername, section: section};
+			return $http.put('/student/sections/add', dataToSend, {
+				headers: {Authorization: 'Bearer '+auth.getToken()}
+			}).success(function(student) {
+				$state.go($state.current, {}, {reload: true}); // reload the page
+	      return section;
+			});
+
+    });
   };
 
 	return o;
