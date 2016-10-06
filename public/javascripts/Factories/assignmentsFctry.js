@@ -18,15 +18,15 @@ function($http, $state, auth) {
       return res.data;
     });
   };
-  // o.addSubmission = function(assignmentId, student, graph) {
-  //   var dataToSend = {student: student, graph: graph};
-  //   return $http.put('/teacher/assignments/' + assignmentId + '/submission', dataToSend, {
-	// 		headers: {Authorization: 'Bearer '+auth.getToken()}
-	// 	}).success(function(returnedData) {
-  //       $state.go($state.current, {}, {reload: true}); // reload the page
-  //       return returnedData;
-  //   });
-  // };
+  o.addSubmission = function(document, assignmentId) {
+    var dataToSend = {document: document};
+    return $http.put('/teacher/assignments/' + assignmentId + '/submission', dataToSend, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(returnedData) {
+        $state.go($state.current, {}, {reload: true}); // reload the page
+        return returnedData;
+    });
+  };
 
 	return o;
 }]);

@@ -35,11 +35,11 @@ router.get('/', auth, function(req, res, next) {
 
 // POST a single document
 router.post('/', auth, function(req, res, next) {
-  var document = new Document(req.body.document);
   Student.findOne({ username: req.payload.username }).exec(function (err, student) {
     if (err) { return next(err); }
     if (!student) { return next(new Error("can't find student")); }
 
+    var document = new Document({title: req.body.title, graph: req.body.graph, student: student});
     document.save(function(err, document) {
       if (err) { return next(err); }
 

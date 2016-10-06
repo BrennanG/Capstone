@@ -3,6 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Student = mongoose.model('Student');
 var Teacher = mongoose.model('Teacher');
+var Section = mongoose.model('Section');
 var passport = require('passport');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
@@ -73,15 +74,12 @@ router.put('/sections/add', auth, function(req, res, next) {
 
 // GET all sections belonging to the student
 router.get('/sections', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username }).exec(function (err, student) {
+  Student.findOne({ username: req.payload.username })
+  .populate({path: 'sections', populate: {path: 'assignments'}}).exec(function (err, student) {
     if (err) { return next(err); }
     if (!student) { return res.status(400).json({message: "Can't find student"}); }
 
-    student.populate('sections', function(err, student) {
-      if (err) { return next(err); }
-
-      res.json(student.sections);
-    });
+    res.json(student.sections);
   });
 });
 

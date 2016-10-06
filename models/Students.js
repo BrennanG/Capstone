@@ -4,7 +4,7 @@ var jwt = require('jsonwebtoken');
 
 
 var StudentSchema = new mongoose.Schema({
-  username: {type: String, lowercase: true, unique: true},
+  username: {type: String, unique: true},
   hash: String,
   salt: String,
   documents: [{type: mongoose.Schema.Types.ObjectId, ref: 'Document'}],

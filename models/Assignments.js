@@ -5,8 +5,7 @@ var AssignmentSchema = new mongoose.Schema({
   description: String,
   teachers: [{type: mongoose.Schema.Types.ObjectId, ref: 'Teacher'}],
   section: {type: mongoose.Schema.Types.ObjectId, ref: 'Section'},
-  submissions: [{student: {type: mongoose.Schema.Types.ObjectId, ref: 'Student'},
-                 graph: {type: mongoose.Schema.Types.ObjectId, ref: 'Graph'}}]
+  submissions: [{type: mongoose.Schema.Types.ObjectId, ref: 'Document'}]
 });
 
 mongoose.model('Assignment', AssignmentSchema);

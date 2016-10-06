@@ -1,7 +1,8 @@
-angular.module('biologyGraphingApp').controller('StudentHomeCtrl', ['$scope', 'documents', 'sections', 'auth',
-function($scope, documents, sections, auth) {
+angular.module('biologyGraphingApp').controller('StudentHomeCtrl', ['$scope', 'documents', 'sections', 'assignments', 'auth',
+function($scope, documents, sections, assignments, auth) {
 	$scope.documents = documents.documents;
 	$scope.sections = sections.sections;
+	$scope.selections = {assignment: null, document: null};
 	$scope.isLoggedIn = auth.isLoggedIn;
 
   $scope.addDocument = function() {
@@ -13,6 +14,10 @@ function($scope, documents, sections, auth) {
 
   $scope.deleteDocument = function(document) {
     documents.deleteDocument(document);
+  };
+
+	$scope.addSubmission = function() {
+    assignments.addSubmission($scope.selections.document, $scope.selections.assignment._id);
   };
 
 	$scope.logout = function() {

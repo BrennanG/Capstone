@@ -62,17 +62,22 @@
       </div>
 
       <!-- List documents -->
+      {{selections.document}}
+      <form>
       <div ng-repeat="document in documents" ng-show="isLoggedIn()">
-
-        <!-- Link to Document -->
         <span>
           <a href="#/documents/{{document._id}}">{{document.title}}</a>
         </span>
         <span>
           <button ng-click="deleteDocument(document)" class="btn btn-danger" style="height:12px;width:12px;padding:0px;font-size:8">X</button>
         </span>
+        <span>
+          <input ng-model="selections.document" type="radio" name="documentsRadio" ng-value="document">
+        </span>
       </div>
+      </form>
 
+      <!-- Add a Document -->
       <form ng-submit="addDocument()" style="margin-top:30px;">
 
         <div class="form-group">
@@ -83,13 +88,27 @@
       </form>
 
       <!-- List sections -->
+      <br/>
+      <h2>Sections</h2>
+      {{selections.assignment}}
+      <form>
       <div ng-repeat="section in sections" ng-show="isLoggedIn()">
-
-        <!-- Link to Document -->
         <span>
-          {{section.title}}
+          <h4>&nbsp;&nbsp;{{section.title}}</h4>
+          <!-- List assignments -->
+          <div ng-repeat="assignment in section.assignments" ng-show="isLoggedIn()">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <input ng-model="selections.assignment" type="radio" name="assignmentsRadio" ng-value="assignment">{{assignment.title}}
+          </div>
         </span>
       </div>
+      </form>
+
+      <br/>
+      <form ng-submit="addSubmission()" style="margin-top:30px;">
+        <button type="submit" class="btn btn-primary">Submit Document to Assignment</button>
+      </form>
+
     </script>
 
     <!-- Teacher Home Template -->
@@ -196,20 +215,6 @@
           {{submission.student}}
         </span>
       </div>
-      <br/><br/>
-      <!--
-      <form ng-submit="addAssignment()" style="margin-top:30px;">
-
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Title" ng-model="newTitle"></input>
-        </div>
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Description" ng-model="newDescription"></input>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Add Assignment</button>
-      </form>
-      -->
     </script>
 
     <!-- Register Template -->
