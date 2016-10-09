@@ -8,12 +8,17 @@ function($stateProvider) {
 		templateUrl : '/documents.html',
 		controller : 'DocumentsCtrl',
     resolve: {
-      document: ['$stateParams', 'documents', function($stateParams, documents) {
-        return documents.getDocument($stateParams.id);
+      document: ['$stateParams', 'documents', 'auth', function($stateParams, documents, auth) {
+				if (auth.accountType() == "student") {
+        	return documents.getDocument($stateParams.id);
+				}
+				else { // teacher
+					return documents.getDocumentForTeacher($stateParams.id);
+				}
       }]},
 		onEnter : ['$state', 'auth',
 			function($state, auth) {
-				if (!auth.isLoggedIn() || auth.accountType() != "student") {
+				if (!auth.isLoggedIn()) {
 					$state.go('login');
 				}
 		}]

@@ -3,6 +3,8 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Document = mongoose.model('Document');
 var Student = mongoose.model('Student');
+var Teacher = mongoose.model('Teacher');
+var Assignment = mongoose.model('Assignment');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -63,6 +65,25 @@ router.get('/:document', auth, function(req, res, next) {
       if (err) { return next(err); }
 
       res.json(document);
+    });
+  });
+});
+
+// GET a single submitted document by ID (for teachers)
+router.get('/submissions/:document', auth, function(req, res, next) {
+  Teacher.findOne({ username: req.payload.username }).exec(function (err, teacher) {
+    if (err) { return next(err); }
+    if (!teacher) { return next(new Error("can't find teacher")); }
+
+    Assignment.findOne({ teachers: teacher._id, submissions: req.document }).exec(function (err, assignment) {
+      if (err) { return next(err); }
+      if (!assignment) { return next(new Error("can't find assignment")); }
+
+      req.document.populate('graph', function(err, document) {
+        if (err) { return next(err); }
+
+        res.json(document);
+      });
     });
   });
 });

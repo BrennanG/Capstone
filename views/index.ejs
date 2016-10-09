@@ -62,7 +62,6 @@
       </div>
 
       <!-- List documents -->
-      {{selections.document}}
       <form>
       <div ng-repeat="document in documents" ng-show="isLoggedIn()">
         <span>
@@ -90,7 +89,6 @@
       <!-- List sections -->
       <br/>
       <h2>Sections</h2>
-      {{selections.assignment}}
       <form>
       <div ng-repeat="section in sections" ng-show="isLoggedIn()">
         <span>
@@ -212,7 +210,7 @@
       <h3>Submissions</h3>
       <div ng-repeat="submission in submissions" ng-show="isLoggedIn()">
         <span>
-          {{submission.student}}
+          <a href="#/documents/{{submission._id}}">{{submission.title}}</a>
         </span>
       </div>
     </script>

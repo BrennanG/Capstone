@@ -61,14 +61,6 @@ router.get('/:assignment', auth, function(req, res, next) {
 
         res.json(assignment);
       });
-
-      // Student.findOne({ username: req.payload.username })
-      // .populate({path: 'sections', populate: {path: 'assignments'}}).exec(function (err, student) {
-      //   if (err) { return next(err); }
-      //   if (!student) { return res.status(400).json({message: "Can't find student"}); }
-      //
-      //   res.json(student.sections);
-      // });
     });
   });
 });

@@ -18,6 +18,13 @@ function($http, $state, auth) {
       return res.data;
     });
   };
+  o.getDocumentForTeacher = function(id) {
+    return $http.get('/student/documents/submissions/' + id, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).then(function(res) {
+      return res.data;
+    });
+  };
   o.deleteDocument = function(document) {
     return $http.delete('/student/documents/' + document._id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
