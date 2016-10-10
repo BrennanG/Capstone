@@ -18,6 +18,13 @@ function($http, $state, auth) {
       return res.data;
     });
   };
+  o.getDocumentForTeacher = function(id) {
+    return $http.get('/student/documents/submissions/' + id, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).then(function(res) {
+      return res.data;
+    });
+  };
   o.deleteDocument = function(document) {
     return $http.delete('/student/documents/' + document._id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
@@ -45,8 +52,7 @@ function($http, $state, auth) {
     return $http.post('/student/graphs', dataToSend, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(graph) {
-        var doc = { title: newDocTitle, graph: graph._id };
-				var dataToSend = { document: doc };
+        var dataToSend = { title: newDocTitle, graph: graph._id };
         return $http.post('/student/documents', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				}).success(function(document) {
@@ -63,6 +69,7 @@ function($http, $state, auth) {
 		}).success(function(returnedData) {
         document.graph.nodes = returnedData.nodes;
         document.graph.edges = returnedData.edges;
+        document.graph.undoStack = returnedData.undoStack;
         return returnedData;
       });
   };
@@ -185,17 +192,25 @@ function($http, $state, auth) {
         
         
 
+	    var undoStack = new Array();
+        
         var loadGraph = function(graph) {
             var nodes = graph.nodes;
             for (var j = 0; j < nodes.length; j++) {
-              var node = JSON.parse(nodes[j].replace(/\\/g, ""));
+              var node = JSON.parse(nodes[j]);
               var newNode = vis.addNode(node.x, node.y, { id: node.data.id, label: node.data.label, edgesFrom: node.data.edgesFrom, edgesTo: node.data.edgesTo }, true);
             }
 
             var edges = graph.edges;
             for (var k = 0; k < edges.length; k++) {
-              var edge = JSON.parse(edges[k].replace(/\\/g, ""));
+              var edge = JSON.parse(edges[k]);
               var newEdge = vis.addEdge({ id: edge.data.id, label: edge.data.label, source: edge.data.source, target: edge.data.target, directed: true });
+            }
+            
+            var undoItems = graph.undoStack;
+            for (var i = 0; i < undoItems.length; i++) {
+                var undoItem = JSON.parse(undoItems[i]);
+                undoStack.push(undoItem);
             }
             
             globalNodeID = globalNode.concat(vis.nodes().length.toString());
@@ -214,8 +229,13 @@ function($http, $state, auth) {
             for (var i = 0; i < edges.length; i++) {
               newEdges[i] = JSON.stringify(edges[i]);
             }
+            
+            var undoStackJSON = [];
+            for (var i = 0; i < undoStack.length; i++) {
+                undoStackJSON[i] = JSON.stringify(undoStack[i]);
+            }
 
-            o.updateNetworkData(docArg, {nodes: newNodes, edges: newEdges});
+            o.updateNetworkData(docArg, {nodes: newNodes, edges: newEdges, undoStack: undoStackJSON});
         };
 
 		/*****************************************/
@@ -497,7 +517,6 @@ function($http, $state, auth) {
 	    /****************/
 	    /***** UNDO *****/
 	    /****************/
-	    var undoStack = new Array();
         var lastEvent;
 
         function undo() {

@@ -7,7 +7,7 @@ function($scope, documents, sections, assignments, auth) {
 
   $scope.addDocument = function() {
     if ($scope.newDocTitle === '') { return; }
-    var graph = { nodes: [], edges: [] };
+    var graph = { nodes: [], edges: [], undoStack: [] };
     documents.addDocument($scope.newDocTitle, graph);
     $scope.newDocTitle = '';
   };

@@ -74,7 +74,7 @@
           <a href="#/documents/{{document._id}}">{{document.title}}</a>
         </span>
         <span>
-          <button ng-click="deleteDocument(document)" class="btn btn-danger" style="height:12px;width:12px;padding:0px;font-size:8">X</button>
+          <button ng-click="deleteDocument(document)">Delete</button>
         </span>
         <span>
           <input ng-model="selections.document" type="radio" name="documentsRadio" ng-value="document">
@@ -132,7 +132,7 @@
           <a href="#/sections/{{section._id}}">{{section.title}}</a>
         </span>
         <span>
-          <button ng-click="deleteSection(section)" class="btn btn-danger" style="height:12px;width:12px;padding:0px;font-size:8">X</button>
+          <button ng-click="deleteSection(section)">Delete</button>
         </span>
       </div>
 
