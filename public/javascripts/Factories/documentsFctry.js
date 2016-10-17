@@ -276,7 +276,7 @@ function($http, $state, auth) {
             }
             
             // UNDO INFO
-            lastEvent = { type: "addEdge", target: JSON.stringify(e) };
+            lastEvent = { type: "addEdge", target: JSON.stringify(e), time: getTimeStamp() };
             undoStack.push(lastEvent);
             
             // Clearing redo stack
@@ -295,13 +295,6 @@ function($http, $state, auth) {
 
                 _srcId = null;
 				_targId = null;
-
-				/*// UNDO INFO
-				lastEvent = { type: "addEdge", target: JSON.stringify(newEdge) };
-				undoStack.push(lastEvent);
-                
-                // Clearing redo stack
-                redoStack = [];*/
 			}
 		}
 
@@ -412,7 +405,7 @@ function($http, $state, auth) {
         /******************************/
         function editLabelHandler(evt,group) {
             // UNDO INFO
-            lastEvent = { type: "editLabel", target: JSON.stringify(evt.target) };
+            lastEvent = { type: "editLabel", target: JSON.stringify(evt.target), time: getTimeStamp() };
                
             // Clearing redo stack
             redoStack = [];
@@ -472,6 +465,33 @@ function($http, $state, auth) {
             vis.removeListener("click","edges",editLabelListener);
         }
         
+        var source;
+        var dest;
+        function addEdgeListenerSrc(event) {
+            vis.removeListener("click","nodes",addEdgeListenerSrc);
+            
+            var btn = tb.get('item2');
+            if (btn.checked == true) {
+                source = event.target.data.id;
+                
+                vis.addListener("click","nodes",addEdgeListenerTarg);
+            }
+        }
+        
+        function addEdgeListenerTarg(event) {
+            vis.removeListener("click","nodes",addEdgeListenerTarg);
+            
+            var btn = tb.get('item2');
+            if (btn.checked == true) {
+                dest = event.target.data.id;
+                incrementEdgeID();
+                addEdgeHelper(source,dest,globalEdgeID);
+                tb.uncheck(btn.id);
+            }
+            source = "";
+            dest = "";
+        }
+        
         w2ui.toolbar.on('click', function(event) {
             targ = tb.get(event.target);
             
@@ -485,9 +505,7 @@ function($http, $state, auth) {
                         vis.addListener("click",addNodeListener);
                         break;
                     case ("item2"): // Add Edge
-                        // do something to get src and targ, then call addEdgeHelper()
-                        // incrementGlobalEdgeID (i think need to inc before call to addEdgeHelper)
-                    
+                        vis.addListener("click","nodes",addEdgeListenerSrc);
                         break;
                     case ("item3"): // Edit Label
                         vis.addListener("click","nodes",editLabelListener);
@@ -512,6 +530,13 @@ function($http, $state, auth) {
                 }
             }
         });
+        
+        
+        function getTimeStamp() {
+            var d = new Date(Date.now());
+            var t = (d.getMonth()+1) + "-" + d.getDate() + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+            return t;
+        }
 
 
 	    /****************/
@@ -630,7 +655,7 @@ function($http, $state, auth) {
             vis.updateData([n]);
 
             // UNDO INFO
-            lastEvent = { type: "addNode", target: JSON.stringify(n) };
+            lastEvent = { type: "addNode", target: JSON.stringify(n), time: getTimeStamp() };
             undoStack.push(lastEvent);
             
             // Clearing redo stack
@@ -672,7 +697,7 @@ function($http, $state, auth) {
             }
 
             // UNDO INFO
-            lastEvent = { type: "deleteNode", target: JSON.stringify(evt.target), edges: JSON.stringify(allEdges) };
+            lastEvent = { type: "deleteNode", target: JSON.stringify(evt.target), edges: JSON.stringify(allEdges), time: getTimeStamp() };
             undoStack.push(lastEvent);
             
             // Clearing redo stack
@@ -685,7 +710,7 @@ function($http, $state, auth) {
             vis.removeEdge(evt.target.data.id, true);
 
             // UNDO INFO
-            lastEvent = { type: "deleteEdge", target: JSON.stringify(evt.target) };
+            lastEvent = { type: "deleteEdge", target: JSON.stringify(evt.target), time: getTimeStamp() };
             undoStack.push(lastEvent);
                 
             // Clearing redo stack
@@ -736,7 +761,7 @@ function($http, $state, auth) {
                 vis.removeElements(items, true);
                 
                 // UNDO INFO
-                lastEvent = { type: "deleteSelected", target: JSON.stringify(items) };
+                lastEvent = { type: "deleteSelected", target: JSON.stringify(items), time: getTimeStamp() };
                 undoStack.push(lastEvent);
                 
                 // Clearing redo stack
@@ -813,9 +838,6 @@ function($http, $state, auth) {
             // TEST FUNCTION: PRINT GLOBAL ID's
             vis.addContextMenuItem("Print Global IDs", function(evt) {
                 alert("NODE: " + globalNodeID + "\nEDGE: " + globalEdgeID);
-                
-                var d = new Date(Date.now());
-                //alert((d.getMonth()+1) + "-" + d.getDate() + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
             });
 
             // TEST FUNCTION: Print the JSON information of an object
