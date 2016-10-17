@@ -15,7 +15,6 @@ function($http, $state, auth) {
     return $http.get('/student/documents/' + id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).then(function(res) {
-			console.log(res.data);
       return res.data;
     });
   };
@@ -56,7 +55,6 @@ function($http, $state, auth) {
     });
   };
   o.updateGraph = function(document, data) {
-		console.log(data);
     return $http.put('/student/documents/' + document._id + '/graph', data, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(returnedData) {
