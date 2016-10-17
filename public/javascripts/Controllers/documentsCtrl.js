@@ -6,5 +6,4 @@ function($scope, documents, document, auth) {
 	$scope.isLoggedIn = auth.isLoggedIn;
 
   documents.loadCytoScape(document);
-
 }]);

@@ -61,8 +61,9 @@ router.get('/:document', auth, function(req, res, next) {
     if (err) { return next(err); }
     if (!student) { return next(new Error("can't find student")); }
 
-    req.document.populate('graph', function(err, document) {
+    Document.findOne({_id: req.document}).exec(function (err, document) {
       if (err) { return next(err); }
+      if (!document) { return next(new Error("can't find document")); }
 
       res.json(document);
     });
@@ -79,10 +80,30 @@ router.get('/submissions/:document', auth, function(req, res, next) {
       if (err) { return next(err); }
       if (!assignment) { return next(new Error("can't find assignment")); }
 
-      req.document.populate('graph', function(err, document) {
+      Document.findOne({_id: req.document}).exec(function (err, document) {
         if (err) { return next(err); }
+        if (!document) { return next(new Error("can't find document")); }
 
         res.json(document);
+      });
+    });
+  });
+});
+
+// PUT an updated graph to the document
+router.put('/:document/graph', auth, function(req, res, next) {
+  Student.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, student) {
+    if (err) { return next(err); }
+    if (!student) { return next(new Error("can't find student")); }
+
+    Document.findOne({_id: req.document}).exec(function (err, document) {
+      if (err) { return next(err); }
+      if (!document) { return next(new Error("can't find document")); }
+
+      document.updateGraph(req.body, function(err, graph) {
+        if (err) { return next(err); }
+
+        res.json(graph);
       });
     });
   });
