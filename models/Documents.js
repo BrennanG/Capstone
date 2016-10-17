@@ -2,6 +2,8 @@ var mongoose = require('mongoose');
 
 var DocumentSchema = new mongoose.Schema({
   title: String,
+  status: { type: String, default: 'unsubmitted', enum: ['unsubmitted', 'submitted', 'returned'] },
+  submittedTo: {type: mongoose.Schema.Types.ObjectId, ref: 'Assignment'},
   student: {type: mongoose.Schema.Types.ObjectId, ref: 'Student'},
   graph: {nodes: [String], edges: [String], undoStack: [String]}
 });
@@ -10,6 +12,16 @@ DocumentSchema.methods.updateGraph = function(data, cb) {
   this.graph.nodes = data.nodes;
   this.graph.edges = data.edges;
   this.graph.undoStack = data.undoStack;
+  this.save(cb);
+};
+
+DocumentSchema.methods.updateStatus = function(status, cb) {
+  this.status = status;
+  this.save(cb);
+};
+
+DocumentSchema.methods.updateSubmittedTo = function(assignmentId, cb) {
+  this.submittedTo = assignmentId;
   this.save(cb);
 };
 

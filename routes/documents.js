@@ -41,7 +41,7 @@ router.post('/', auth, function(req, res, next) {
     if (err) { return next(err); }
     if (!student) { return next(new Error("can't find student")); }
 
-    var document = new Document({title: req.body.title, graph: req.body.graph, student: student});
+    var document = new Document({title: req.body.title, graph: req.body.graph, student: student, status: "unsubmitted"});
     document.save(function(err, document) {
       if (err) { return next(err); }
 
@@ -99,6 +99,7 @@ router.put('/:document/graph', auth, function(req, res, next) {
     Document.findOne({_id: req.document}).exec(function (err, document) {
       if (err) { return next(err); }
       if (!document) { return next(new Error("can't find document")); }
+      if (document.status !== "unsubmitted") { return next(new Error("this document is not allowed to be changed")); }
 
       document.updateGraph(req.body, function(err, graph) {
         if (err) { return next(err); }
@@ -115,8 +116,9 @@ router.delete('/:document', auth, function(req, res, next) {
     if (err) { return next(err); }
     if (!student) { return next(new Error("can't find student")); }
 
-    Document.findOneAndRemove({_id: req.document._id}, function(err, document) {
+    Document.findOneAndRemove({_id: req.document._id, status: "unsubmitted"}, function(err, document) {
       if (err) { return next(err); }
+      if (!document) { return next("document can't be deleted"); }
 
       res.json(document);
     });

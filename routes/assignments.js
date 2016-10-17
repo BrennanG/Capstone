@@ -5,6 +5,7 @@ var Assignment = mongoose.model('Assignment');
 var Section = mongoose.model('Section');
 var Teacher = mongoose.model('Teacher');
 var Student = mongoose.model('Student');
+var Document = mongoose.model('Document');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -79,11 +80,18 @@ router.put('/:assignment/submission', auth, function(req, res, next) {
         if (err) { return next(err); }
         if (!assignment) { return next(new Error("can't find assignment")); }
 
-        assignment.submissions.push(req.body.document);
-        assignment.save(function(err, assignment) {
+        Document.findOne({_id: req.body.document}).exec(function (err, document) {
           if (err) { return next(err); }
+          if (!document) { return next(new Error("can't find document")); }
 
-          res.json(assignment);
+          assignment.submissions.push(req.body.document);
+          assignment.save(function(err, assignment) {
+            if (err) { return next(err); }
+
+            document.updateStatus("submitted");
+            document.updateSubmittedTo(assignment._id);
+            res.json(assignment);
+          });
         });
       });
     });
