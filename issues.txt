@@ -1,1 +1,0 @@
-- When a student turns in a document, then deletes the document, what happens? The graph is gone so the teacher can't look at it.
