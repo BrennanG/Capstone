@@ -1,0 +1,13 @@
+In our current system, there are 2 different types of accounts: Students and Teachers.
+
+Each Student's home page lists all of his/her documents, enrolled classes, and assignments.
+There are also forms that allow the student to create new documents and submit documents to assignments.
+Clicking a document opens it in the graphing portal, which allows the student to edit the graph.
+The Student has the ability add, remove, move, and add labels to both nodes and edges.
+There are also undo/redo functions and a save button.
+
+Each Teacher's home page lists all of his/her classes and has a form to create new classes.
+Clicking on a class in the list opens up that class's page, which lists the Teacher, enrolled Students, and assignments.
+From this page, the Teacher can add students and assignments to the class.
+Clicking on a specific assignment brings up that assignment's page which lists all documents that have been submitted by Students.
+The Teacher can click on any of the submitted documents to view them.
