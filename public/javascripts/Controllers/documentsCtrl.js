@@ -4,6 +4,13 @@ function($scope, documents, document, auth) {
   $scope.nodes = document.graph.nodes;
   $scope.edges = document.graph.edges;
 	$scope.isLoggedIn = auth.isLoggedIn;
+	$scope.isTeacher = auth.accountType() == "teacher";
+
+	$scope.updateGrade = function() {
+    if ($scope.newGrade === '') { return; }
+    documents.updateGrade(document, $scope.newGrade);
+    $scope.newGrade = '';
+  };
 
   documents.loadCytoScape(document);
 }]);

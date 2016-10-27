@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 var DocumentSchema = new mongoose.Schema({
   title: String,
+  grade: Number,
   status: { type: String, default: 'unsubmitted', enum: ['unsubmitted', 'submitted', 'returned'] },
   submittedTo: {type: mongoose.Schema.Types.ObjectId, ref: 'Assignment'},
   student: {type: mongoose.Schema.Types.ObjectId, ref: 'Student'},
@@ -22,6 +23,11 @@ DocumentSchema.methods.updateStatus = function(status, cb) {
 
 DocumentSchema.methods.updateSubmittedTo = function(assignmentId, cb) {
   this.submittedTo = assignmentId;
+  this.save(cb);
+};
+
+DocumentSchema.methods.updateGrade = function(grade, cb) {
+  this.grade = grade;
   this.save(cb);
 };
 

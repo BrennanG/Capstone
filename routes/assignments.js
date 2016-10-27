@@ -81,4 +81,27 @@ router.put('/:assignment/submission', auth, function(req, res, next) {
   });
 });
 
+// PUT a grade to a submitted document
+router.put('/:assignment/submission/grade', auth, function(req, res, next) {
+  Assignment.findOne({teachers: req.payload._id, _id: req.assignment}).exec(function (err, assignment) {
+    if (err) { return next(err); }
+    if (!assignment) { return next(new Error("can't find assignment")); }
+
+    Document.findOne({_id: req.body.document, submittedTo: req.assignment}).exec(function (err, document) {
+      if (err) { return next(err); }
+      if (!document) { return next(new Error("can't find document")); }
+
+      document.updateGrade(req.body.grade, function (err, document) {
+        if (err) { return next(err); }
+
+        document.updateStatus("returned", function (err, document) {
+          if (err) { return next(err); }
+
+          res.json(document);
+        });
+      });
+    });
+  });
+});
+
 module.exports = router;

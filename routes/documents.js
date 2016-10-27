@@ -22,7 +22,8 @@ router.param('document', function(req, res, next, id) {
 
 // GET all documents
 router.get('/', auth, function(req, res, next) {
-  Document.find({student: req.payload._id}, function(err, documents) {
+  Document.find({student: req.payload._id})
+  .populate({path: 'submittedTo'}).exec(function(err, documents) {
     if (err) { return next(err); }
 
     res.json(documents);

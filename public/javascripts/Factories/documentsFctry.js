@@ -54,6 +54,15 @@ function($http, $state, auth) {
         return document;
     });
   };
+	o.updateGrade = function(document, grade) {
+		var dataToSend = { document: document._id, grade: grade };
+		return $http.put('/teacher/assignments/' + document.submittedTo + '/submission/grade', dataToSend, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(returnedData) {
+        $state.go($state.current, {}, {reload: true}); // reload the page
+        return returnedData;
+    });
+  };
   o.updateGraph = function(document, data) {
     return $http.put('/student/documents/' + document._id + '/graph', data, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
