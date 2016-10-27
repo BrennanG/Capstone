@@ -22,21 +22,16 @@ router.param('section', function(req, res, next, id) {
 
 // GET all sections belonging to the teacher
 router.get('/', auth, function(req, res, next) {
-  Teacher.findOne({ username: req.payload.username }).exec(function (err, teacher) {
+  Section.find({ teachers: req.payload._id }, function (err, sections) {
     if (err) { return next(err); }
-    if (!teacher) { return next(new Error("can't find teacher")); }
 
-    teacher.populate('sections', function(err, teacher) {
-      if (err) { return next(err); }
-
-      res.json(teacher.sections);
-    });
+    res.json(sections);
   });
 });
 
 // POST a single section
 router.post('/', auth, function(req, res, next) {
-  Teacher.findOne({ username: req.payload.username }).exec(function (err, teacher) {
+  Teacher.findOne({ username: req.payload.username, _id: req.payload._id }).exec(function (err, teacher) {
     if (err) { return next(err); }
     if (!teacher) { return next(new Error("can't find teacher")); }
 
@@ -56,11 +51,11 @@ router.post('/', auth, function(req, res, next) {
 
 // GET a single section by ID
 router.get('/:section', auth, function(req, res, next) {
-  Teacher.findOne({ username: req.payload.username, sections: req.section }).exec(function (err, teacher) {
+  Section.findOne({ teachers: req.payload._id, _id: req.section }).exec(function (err, section) {
     if (err) { return next(err); }
-    if (!teacher) { return next(new Error("can't find teacher")); }
+    if (!section) { return next(new Error("can't find section")); }
 
-    req.section.populate('teachers', function(err, section) {
+    section.populate('teachers', function(err, section) {
       if (err) { return next(err); }
 
       section.populate('students', function(err, section) {
@@ -79,31 +74,26 @@ router.get('/:section', auth, function(req, res, next) {
 
 // DELETE a section by ID
 router.delete('/:section', auth, function(req, res, next) {
-  Teacher.findOne({ username: req.payload.username, sections: req.section }).exec(function (err, teacher) {
+  Section.findOneAndRemove({ _id: req.section._id, teachers: req.payload._id }, function(err, section) {
     if (err) { return next(err); }
-    if (!teacher) { return next(new Error("can't find teacher")); }
 
-    Section.findOneAndRemove({_id: req.section._id}, function(err, section) {
-      if (err) { return next(err); }
-
-      res.json(section);
-    });
+    res.json(section);
   });
 });
 
 // Add a student to the section's student list
 router.put('/:section/students/add', auth, function(req, res, next) {
-  Teacher.findOne({ username: req.payload.username, sections: req.section }).exec(function (err, teacher) {
+  Section.findOne({ teachers: req.payload._id, _id: req.section }).exec(function (err, section) {
     if (err) { return next(err); }
-    if (!teacher) { return res.status(400).json({message: "Can't find teacher"}); }
+    if (!section) { return res.status(400).json({message: "Can't find section"}); }
 
     Student.findOne({ username: req.body.username }).exec(function (err, student) {
       if (err) { return next(err); }
       if (!student) { return res.status(400).json({message: "Can't find student"}); }
-      //if (req.section.students.indexOf(student) != -1) { return res.status(400).json({message: "Section already contains that student"}); }
+      //if (section.students.indexOf(student) != -1) { return res.status(400).json({message: "Section already contains that student"}); }
 
-      req.section.students.push(student);
-      req.section.save(function(err, section) {
+      section.students.push(student);
+      section.save(function(err, section) {
         if (err) { return next(err); }
 
         res.json(section);

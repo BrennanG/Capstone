@@ -40,7 +40,7 @@ router.post('/login', function(req, res, next){
 });
 
 router.put('/sections/remove', auth, function(req, res, next){
-  Teacher.findOneAndUpdate({username: req.body.teacher}, {$pull: {sections: req.body.sectionId}}, function(err, data){
+  Teacher.findOneAndUpdate({ username: req.payload.username, _id: req.payload._id }, {$pull: {sections: req.body.sectionId}}, function(err, data){
     if(err) {
       return res.status(500).json({'error' : 'error in deleting secionId'});
     }

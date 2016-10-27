@@ -3,7 +3,6 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Document = mongoose.model('Document');
 var Student = mongoose.model('Student');
-var Teacher = mongoose.model('Teacher');
 var Assignment = mongoose.model('Assignment');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
@@ -23,21 +22,16 @@ router.param('document', function(req, res, next, id) {
 
 // GET all documents
 router.get('/', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username }).exec(function (err, student) {
+  Document.find({student: req.payload._id}, function(err, documents) {
     if (err) { return next(err); }
-    if (!student) { return next(new Error("can't find student")); }
 
-    student.populate('documents', function(err, student) {
-      if (err) { return next(err); }
-
-      res.json(student.documents);
-    });
+    res.json(documents);
   });
 });
 
 // POST a single document
 router.post('/', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username }).exec(function (err, student) {
+  Student.findOne({ username: req.payload.username, _id: req.payload._id }).exec(function (err, student) {
     if (err) { return next(err); }
     if (!student) { return next(new Error("can't find student")); }
 
@@ -57,71 +51,51 @@ router.post('/', auth, function(req, res, next) {
 
 // GET a single document by ID
 router.get('/:document', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, student) {
+  Document.findOne({_id: req.document, student: req.payload._id}).exec(function (err, document) {
     if (err) { return next(err); }
-    if (!student) { return next(new Error("can't find student")); }
+    if (!document) { return next(new Error("can't find document")); }
+
+    res.json(document);
+  });
+});
+
+// GET a single submitted document by ID (for teachers)
+router.get('/submissions/:document', auth, function(req, res, next) {
+  Assignment.findOne({ teachers: req.payload._id, submissions: req.document }).exec(function (err, assignment) {
+    if (err) { return next(err); }
+    if (!assignment) { return next(new Error("can't find assignment")); }
 
     Document.findOne({_id: req.document}).exec(function (err, document) {
       if (err) { return next(err); }
       if (!document) { return next(new Error("can't find document")); }
 
       res.json(document);
-    });
-  });
-});
-
-// GET a single submitted document by ID (for teachers)
-router.get('/submissions/:document', auth, function(req, res, next) {
-  Teacher.findOne({ username: req.payload.username }).exec(function (err, teacher) {
-    if (err) { return next(err); }
-    if (!teacher) { return next(new Error("can't find teacher")); }
-
-    Assignment.findOne({ teachers: teacher._id, submissions: req.document }).exec(function (err, assignment) {
-      if (err) { return next(err); }
-      if (!assignment) { return next(new Error("can't find assignment")); }
-
-      Document.findOne({_id: req.document}).exec(function (err, document) {
-        if (err) { return next(err); }
-        if (!document) { return next(new Error("can't find document")); }
-
-        res.json(document);
-      });
     });
   });
 });
 
 // PUT an updated graph to the document
 router.put('/:document/graph', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, student) {
+  Document.findOne({_id: req.document, student: req.payload._id}).exec(function (err, document) {
     if (err) { return next(err); }
-    if (!student) { return next(new Error("can't find student")); }
+    if (!document) { return next(new Error("can't find document")); }
+    if (document.status !== "unsubmitted") { return next(new Error("this document is not allowed to be changed")); }
 
-    Document.findOne({_id: req.document}).exec(function (err, document) {
+    document.updateGraph(req.body, function(err, graph) {
       if (err) { return next(err); }
-      if (!document) { return next(new Error("can't find document")); }
-      if (document.status !== "unsubmitted") { return next(new Error("this document is not allowed to be changed")); }
 
-      document.updateGraph(req.body, function(err, graph) {
-        if (err) { return next(err); }
-
-        res.json(graph);
-      });
+      res.json(graph);
     });
   });
 });
 
 // DELETE a document by ID
 router.delete('/:document', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username, documents: req.document }).exec(function (err, student) {
+  Document.findOneAndRemove({_id: req.document._id, student: req.payload._id, status: "unsubmitted"}, function(err, document) {
     if (err) { return next(err); }
-    if (!student) { return next(new Error("can't find student")); }
+    if (!document) { return next("document can't be deleted"); }
 
-    Document.findOneAndRemove({_id: req.document._id, status: "unsubmitted"}, function(err, document) {
-      if (err) { return next(err); }
-      if (!document) { return next("document can't be deleted"); }
-
-      res.json(document);
-    });
+    res.json(document);
   });
 });
 

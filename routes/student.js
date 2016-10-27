@@ -43,7 +43,7 @@ router.post('/login', function(req, res, next){
 
 // Remove a document from the student's documents list
 router.put('/documents/remove', auth, function(req, res, next){
-  Student.findOneAndUpdate({username: req.body.student}, {$pull: {documents: req.body.documentId}}, function(err, data){
+  Student.findOneAndUpdate({username: req.payload.username, _id: req.payload._id}, {$pull: {documents: req.body.documentId}}, function(err, data){
     if(err) {
       return res.status(500).json({'error' : 'error in deleting documentId'});
     }
@@ -54,15 +54,15 @@ router.put('/documents/remove', auth, function(req, res, next){
 
 // Add a section to the student's sections list
 router.put('/sections/add', auth, function(req, res, next) {
-  Teacher.findOne({ username: req.payload.username, sections: req.body.section._id }).exec(function (err, teacher) {
+  Section.findOne({ teachers: req.payload._id, _id: req.body.section._id }).exec(function (err, section) {
     if (err) { return next(err); }
-    if (!teacher) { return res.status(400).json({message: "Can't find teacher"}); }
+    if (!section) { return res.status(400).json({message: "Can't find section"}); }
 
     Student.findOne({ username: req.body.username }).exec(function (err, student) {
       if (err) { return next(err); }
       if (!student) { return res.status(400).json({message: "Can't find student"}); }
 
-      student.sections.push(req.body.section);
+      student.sections.push(section);
       student.save(function(err, student) {
         if (err) { return next(err); }
 
@@ -74,7 +74,7 @@ router.put('/sections/add', auth, function(req, res, next) {
 
 // GET all sections belonging to the student
 router.get('/sections', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username })
+  Student.findOne({ username: req.payload.username, _id: req.payload._id })
   .populate({path: 'sections', populate: {path: 'assignments'}}).exec(function (err, student) {
     if (err) { return next(err); }
     if (!student) { return res.status(400).json({message: "Can't find student"}); }
