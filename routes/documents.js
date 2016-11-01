@@ -32,7 +32,7 @@ router.get('/', auth, function(req, res, next) {
 
 // POST a single document
 router.post('/', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username, _id: req.payload._id }).exec(function (err, student) {
+  Student.findOne({ email: req.payload.email, _id: req.payload._id }).exec(function (err, student) {
     if (err) { return next(err); }
     if (!student) { return next(new Error("can't find student")); }
 

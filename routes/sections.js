@@ -31,7 +31,7 @@ router.get('/', auth, function(req, res, next) {
 
 // POST a single section
 router.post('/', auth, function(req, res, next) {
-  Teacher.findOne({ username: req.payload.username, _id: req.payload._id }).exec(function (err, teacher) {
+  Teacher.findOne({ email: req.payload.email, _id: req.payload._id }).exec(function (err, teacher) {
     if (err) { return next(err); }
     if (!teacher) { return next(new Error("can't find teacher")); }
 
@@ -87,7 +87,7 @@ router.put('/:section/students/add', auth, function(req, res, next) {
     if (err) { return next(err); }
     if (!section) { return res.status(400).json({message: "Can't find section"}); }
 
-    Student.findOne({ username: req.body.username }).exec(function (err, student) {
+    Student.findOne({ email: req.body.email }).exec(function (err, student) {
       if (err) { return next(err); }
       if (!student) { return res.status(400).json({message: "Can't find student"}); }
       //if (section.students.indexOf(student) != -1) { return res.status(400).json({message: "Section already contains that student"}); }

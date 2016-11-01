@@ -54,13 +54,13 @@ function($http, $state, auth) {
         return deletedSection;
       });
   };
-  o.addStudentToSection = function(studentUsername, section) {
-		var dataToSend = { username: studentUsername };
+  o.addStudentToSection = function(studentEmail, section) {
+		var dataToSend = { email: studentEmail };
     return $http.put('/teacher/sections/' + section._id + '/students/add', dataToSend, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
 		}).success(function(section) {
 
-			dataToSend = {username: studentUsername, section: section};
+			dataToSend = {email: studentEmail, section: section};
 			return $http.put('/student/sections/add', dataToSend, {
 				headers: {Authorization: 'Bearer '+auth.getToken()}
 			}).success(function(student) {

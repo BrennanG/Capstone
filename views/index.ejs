@@ -178,14 +178,14 @@
       <h3>Teachers</h3>
       <div ng-repeat="teacher in teachers" ng-show="isLoggedIn()">
         <span>
-          {{teacher.username}}
+          {{teacher.email}}
         </span>
       </div>
       <!-- List students -->
       <h3>Students</h3>
       <div ng-repeat="student in students" ng-show="isLoggedIn()">
         <span>
-          {{student.username}}
+          {{student.email}}
         </span>
       </div>
       <!-- List assignments -->
@@ -213,7 +213,7 @@
       <form ng-submit="addStudentToSection()" style="margin-top:30px;">
 
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Student Username" ng-model="studentUsername"></input>
+          <input type="text" class="form-control" placeholder="Student Email" ng-model="studentEmail"></input>
         </div>
 
         <button type="submit" class="btn btn-primary">Add Student</button>
@@ -253,8 +253,8 @@
   	    <div class="form-group">
   	      <input type="text"
   	      class="form-control"
-  	      placeholder="Username"
-  	      ng-model="user.username"></input>
+  	      placeholder="Email"
+  	      ng-model="user.email"></input>
   	    </div>
   	    <div class="form-group">
   	      <input type="password"
@@ -293,8 +293,8 @@
   	    <div class="form-group">
   	      <input type="text"
   	      class="form-control"
-  	      placeholder="Username"
-  	      ng-model="user.username"></input>
+  	      placeholder="Email"
+  	      ng-model="user.email"></input>
   	    </div>
   	    <div class="form-group">
   	      <input type="password"

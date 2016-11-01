@@ -15,8 +15,8 @@ function($scope, section, auth, assignments, sections) {
   };
 
 	$scope.addStudentToSection = function() {
-    if ($scope.studentUsername === '') { return; }
-    sections.addStudentToSection($scope.studentUsername, $scope.section);
-    $scope.studentUsername = '';
+    if ($scope.studentEmail === '') { return; }
+    sections.addStudentToSection($scope.studentEmail, $scope.section);
+    $scope.studentEmail = '';
   };
 }]);

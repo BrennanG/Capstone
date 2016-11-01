@@ -1,10 +1,10 @@
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
-
+require('mongoose-type-email');
 
 var StudentSchema = new mongoose.Schema({
-  username: {type: String, unique: true},
+  email: {type: mongoose.SchemaTypes.Email, unique: true},
   hash: String,
   salt: String,
   documents: [{type: mongoose.Schema.Types.ObjectId, ref: 'Document'}],
@@ -12,7 +12,6 @@ var StudentSchema = new mongoose.Schema({
 });
 
 StudentSchema.methods.generateJWT = function() {
-
   // set expiration to 60 days
   var today = new Date();
   var exp = new Date(today);
@@ -20,7 +19,7 @@ StudentSchema.methods.generateJWT = function() {
 
   return jwt.sign({
     _id: this._id,
-    username: this.username,
+    email: this.email,
     exp: parseInt(exp.getTime() / 1000),
   }, 'SECRET');
 };

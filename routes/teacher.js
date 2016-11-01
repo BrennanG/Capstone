@@ -7,12 +7,12 @@ var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
 router.post('/register', function(req, res, next){
-  if(!req.body.username || !req.body.password){
+  if(!req.body.email || !req.body.password){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
   var teacher = new Teacher();
-  teacher.username = req.body.username;
+  teacher.email = req.body.email;
   teacher.setPassword(req.body.password);
   teacher.sections = [];
 
@@ -24,7 +24,7 @@ router.post('/register', function(req, res, next){
 });
 
 router.post('/login', function(req, res, next){
-  if(!req.body.username || !req.body.password){
+  if(!req.body.email || !req.body.password){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
@@ -40,7 +40,7 @@ router.post('/login', function(req, res, next){
 });
 
 router.put('/sections/remove', auth, function(req, res, next){
-  Teacher.findOneAndUpdate({ username: req.payload.username, _id: req.payload._id }, {$pull: {sections: req.body.sectionId}}, function(err, data){
+  Teacher.findOneAndUpdate({ email: req.payload.email, _id: req.payload._id }, {$pull: {sections: req.body.sectionId}}, function(err, data){
     if(err) {
       return res.status(500).json({'error' : 'error in deleting secionId'});
     }

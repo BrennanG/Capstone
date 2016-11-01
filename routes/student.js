@@ -9,14 +9,13 @@ var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
 router.post('/register', function(req, res, next){
-  if(!req.body.username || !req.body.password){
+  if(!req.body.email || !req.body.password){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
   var student = new Student();
-  student.username = req.body.username;
+  student.email = req.body.email;
   student.setPassword(req.body.password);
-  student.documents = [];
 
   student.save(function (err){
     if(err){ return next(err); }
@@ -26,7 +25,7 @@ router.post('/register', function(req, res, next){
 });
 
 router.post('/login', function(req, res, next){
-  if(!req.body.username || !req.body.password){
+  if(!req.body.email || !req.body.password){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
@@ -43,7 +42,7 @@ router.post('/login', function(req, res, next){
 
 // Remove a document from the student's documents list
 router.put('/documents/remove', auth, function(req, res, next){
-  Student.findOneAndUpdate({username: req.payload.username, _id: req.payload._id}, {$pull: {documents: req.body.documentId}}, function(err, data){
+  Student.findOneAndUpdate({email: req.payload.email, _id: req.payload._id}, {$pull: {documents: req.body.documentId}}, function(err, data){
     if(err) {
       return res.status(500).json({'error' : 'error in deleting documentId'});
     }
@@ -58,7 +57,7 @@ router.put('/sections/add', auth, function(req, res, next) {
     if (err) { return next(err); }
     if (!section) { return res.status(400).json({message: "Can't find section"}); }
 
-    Student.findOne({ username: req.body.username }).exec(function (err, student) {
+    Student.findOne({ email: req.body.email }).exec(function (err, student) {
       if (err) { return next(err); }
       if (!student) { return res.status(400).json({message: "Can't find student"}); }
 
@@ -74,7 +73,7 @@ router.put('/sections/add', auth, function(req, res, next) {
 
 // GET all sections belonging to the student
 router.get('/sections', auth, function(req, res, next) {
-  Student.findOne({ username: req.payload.username, _id: req.payload._id })
+  Student.findOne({ email: req.payload.email, _id: req.payload._id })
   .populate({path: 'sections', populate: {path: 'assignments'}}).exec(function (err, student) {
     if (err) { return next(err); }
     if (!student) { return res.status(400).json({message: "Can't find student"}); }

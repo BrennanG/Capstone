@@ -4,12 +4,15 @@ var mongoose = require('mongoose');
 var Student = mongoose.model('Student');
 var Teacher = mongoose.model('Teacher');
 
-passport.use('student-local', new LocalStrategy(
-  function(username, password, done) {
-    Student.findOne({ username: username }, function (err, student) {
+passport.use('student-local', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    Student.findOne({ email: email }, function (err, student) {
       if (err) { return done(err); }
       if (!student) {
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false, { message: 'Incorrect email.' });
       }
       if (!student.validPassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
@@ -19,12 +22,15 @@ passport.use('student-local', new LocalStrategy(
   }
 ));
 
-passport.use('teacher-local', new LocalStrategy(
-  function(username, password, done) {
-    Teacher.findOne({ username: username }, function (err, teacher) {
+passport.use('teacher-local', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  function(email, password, done) {
+    Teacher.findOne({ email: email }, function (err, teacher) {
       if (err) { return done(err); }
       if (!teacher) {
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false, { message: 'Incorrect email.' });
       }
       if (!teacher.validPassword(password)) {
         return done(null, false, { message: 'Incorrect password.' });
