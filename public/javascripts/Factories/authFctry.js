@@ -9,7 +9,7 @@ function($http, $window, $state) {
 
 	auth.getToken = function() {
 		return $window.localStorage['biograph-token'];
-	}
+	};
 
 	auth.isLoggedIn = function() {
 		var token = auth.getToken();
@@ -30,7 +30,6 @@ function($http, $window, $state) {
 
 			return payload.email;
 		}
-		return "";
 	};
 
 	auth.studentRegister = function(student) {
@@ -69,6 +68,17 @@ function($http, $window, $state) {
 	auth.accountType = function() {
 		return type;
 	};
+
+	$http.get('/teacher/email', {
+		headers: {Authorization: 'Bearer '+auth.getToken()}
+	}).success(function(data) {
+		if (data.found == "true") { type = "teacher" };
+	});
+	$http.get('/student/email', {
+		headers: {Authorization: 'Bearer '+auth.getToken()}
+	}).success(function(data) {
+		if (data.found == "true") { type = "student" };
+	});
 
 	return auth;
 }]);

@@ -39,6 +39,15 @@ router.post('/login', function(req, res, next){
   })(req, res, next);
 });
 
+router.get('/email', auth, function(req, res, next){
+  Teacher.findOne({email: req.payload.email, _id: req.payload._id}, function(err, teacher){
+    if (err) { return res.status(500).json({'error' : 'error in checking for the email in Teachers'}); }
+
+    if (teacher) { res.json({found: 'true'}); }
+    else { res.json({found: 'false'}); }
+  });
+});
+
 router.put('/sections/remove', auth, function(req, res, next){
   Teacher.findOneAndUpdate({ email: req.payload.email, _id: req.payload._id }, {$pull: {sections: req.body.sectionId}}, function(err, data){
     if(err) {

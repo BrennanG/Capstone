@@ -40,6 +40,15 @@ router.post('/login', function(req, res, next){
   })(req, res, next);
 });
 
+router.get('/email', auth, function(req, res, next){
+  Student.findOne({email: req.payload.email, _id: req.payload._id}, function(err, student){
+    if (err) { return res.status(500).json({'error' : 'error in checking for the email in Students'}); }
+
+    if (student) { res.json({found: 'true'}); }
+    else { res.json({found: 'false'}); }
+  });
+});
+
 // Remove a document from the student's documents list
 router.put('/documents/remove', auth, function(req, res, next){
   Student.findOneAndUpdate({email: req.payload.email, _id: req.payload._id}, {$pull: {documents: req.body.documentId}}, function(err, data){
