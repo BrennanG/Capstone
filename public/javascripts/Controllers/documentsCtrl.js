@@ -5,6 +5,7 @@ function($scope, documents, document, auth) {
   $scope.edges = document.graph.edges;
 	$scope.isLoggedIn = auth.isLoggedIn;
 	$scope.isTeacher = auth.accountType() == "teacher";
+	$scope.newGrade = "";
 
 	$scope.updateGrade = function() {
     if ($scope.newGrade === '') { return; }

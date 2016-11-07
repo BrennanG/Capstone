@@ -2,6 +2,7 @@ angular.module('biologyGraphingApp').controller('TeacherHomeCtrl', ['$scope', 'a
 function($scope, auth, sections) {
 	$scope.sections = sections.sections;
 	$scope.isLoggedIn = auth.isLoggedIn;
+	$scope.newSectionTitle = "";
 
 	$scope.addSection = function() {
     if ($scope.newSectionTitle === '') { return; }

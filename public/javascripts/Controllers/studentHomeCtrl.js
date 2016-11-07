@@ -1,6 +1,7 @@
 angular.module('biologyGraphingApp').controller('StudentHomeCtrl', ['$scope', 'documents', 'sections', 'assignments', 'auth',
 function($scope, documents, sections, assignments, auth) {
 	$scope.documents = documents.documents;
+	$scope.newDocTitle = '';
 	$scope.sections = sections.sections;
 	$scope.selections = {assignment: null, document: null};
 	$scope.isLoggedIn = auth.isLoggedIn;

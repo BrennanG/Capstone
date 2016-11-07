@@ -6,6 +6,9 @@ function($scope, section, auth, assignments, sections) {
   $scope.students = section.students;
   $scope.assignments = section.assignments;
 	$scope.isLoggedIn = auth.isLoggedIn;
+	$scope.newTitle = "";
+	$scope.newDescription = "";
+	$scope.studentEmail = "";
 
 	$scope.addAssignment = function() {
     if ($scope.newTitle === '' || $scope.newDescription === '') { return; }
