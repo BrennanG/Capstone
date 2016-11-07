@@ -23,13 +23,14 @@ function($http, $window, $state) {
 		}
 	};
 
-	auth.currentUserName = function() {
+	auth.currentEmail = function() {
 		if (auth.isLoggedIn()) {
 			var token = auth.getToken();
 			var payload = JSON.parse($window.atob(token.split('.')[1]));
 
 			return payload.email;
 		}
+		return "";
 	};
 
 	auth.studentRegister = function(student) {

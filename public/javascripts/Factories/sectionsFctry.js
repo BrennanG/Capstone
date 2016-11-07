@@ -45,7 +45,7 @@ function($http, $state, auth) {
           section._id = deletedSection._id;
         }), 1);
 
-				var dataToSend = {teacher: auth.currentUserName(), sectionId: section._id};
+				var dataToSend = {teacher: auth.currentEmail(), sectionId: section._id};
 				$http.put('/teacher/sections/remove', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				});

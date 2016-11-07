@@ -34,7 +34,7 @@ function($http, $state, auth) {
           doc._id = deletedDocument._id;
         }), 1);
 
-				var dataToSend = {student: auth.currentUserName(), documentId: document._id};
+				var dataToSend = {student: auth.currentEmail(), documentId: document._id};
 				$http.put('/student/documents/remove', dataToSend, {
 					headers: {Authorization: 'Bearer '+auth.getToken()}
 				});
