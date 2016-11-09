@@ -1,0 +1,12 @@
+<div>
+  <div id="cy"></div>
+  <div id="toolbar"></div>
+  <br/>
+  <h4>Current Grade: {{document.grade}}</h4>
+  <form ng-submit="updateGrade()" style="margin-top:30px;" ng-show="isTeacher">
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Grade (percentage)" ng-model="newGrade"></input>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Grade</button>
+  </form>
+</div>

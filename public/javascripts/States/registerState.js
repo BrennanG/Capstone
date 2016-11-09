@@ -5,7 +5,7 @@ function($stateProvider) {
 
 	$stateProvider.state('register', {
 		url : '/register',
-		templateUrl : '/register.html',
+		templateUrl : 'templates/register.html',
 		controller : 'AuthCtrl'
 	});
 

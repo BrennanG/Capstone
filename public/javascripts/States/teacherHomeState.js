@@ -5,7 +5,7 @@ function($stateProvider, $urlRouterProvider) {
 
 	$stateProvider.state('teacherHome', {
 		url : '/teacher/home',
-		templateUrl : '/teacher/home.html',
+		templateUrl : 'templates/teacherHome.html',
 		controller : 'TeacherHomeCtrl',
     resolve: {
       postPromise : ['sections', function(sections) {

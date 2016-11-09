@@ -5,7 +5,7 @@ function($stateProvider) {
 
 	$stateProvider.state('assignments', {
 		url : '/assignments/{id}',
-		templateUrl : '/assignments.html',
+		templateUrl : 'templates/assignments.html',
 		controller : 'AssignmentsCtrl',
     resolve: {
       assignment: ['$stateParams', 'assignments', function($stateParams, assignments) {

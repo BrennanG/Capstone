@@ -1,0 +1,14 @@
+<div>
+  <div class="page-header">
+    <h1>{{title}}</h1>
+    <p>{{description}}</p>
+  </div>
+
+  <!-- List submissions -->
+  <h3>Submissions</h3>
+  <div ng-repeat="submission in submissions" ng-show="isLoggedIn()">
+    <span>
+      <a href="#/documents/{{submission._id}}">{{submission.title}}</a>
+    </span>
+  </div>
+</div>

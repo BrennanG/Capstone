@@ -5,7 +5,7 @@ function($stateProvider) {
 
 	$stateProvider.state('sections', {
 		url : '/sections/{id}',
-		templateUrl : '/sections.html',
+		templateUrl : 'templates/sections.html',
 		controller : 'SectionsCtrl',
     resolve: {
       section: ['$stateParams', 'sections', function($stateParams, sections) {

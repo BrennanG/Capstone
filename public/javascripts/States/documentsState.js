@@ -5,7 +5,7 @@ function($stateProvider) {
 
 	$stateProvider.state('documents', {
 		url : '/documents/{id}',
-		templateUrl : '/documents.html',
+		templateUrl : 'templates/documents.html',
 		controller : 'DocumentsCtrl',
     resolve: {
       document: ['$stateParams', 'documents', 'auth', function($stateParams, documents, auth) {
