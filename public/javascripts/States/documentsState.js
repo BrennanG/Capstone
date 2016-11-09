@@ -4,6 +4,7 @@ angular.module('biologyGraphingApp')
 function($stateProvider) {
 
 	$stateProvider.state('documents', {
+		parent: 'biograph',
 		url : '/documents/{id}',
 		templateUrl : 'templates/documents.html',
 		controller : 'DocumentsCtrl',

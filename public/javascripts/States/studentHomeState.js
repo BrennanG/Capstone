@@ -1,9 +1,10 @@
 angular.module('biologyGraphingApp')
-.config(['$stateProvider', '$urlRouterProvider',
+.config(['$stateProvider',
 
-function($stateProvider, $urlRouterProvider) {
+function($stateProvider) {
 
 	$stateProvider.state('studentHome', {
+		parent: 'biograph',
 		url : '/student/home',
 		templateUrl : 'templates/studentHome.html',
 		controller : 'StudentHomeCtrl',
@@ -23,5 +24,4 @@ function($stateProvider, $urlRouterProvider) {
 		}]
 	});
 
-	$urlRouterProvider.otherwise('login');
 }]);

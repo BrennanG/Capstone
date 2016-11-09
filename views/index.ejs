@@ -16,6 +16,7 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
     <!-- import angular js files -->
     <script src="/javascripts/angularApp.js"></script>
+    <script src="/javascripts/States/biographState.js"></script>
     <script src="/javascripts/States/studentHomeState.js"></script>
     <script src="/javascripts/States/teacherHomeState.js"></script>
     <script src="/javascripts/States/documentsState.js"></script>
@@ -62,7 +63,9 @@
   <body ng-app="biologyGraphingApp">
     <div class="row">
       <div class="col-md-6 col-md-offset-3">
-        <ui-view></ui-view>
+        <div ui-view="header"></div>
+        <div ui-view="content"></div>
+        <div ui-view="footer"></div>
       </div>
     </div>
   </body>

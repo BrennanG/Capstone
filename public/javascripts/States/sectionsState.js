@@ -4,6 +4,7 @@ angular.module('biologyGraphingApp')
 function($stateProvider) {
 
 	$stateProvider.state('sections', {
+		parent: 'biograph',
 		url : '/sections/{id}',
 		templateUrl : 'templates/sections.html',
 		controller : 'SectionsCtrl',
