@@ -21,10 +21,4 @@ function($scope, documents, sections, assignments, auth) {
     assignments.addSubmission($scope.selections.document, $scope.selections.assignment._id);
   };
 
-	$scope.logout = function() {
-		if ($scope.isLoggedIn) {
-			auth.logOut();
-		}
-	};
-
 }]);

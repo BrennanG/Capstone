@@ -14,10 +14,4 @@ function($scope, auth, sections) {
     sections.deleteSection(section);
   };
 
-	$scope.logout = function() {
-		if ($scope.isLoggedIn) {
-			auth.logOut();
-		}
-	};
-
 }]);
