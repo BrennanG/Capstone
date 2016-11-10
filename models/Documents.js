@@ -6,12 +6,11 @@ var DocumentSchema = new mongoose.Schema({
   status: { type: String, default: 'unsubmitted', enum: ['unsubmitted', 'submitted', 'returned'] },
   submittedTo: {type: mongoose.Schema.Types.ObjectId, ref: 'Assignment'},
   student: {type: mongoose.Schema.Types.ObjectId, ref: 'Student'},
-  graph: {nodes: [String], edges: [String], undoStack: [String]}
+  graph: {elements: [String], undoStack: [String]}
 });
 
 DocumentSchema.methods.updateGraph = function(data, cb) {
-  this.graph.nodes = data.nodes;
-  this.graph.edges = data.edges;
+  this.graph.elements = data.elements;
   this.graph.undoStack = data.undoStack;
   this.save(cb);
 };

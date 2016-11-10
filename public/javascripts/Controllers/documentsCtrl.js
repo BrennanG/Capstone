@@ -1,8 +1,8 @@
 angular.module('biologyGraphingApp').controller('DocumentsCtrl', ['$scope', 'documents', 'document', 'auth',
 function($scope, documents, document, auth) {
 	$scope.document = document;
-  $scope.nodes = document.graph.nodes;
-  $scope.edges = document.graph.edges;
+  $scope.elements = document.graph.elements;
+  $scope.undoStack = document.graph.undoStack;
 	$scope.isLoggedIn = auth.isLoggedIn;
 	$scope.isTeacher = auth.accountType() == "teacher";
 	$scope.newGrade = "";
@@ -13,5 +13,5 @@ function($scope, documents, document, auth) {
     $scope.newGrade = '';
   };
 
-  documents.loadCytoScape(document);
+	documents.loadCytoScape(document);
 }]);

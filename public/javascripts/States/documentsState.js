@@ -22,7 +22,7 @@ function($stateProvider) {
 				if (!auth.isLoggedIn()) {
 					$state.go('login');
 				}
-		}]
+			}]
   });
 
 }]);
