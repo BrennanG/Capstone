@@ -20,6 +20,7 @@ TeacherSchema.methods.generateJWT = function() {
     _id: this._id,
     email: this.email,
     exp: parseInt(exp.getTime() / 1000),
+    type: "teacher"
   }, 'SECRET');
 };
 

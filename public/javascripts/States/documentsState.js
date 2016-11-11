@@ -10,10 +10,11 @@ function($stateProvider) {
 		controller : 'DocumentsCtrl',
     resolve: {
       document: ['$stateParams', 'documents', 'auth', function($stateParams, documents, auth) {
-				if (auth.accountType() == "student") {
+				var type = auth.accountType();
+				if (type == "student") {
         	return documents.getDocument($stateParams.id);
 				}
-				else { // teacher
+				else if (type == "teacher"){ // teacher
 					return documents.getDocumentForTeacher($stateParams.id);
 				}
       }]},

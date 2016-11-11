@@ -1,7 +1,6 @@
 angular.module('biologyGraphingApp').factory('auth', ['$http', '$window', '$state',
 function($http, $window, $state) {
 	var auth = {};
-	var type = "";
 
 	auth.saveToken = function(token) {
 		$window.localStorage['biograph-token'] = token;
@@ -35,28 +34,24 @@ function($http, $window, $state) {
 	auth.studentRegister = function(student) {
 		return $http.post('/student/register', student).success(function(data) {
 			auth.saveToken(data.token);
-			type = "student";
 		});
 	};
 
 	auth.studentLogIn = function(student) {
 		return $http.post('/student/login', student).success(function(data) {
 			auth.saveToken(data.token);
-			type = "student";
 		});
 	};
 
 	auth.teacherRegister = function(teacher) {
 		return $http.post('/teacher/register', teacher).success(function(data) {
 			auth.saveToken(data.token);
-			type = "teacher";
 		});
 	};
 
 	auth.teacherLogIn = function(teacher) {
 		return $http.post('/teacher/login', teacher).success(function(data) {
 			auth.saveToken(data.token);
-			type = "teacher";
 		});
 	};
 
@@ -66,19 +61,13 @@ function($http, $window, $state) {
 	};
 
 	auth.accountType = function() {
-		return type;
-	};
+		if (auth.isLoggedIn()) {
+			var token = auth.getToken();
+			var payload = JSON.parse($window.atob(token.split('.')[1]));
 
-	$http.get('/teacher/email', {
-		headers: {Authorization: 'Bearer '+auth.getToken()}
-	}).success(function(data) {
-		if (data.found == "true") { type = "teacher" };
-	});
-	$http.get('/student/email', {
-		headers: {Authorization: 'Bearer '+auth.getToken()}
-	}).success(function(data) {
-		if (data.found == "true") { type = "student" };
-	});
+			return payload.type;
+		}
+	};
 
 	return auth;
 }]);
