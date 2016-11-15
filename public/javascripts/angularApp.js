@@ -1,1 +1,1 @@
-angular.module('biologyGraphingApp', ['ui.router']);
+angular.module('biologyGraphingApp', ['ui.router', 'smart-table']);

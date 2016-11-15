@@ -24,15 +24,43 @@
   </div>
   </form>
 
+  <style type="text/css">
+  .st-sort-ascent:before{
+    content: '\25B2';
+  }
+
+  .st-sort-descent:before{
+    content: '\25BC';
+  }
+  </style>
+  <table st-table="documents" class="table table-striped">
+    <thead>
+      <tr>
+      	<th st-sort="title">Document Title</th>
+      	<th st-sort="status">Document Status</th>
+      	<th st-sort="submittedTo.title">Submitted To</th>
+      	<th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="document in documents">
+      	<td>{{document.title}}</td>
+      	<td>{{document.status}}</td>
+      	<td>{{document.submittedTo.title}}</td>
+        <td>
+    			<button type="button" ng-click="deleteDocument(document)" class="btn btn-sm btn-danger">
+    				<i class="glyphicon glyphicon-remove-circle"></i>
+    			</button>
+		    </td>
+      </tr>
+    </tbody>
+  </table>
+
   <!-- Add a Document -->
-  <form ng-submit="addDocument()" style="margin-top:30px;">
-
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="Title" ng-model="newDocTitle"></input>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Add Document</button>
-  </form>
+  <button type="button" ng-click="addDocument()" class="btn btn-sm btn-success">
+			<i class="glyphicon glyphicon-plus">
+			</i> Add Document
+	</button>
 
   <!-- List sections -->
   <br/>
