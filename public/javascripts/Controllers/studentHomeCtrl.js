@@ -1,8 +1,7 @@
-angular.module('biologyGraphingApp').controller('StudentHomeCtrl', ['$scope', 'documents', 'sections', 'assignments', 'auth',
-function($scope, documents, sections, assignments, auth) {
+angular.module('biologyGraphingApp').controller('StudentHomeCtrl', ['$scope',  '$location', '$uibModal', 'documents', 'sections', 'assignments', 'auth',
+function($scope, $location, $uibModal, documents, sections, assignments, auth) {
 	$scope.documents = documents.documents;
 	$scope.sections = sections.sections;
-	$scope.selections = {assignment: null, document: null};
 	$scope.isLoggedIn = auth.isLoggedIn;
 
   $scope.addDocument = function() {
@@ -10,6 +9,38 @@ function($scope, documents, sections, assignments, auth) {
     if (newDocTitle === '' || newDocTitle == null) { return; }
     var graph = { nodes: [], edges: [], undoStack: [] };
     documents.addDocument(newDocTitle, graph);
+  };
+
+	$scope.editDocument = function(document) {
+		$location.path("documents/" + document._id);
+  };
+
+	$scope.submitDocument = function(document) {
+		var modalInstance = $uibModal.open({
+      templateUrl: 'templates/submitDocumentModal.html',
+      controller: function($scope, $uibModalInstance, sections) {
+        $scope.selected = {assignment: null};
+				$scope.sections = sections;
+
+        $scope.returnSelectedAssignment = function() {
+          $uibModalInstance.close($scope.selected.assignment);
+        }
+
+        $scope.cancel = function() {
+          $uibModalInstance.dismiss('cancel');
+        };
+
+      },
+      resolve: {
+        sections: function () {
+          return $scope.sections;
+      	}
+			}
+    });
+
+		modalInstance.result.then(function (selectedAssignment) {
+			assignments.addSubmission(document, selectedAssignment._id);
+		});
   };
 
   $scope.deleteDocument = function(document) {
@@ -21,10 +52,6 @@ function($scope, documents, sections, assignments, auth) {
 		else {
 			alert("Cannot delete " + document.title + " because it has been submitted to " + document.submittedTo.title + ".");
 		}
-  };
-
-	$scope.addSubmission = function() {
-    assignments.addSubmission($scope.selections.document, $scope.selections.assignment._id);
   };
 
 }]);

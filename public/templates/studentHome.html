@@ -3,27 +3,7 @@
     <h1>Your Documents</h1>
   </div>
 
-  <!-- List documents -->
-  <form>
-  <div ng-repeat="document in documents" ng-show="isLoggedIn()">
-    <span>
-      <a href="#/documents/{{document._id}}">{{document.title}}</a>
-    </span>
-    <span>
-      <button ng-click="deleteDocument(document)">Delete</button>
-    </span>
-    <span>
-      <input ng-model="selections.document" type="radio" name="documentsRadio" ng-value="document">
-    </span>
-    <span>
-      {{document.status}}
-    </span>
-    <span>
-      {{document.submittedTo.title}}
-    </span>
-  </div>
-  </form>
-
+<!-- List Documents -->
   <style type="text/css">
   .st-sort-ascent:before{
     content: '\25B2';
@@ -36,17 +16,22 @@
   <table st-table="documents" class="table table-striped">
     <thead>
       <tr>
-      	<th st-sort="title">Document Title</th>
-      	<th st-sort="status">Document Status</th>
-      	<th st-sort="submittedTo.title">Submitted To</th>
-      	<th>Delete</th>
+      	<th st-sort="title"><b style="cursor:pointer;">Document Title</b></th>
+      	<th st-sort="status"><b style="cursor:pointer;">Document Status</b></th>
+      	<th st-sort="submittedTo.title"><b style="cursor:pointer;">Submitted To</b></th>
+        <th>Edit Document</th>
+      	<th>Delete Document</th>
       </tr>
     </thead>
     <tbody>
       <tr ng-repeat="document in documents">
       	<td>{{document.title}}</td>
       	<td>{{document.status}}</td>
-      	<td>{{document.submittedTo.title}}</td>
+      	<td>
+          <div ng-show="document.submittedTo">{{document.submittedTo.title}}</div>
+          <div ng-hide="document.submittedTo"><button type="button" ng-click="submitDocument(document)" class="btn btn-sm">Submit</button></div>
+        </td>
+        <td><button type="button" ng-click="editDocument(document)" class="btn btn-sm">Edit</button></td>
         <td>
     			<button type="button" ng-click="deleteDocument(document)" class="btn btn-sm btn-danger">
     				<i class="glyphicon glyphicon-remove-circle"></i>
@@ -65,21 +50,13 @@
   <!-- List sections -->
   <br/>
   <h2>Sections</h2>
-  <form>
   <div ng-repeat="section in sections" ng-show="isLoggedIn()">
     <span>
       <h4>&nbsp;&nbsp;{{section.title}}</h4>
       <!-- List assignments -->
       <div ng-repeat="assignment in section.assignments" ng-show="isLoggedIn()">
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <input ng-model="selections.assignment" type="radio" name="assignmentsRadio" ng-value="assignment">{{assignment.title}}
+        &nbsp;&nbsp;&nbsp;&nbsp;- {{assignment.title}}
       </div>
     </span>
   </div>
-  </form>
-
-  <br/>
-  <form ng-submit="addSubmission()" style="margin-top:30px;">
-    <button type="submit" class="btn btn-primary">Submit Document to Assignment</button>
-  </form>
 </div>

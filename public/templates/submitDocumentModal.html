@@ -1,0 +1,20 @@
+<div class="modal-header">
+  <h3 class="modal-title" id="modal-title">Choose Assignment</h3>
+</div>
+<div class="modal-body" id="modal-body">
+  <form>
+  <div ng-repeat="section in sections">
+    <span>
+      <h4>{{section.title}}</h4>
+      <div ng-repeat="assignment in section.assignments">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <input ng-model="selected.assignment" type="radio" name="assignmentsRadio" ng-value="assignment">{{assignment.title}}
+      </div>
+    </span>
+  </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" type="button" ng-click="returnSelectedAssignment()">Submit</button>
+  <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>
