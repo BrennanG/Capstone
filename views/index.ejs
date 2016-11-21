@@ -16,7 +16,7 @@
     <!-- import Angular ui-router -->
     <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
     <!-- import smart table -->
-    <script src="http://lorenzofox3.github.io/smart-table-website/bower_components/angular-smart-table/dist/smart-table.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-smart-table/2.1.8/smart-table.min.js"></script>
     <!-- import angular js files -->
     <script src="/javascripts/angularApp.js"></script>
     <script src="/javascripts/States/biographState.js"></script>
@@ -45,9 +45,6 @@
     <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
     <script type="text/javascript" src="http://w2ui.com/src/w2ui-1.4.3.min.js"></script>
 
-    <!-- set cursor to pointer on thumbs-up icon -->
-    <style> .glyphicon-thumbs-up { cursor:pointer } </style>
-
     <style>
         #cy {
             width: 100%;
@@ -66,11 +63,9 @@
 
   </head>
   <body ng-app="biologyGraphingApp">
-    <div class="row">
-      <div class="col-md-6 col-md-offset-3">
-        <div ui-view="header"></div>
-        <div ui-view="content"></div>
-      </div>
+    <div class="col-md-6 col-md-offset-3">
+      <div ui-view="header"></div>
+      <div ui-view="content"></div>
     </div>
   </body>
 </html>
