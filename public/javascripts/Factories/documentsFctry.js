@@ -204,7 +204,6 @@ function($http, $state, auth) {
     };
 
 
-
     /*********************************/
     /***** DOUBLE CLICK LISTENER *****/
     /*********************************/
@@ -238,31 +237,35 @@ function($http, $state, auth) {
 	    $('#toolbar').w2toolbar({
 	        name: 'toolbar',
 	        items: [
-	            { type: 'check',  id: 'item1', caption: 'Add Node'},//, img: 'icon-page', checked: false },
-	            { type: 'check',  id: 'item2', caption: 'Add Edge'},//, img: 'icon-page', checked: false },
-	            { type: 'check',  id: 'item3', caption: 'Edit Label'},//, img: 'icon-page', checked: false },
-	            { type: 'button',  id: 'item4', caption: 'Delete'},//, img: 'icon-page', checked: false },
-	            { type: 'button',  id: 'item5', caption: 'Undo'},//, img: 'icon-page', checked: false },
-	            { type: 'button',  id: 'item6', caption: 'Redo'},//, img: 'icon-page', checked: false },
-	            { type: 'button',  id: 'item7', caption: 'Save'},//, img: 'icon-page', checked: false },
-	            { type: 'button',  id: 'item8', caption: 'Fit'},//, img: 'icon-page', checked: false }
+	            { type: 'check',  id: 'item1', caption: 'Add Node'},
+	            { type: 'check',  id: 'item2', caption: 'Add Edge'},
+	            { type: 'check',  id: 'item3', caption: 'Edit Label'},
+	            { type: 'button',  id: 'item4', caption: 'Delete'},
+	            { type: 'button',  id: 'item5', caption: 'Undo'},
+	            { type: 'button',  id: 'item6', caption: 'Redo'},
+	            { type: 'button',  id: 'item7', caption: 'Save'},
+	            { type: 'button',  id: 'item8', caption: 'Fit'}
 	        ]
 	    });
 
     var tb = w2ui['toolbar'];
     var items = tb['items'];
 
+
+		/***********************************/
+		/***** TOOLBAR EVENT LISTENERS *****/
+		/***********************************/
     function addNodeListener(event) {
         var btn = tb.get('item1');
         if (btn.checked == true) {
-            var n = addNode(event);
+            var n = addNode(event.cyRenderedPosition.x, event.cyRenderedPosition.y);
 
-            tb.uncheck(btn.id);
+            //tb.uncheck(btn.id);
         }
-        graph.removeEventListener("click",addNodeListener);
+				else { cy.off('click', addNodeListener); }
     }
 
-    var source;
+		var source;
     var dest;
     function addEdgeListenerSrc(event) {
         cy.off('click', 'node', addEdgeListenerSrc);
@@ -308,6 +311,7 @@ function($http, $state, auth) {
 				editLabel(targ);
     }
 
+
     /***************************/
     /***** TOOLBAR ONCLICK *****/
     /***************************/
@@ -321,9 +325,11 @@ function($http, $state, auth) {
         if (targ.checked != true) {
             switch (event.target) {
                 case ("item1"): // Add Node
-                    graph.addEventListener("click",addNodeListener);
+										cy.on('click', addNodeListener);
                     break;
                 case ("item2"): // Add Edge
+										source = "";
+										dest = "";
                     cy.on('click', 'node', addEdgeListenerSrc);
                     break;
                 case ("item3"): // Edit Label
@@ -354,7 +360,6 @@ function($http, $state, auth) {
     /***** UNDO *****/
     /****************/
     var lastEvent;
-
     function undo() {
 				if (undoStack == 0) { return; }
 
@@ -377,22 +382,16 @@ function($http, $state, auth) {
             case ("addEdge"):
                 cy.remove(targ);
                 break;
-            case ("deleteSelected"):
-                targ.restore();
-                break;
-            case ("deleteElem"):
-                targ.restore();
-                break;
-            case ("deleteEdge"):
-                var data = targ.data;
-                addEdgeHelper(data.source, data.target, data.id, data.label);
-                break;
             case ("editLabel"):
 								handleWidth(targ, lab);
                 targ.json({ data: { label: lab } });
                 break;
+            case ("deleteSelected"):
+                targ.restore();
+                break;
         }
     }
+
 
     /****************/
     /***** REDO *****/
@@ -421,28 +420,26 @@ function($http, $state, auth) {
             case ("addEdge"):
                 cy.add(targ);
                 break;
-            case ("deleteSelected"):
-                cy.remove(targ);
-                break;
-            case ("deleteElem"):
-                cy.remove(targ);
-                break;
             case ("editLabel"):
 								handleWidth(targ, lab);
                 targ.json({ data: { label: lab } });
+                break;
+            case ("deleteSelected"):
+                cy.remove(targ);
                 break;
         }
 
     }
 
 
-
     /***** ADD NODE *****/
-    function addNode(evt) {
-
+    function addNode(posX,posY) {
         incrementNodeID();
-        var node = cy.add({ group: "nodes", data: { id: globalNodeID, label: "", width: 60 }, renderedPosition: { x: evt.clientX, y: evt.clientY } });
-				//cy.$('#n1').
+        var node = cy.add({
+					group: "nodes",
+					data: { id: globalNodeID, label: "", width: 60 },
+					renderedPosition: { x: posX, y: posY }
+				});
 
         // UNDO INFO
         lastEvent = { type: "addNode", target: node, time: getTimeStamp() };
@@ -453,9 +450,11 @@ function($http, $state, auth) {
 
     /***** ADD EDGE *****/
     function addEdge(src, dst) {
-
 				incrementEdgeID();
-        var edge = cy.add({ group: "edges", data: { id: globalEdgeID, source: src, target: dst, label: "" } });
+        var edge = cy.add({
+					group: "edges",
+					data: { id: globalEdgeID, source: src, target: dst, label: "" }
+				});
 
         // UNDO INFO
         lastEvent = { type: "addEdge", target : edge, time: getTimeStamp() };
@@ -465,7 +464,6 @@ function($http, $state, auth) {
 		/***** EDIT LABEL *****/
 		function editLabel(target) {
 		    oldLabel = target.data('label');
-
 		    var newLabel = prompt("Enter new label", target.data('label'));
 
 				// Checking if prompt was cancelled
@@ -474,24 +472,13 @@ function($http, $state, auth) {
 				}
 				else { // If not cancelled
 						handleWidth(target, newLabel);
-
 						target.json({ data: { label: newLabel } });
 
 						// UNDO INFO
 						lastEvent = { type: "editLabel", target: target, time: getTimeStamp(), oldLabel: oldLabel };
 						undoStack.push(lastEvent);
 				}
-
 		}
-
-    /***** DELETE ELEMENT *****/
-    function deleteElem(targ) {
-        removedElements = cy.remove(targ.union(targ.connectedEdges()));
-
-        // UNDO INFO
-        lastEvent = { type: "deleteElem", target: removedElements, time: getTimeStamp() };
-        undoStack.push(lastEvent);
-    }
 
     /***** DELETE SELECTED *****/
     function deleteSelected() {
