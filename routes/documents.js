@@ -90,6 +90,21 @@ router.put('/:document/graph', auth, function(req, res, next) {
   });
 });
 
+// PUT a new title to a document
+router.put('/:document/title', auth, function(req, res, next) {
+  Document.findOne({_id: req.document, student: req.payload._id}).exec(function (err, document) {
+    if (err) { return next(err); }
+    if (!document) { return next(new Error("can't find document")); }
+    //if (document.status !== "unsubmitted") { return next(new Error("this document is not allowed to be changed")); }
+
+    document.updateTitle(req.body.title, function(err, graph) {
+      if (err) { return next(err); }
+
+      res.json(graph);
+    });
+  });
+});
+
 // DELETE a document by ID
 router.delete('/:document', auth, function(req, res, next) {
   Document.findOneAndRemove({_id: req.document._id, student: req.payload._id, status: "unsubmitted"}, function(err, document) {

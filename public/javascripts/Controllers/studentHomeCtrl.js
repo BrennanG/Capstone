@@ -15,6 +15,12 @@ function($scope, $location, $uibModal, documents, sections, assignments, auth) {
 		$location.path("documents/" + document._id);
   };
 
+	$scope.renameDocument = function(document) {
+		var newTitle = prompt("Enter a new Title for your Document.", "");
+    if (newTitle === '' || newTitle == null) { return; }
+		documents.renameDocument(document, newTitle);
+  };
+
 	$scope.submitDocument = function(document) {
 		var modalInstance = $uibModal.open({
       templateUrl: 'templates/submitDocumentModal.html',

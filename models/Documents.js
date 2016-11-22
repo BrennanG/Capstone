@@ -25,6 +25,11 @@ DocumentSchema.methods.updateSubmittedTo = function(assignmentId, cb) {
   this.save(cb);
 };
 
+DocumentSchema.methods.updateTitle = function(title, cb) {
+  this.title = title;
+  this.save(cb);
+};
+
 DocumentSchema.methods.updateGrade = function(grade, cb) {
   this.grade = grade;
   this.save(cb);

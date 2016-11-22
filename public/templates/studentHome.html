@@ -20,6 +20,7 @@
       	<th st-sort="status"><b style="cursor:pointer;">Document Status</b></th>
       	<th st-sort="submittedTo.title"><b style="cursor:pointer;">Submitted To</b></th>
         <th>Edit Document</th>
+        <th>Rename Document</th>
       	<th>Delete Document</th>
       </tr>
     </thead>
@@ -32,6 +33,7 @@
           <div ng-hide="document.submittedTo"><button type="button" ng-click="submitDocument(document)" class="btn btn-sm">Submit</button></div>
         </td>
         <td><button type="button" ng-click="editDocument(document)" class="btn btn-sm">Edit</button></td>
+        <td><button type="button" ng-click="renameDocument(document)" class="btn btn-sm">Rename</button></td>
         <td>
     			<button type="button" ng-click="deleteDocument(document)" class="btn btn-sm btn-danger">
     				<i class="glyphicon glyphicon-remove-circle"></i>
@@ -48,15 +50,29 @@
 	</button>
 
   <!-- List sections -->
-  <br/>
-  <h2>Sections</h2>
-  <div ng-repeat="section in sections" ng-show="isLoggedIn()">
-    <span>
-      <h4>&nbsp;&nbsp;{{section.title}}</h4>
-      <!-- List assignments -->
-      <div ng-repeat="assignment in section.assignments" ng-show="isLoggedIn()">
-        &nbsp;&nbsp;&nbsp;&nbsp;- {{assignment.title}}
-      </div>
-    </span>
+  <br/><br/>
+  <div class="page-header">
+    <center><h1>Enrolled Sections</h1></center>
   </div>
+
+  <table st-table="sections" class="table">
+    <tbody>
+      <tr ng-repeat="section in sections">
+      	<td><h3>{{section.title}}</h3></td>
+        <td>
+          <table st-table="assignments" class="table table-striped">
+            <tr>
+              <th>Assignments</th>
+              <th>Description</th>
+            </tr>
+            <tr ng-repeat="assignment in section.assignments">
+              <td>{{assignment.title}}</td>
+              <td>{{assignment.description}}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
 </div>

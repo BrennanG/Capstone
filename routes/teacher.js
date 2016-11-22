@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
+var Student = mongoose.model('Student');
 var Teacher = mongoose.model('Teacher');
 var passport = require('passport');
 var jwt = require('express-jwt');
@@ -11,15 +12,25 @@ router.post('/register', function(req, res, next){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  var teacher = new Teacher();
-  teacher.email = req.body.email;
-  teacher.setPassword(req.body.password);
-  teacher.sections = [];
+  Student.findOne({email: req.body.email}, function(err, student) {
+    if (err) { return next(err); }
+    if (student) { return res.status(400).json({message: 'An account with that email already exists.'}); }
 
-  teacher.save(function (err){
-    if(err){ return next(err); }
+    Teacher.findOne({email: req.body.email}, function(err, teacher) {
+      if (err) { return next(err); }
+      if (teacher) { return res.status(400).json({message: 'An account with that email already exists.'}); }
 
-    return res.json({token: teacher.generateJWT()})
+      var teacher = new Teacher();
+      teacher.email = req.body.email;
+      teacher.setPassword(req.body.password);
+      teacher.sections = [];
+
+      teacher.save(function (err){
+        if(err){ return next(err); }
+
+        return res.json({token: teacher.generateJWT()})
+      });
+    });
   });
 });
 

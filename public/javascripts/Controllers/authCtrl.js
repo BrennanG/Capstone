@@ -28,20 +28,15 @@ function($scope, $state, auth) {
 	};
 
 	$scope.logIn = function() {
-		if ($scope.teacherAccount) {
+		auth.studentLogIn($scope.user).error(function(error) {
 			auth.teacherLogIn($scope.user).error(function(error) {
 				$scope.error = error;
 			}).then(function() {
 				$state.go('teacherHome');
 			});
-		}
-		else {
-			auth.studentLogIn($scope.user).error(function(error) {
-				$scope.error = error;
-			}).then(function() {
-				$state.go('studentHome');
-			});
-		}
+		}).then(function() {
+			$state.go('studentHome');
+		});
 	};
 
 }]);

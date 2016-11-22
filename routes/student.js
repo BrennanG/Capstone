@@ -13,14 +13,24 @@ router.post('/register', function(req, res, next){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  var student = new Student();
-  student.email = req.body.email;
-  student.setPassword(req.body.password);
+  Student.findOne({email: req.body.email}, function(err, student) {
+    if (err) { return next(err); }
+    if (student) { return res.status(400).json({message: 'An account with that email already exists.'}); }
 
-  student.save(function (err){
-    if(err){ return next(err); }
+    Teacher.findOne({email: req.body.email}, function(err, teacher) {
+      if (err) { return next(err); }
+      if (teacher) { return res.status(400).json({message: 'An account with that email already exists.'}); }
 
-    return res.json({token: student.generateJWT()})
+      var student = new Student();
+      student.email = req.body.email;
+      student.setPassword(req.body.password);
+
+      student.save(function (err){
+        if(err){ return next(err); }
+
+        return res.json({token: student.generateJWT()})
+      });
+    });
   });
 });
 
