@@ -97,7 +97,12 @@ function($http, $state, auth) {
                 style: {
                     'curve-style': 'bezier',
                     'target-arrow-shape': 'triangle',
-                    label: 'data(label)'
+                    label: 'data(label)',
+										//'text-background-color': "#f4f8ff",
+										//'text-background-opacity': 1,
+										//'text-background-shape': 'rectangle'
+										'text-outline-width': 1,
+										"text-outline-color": "#f4f8ff"
                 }
             }
         ],
@@ -445,6 +450,9 @@ function($http, $state, auth) {
         lastEvent = { type: "addNode", target: node, time: getTimeStamp() };
         undoStack.push(lastEvent);
 
+				// EMPTY REDO STACK
+				redoStack = [];
+
         return node;
     }
 
@@ -459,6 +467,9 @@ function($http, $state, auth) {
         // UNDO INFO
         lastEvent = { type: "addEdge", target : edge, time: getTimeStamp() };
         undoStack.push(lastEvent);
+
+				// EMPTY REDO STACK
+				redoStack = [];
     }
 
 		/***** EDIT LABEL *****/
@@ -477,6 +488,9 @@ function($http, $state, auth) {
 						// UNDO INFO
 						lastEvent = { type: "editLabel", target: target, time: getTimeStamp(), oldLabel: oldLabel };
 						undoStack.push(lastEvent);
+
+						// EMPTY REDO STACK
+						redoStack = [];
 				}
 		}
 
@@ -494,6 +508,9 @@ function($http, $state, auth) {
         // UNDO INFO
         lastEvent = { type: "deleteSelected", target: selectedElements, time: getTimeStamp() };
         undoStack.push(lastEvent);
+
+				// EMPTY REDO STACK
+				redoStack = [];
     }
   };
 
