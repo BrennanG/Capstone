@@ -1,7 +1,7 @@
 angular.module('biologyGraphingApp')
-.config(['$stateProvider',
+.config(['$stateProvider', '$urlRouterProvider',
 
-function($stateProvider) {
+function($stateProvider, $urlRouterProvider) {
 
 	$stateProvider.state('biograph', {
       views: {
@@ -18,5 +18,7 @@ function($stateProvider) {
         }*/
      }
  });
+
+ $urlRouterProvider.otherwise('/login');
 
 }]);

@@ -13,5 +13,12 @@ function($scope, documents, document, auth) {
     $scope.newGrade = '';
   };
 
+	// Warn about unsaved data on back button
+	$scope.$on('$locationChangeStart', function(event) {
+		if (!confirm("Are you sure you want to leave this page? All unsaved changes will be lost.")) {
+    	event.preventDefault();
+		}
+	});
+
 	documents.loadCytoScape(document);
 }]);

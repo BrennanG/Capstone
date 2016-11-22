@@ -7,7 +7,13 @@ function($stateProvider) {
 		parent: 'biograph',
 		url : '/register',
 		templateUrl : 'templates/register.html',
-		controller : 'AuthCtrl'
+		controller : 'AuthCtrl',
+		onEnter : ['auth',
+			function(auth) {
+				if (auth.isLoggedIn()) {
+					auth.logOut();
+				}
+			}]
 	});
 
 }]);

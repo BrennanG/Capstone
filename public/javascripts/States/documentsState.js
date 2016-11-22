@@ -3,6 +3,12 @@ angular.module('biologyGraphingApp')
 
 function($stateProvider) {
 
+	var confirmFunc = function (e) {
+		var confirmationMessage = "All unsaved changes will be lost.";
+
+		(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+		return confirmationMessage;                            //Webkit, Safari, Chrome
+	};
 	$stateProvider.state('documents', {
 		parent: 'biograph',
 		url : '/documents/{id}',
@@ -23,6 +29,12 @@ function($stateProvider) {
 				if (!auth.isLoggedIn()) {
 					$state.go('login');
 				}
+				else {
+					window.addEventListener("beforeunload", confirmFunc);
+				}
+			}],
+		onExit : [function() {
+				window.removeEventListener("beforeunload", confirmFunc);
 			}]
   });
 

@@ -3,12 +3,24 @@ function($scope, $state, auth) {
 	$scope.isLoggedIn = auth.isLoggedIn;
 
   $scope.logout = function() {
+		if ($state.current.name == "documents") {
+			if (!confirm("Are you sure you want to leave? All unsaved changes will be lost.")) {
+	    	return;
+	    }
+		}
+
 		if ($scope.isLoggedIn()) {
 			auth.logOut();
 		}
 	};
 
 	$scope.goToHome = function() {
+		if ($state.current.name == "documents") {
+			if (!confirm("Are you sure you want to leave? All unsaved changes will be lost.")) {
+	    	return;
+	    }
+		}
+
 		var accountType = auth.accountType();
 		if (accountType == "student") {
 			$state.go('studentHome');
