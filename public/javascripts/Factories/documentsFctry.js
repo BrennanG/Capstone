@@ -80,7 +80,7 @@ function($http, $state, auth) {
         return returnedData;
       });
   };
-  o.loadCytoScape = function(docArg) {
+  o.loadCytoScape = function(docArg, readOnly, setDirtyBit) {
         var cy = cytoscape({
         container: document.getElementById('cy'),
         wheelSensitivity: .2,
@@ -109,7 +109,7 @@ function($http, $state, auth) {
 										//'text-background-color': "#f4f8ff",
 										//'text-background-opacity': 1,
 										//'text-background-shape': 'rectangle'
-										'text-outline-width': 1,
+										'text-outline-width': 2.5,
 										"text-outline-color": "#f4f8ff"
                 }
             }
@@ -198,6 +198,9 @@ function($http, $state, auth) {
         globalEdgeID = globalEdge.concat(cy.edges().length.toString());
     };
 
+		cy.fit(cy.$('node'), 100);
+		if (readOnly) { cy.nodes().ungrabify(); }
+
 
 		/**********************/
 		/***** SAVE GRAPH *****/
@@ -211,8 +214,12 @@ function($http, $state, auth) {
 						undoStackJSON[i].target = JSON.stringify(undoStack[i].target.json());
 						undoStackJSON[i] = JSON.stringify(undoStackJSON[i]);
         }*/
-				alert(JSON.stringify(cy.elements().jsons()));
+				//alert(JSON.stringify(cy.elements().jsons()));
         o.updateGraph(docArg, { elements: JSON.stringify(cy.elements().jsons()) });
+
+				// HANDLE DIRTY BIT
+				setClean();
+
 				alert("Saved");
     };
 
@@ -237,8 +244,10 @@ function($http, $state, auth) {
         }
     });
 
-    cy.on('doubleTap', 'node', editLabelListenerDBL);
-    cy.on('doubleTap', 'edge', editLabelListenerDBL);
+		if (!readOnly) {
+	    cy.on('doubleTap', 'node', editLabelListenerDBL);
+	    cy.on('doubleTap', 'edge', editLabelListenerDBL);
+		}
 
 
     /*******************/
@@ -250,13 +259,13 @@ function($http, $state, auth) {
 	    $('#toolbar').w2toolbar({
 	        name: 'toolbar',
 	        items: [
-	            { type: 'check',  id: 'item1', caption: 'Add Node'},
-	            { type: 'check',  id: 'item2', caption: 'Add Edge'},
-	            { type: 'check',  id: 'item3', caption: 'Edit Label'},
-	            { type: 'button',  id: 'item4', caption: 'Delete'},
-	            { type: 'button',  id: 'item5', caption: 'Undo'},
-	            { type: 'button',  id: 'item6', caption: 'Redo'},
-	            { type: 'button',  id: 'item7', caption: 'Save'},
+	            { type: 'check',  id: 'item1', caption: 'Add Node', disabled: readOnly},
+	            { type: 'check',  id: 'item2', caption: 'Add Edge', disabled: readOnly},
+	            { type: 'check',  id: 'item3', caption: 'Edit Label', disabled: readOnly},
+	            { type: 'button',  id: 'item4', caption: 'Delete', disabled: readOnly},
+	            { type: 'button',  id: 'item5', caption: 'Undo', disabled: readOnly},
+	            { type: 'button',  id: 'item6', caption: 'Redo', disabled: readOnly},
+	            { type: 'button',  id: 'item7', caption: 'Save', disabled: readOnly},
 	            { type: 'button',  id: 'item8', caption: 'Fit'}
 	        ]
 	    });
@@ -369,6 +378,29 @@ function($http, $state, auth) {
     });
 
 
+		/*************************/
+		/***** HANDLE DIRTY ******/
+		/*************************/
+		var dirty;
+		setClean();
+
+		function setDirty() {
+			if (!dirty) {
+				dirty = true;
+				setDirtyBit(true);
+			}
+			tb.enable("item7");
+		}
+		function setClean() {
+			dirty = false;
+			setDirtyBit(false);
+			tb.disable("item7");
+		}
+		function getDirtyBit() { return dirty;  }
+
+		cy.on('drag', 'node', setDirty);
+
+
     /****************/
     /***** UNDO *****/
     /****************/
@@ -384,6 +416,9 @@ function($http, $state, auth) {
             var lab = event.oldLabel;
             event.oldLabel = targ.data('label');
         }
+
+				// HANDLE DIRTY BIT
+				setDirty();
 
         // Push to redo stack
         redoStack.push(event);
@@ -423,6 +458,9 @@ function($http, $state, auth) {
             event.oldLabel = targ.data('label');
         }
 
+				// HANDLE DIRTY BIT
+				setDirty();
+
         // Push to undo stack
         undoStack.push(event);
 
@@ -461,6 +499,9 @@ function($http, $state, auth) {
 				// EMPTY REDO STACK
 				redoStack = [];
 
+				// HANDLE DIRTY BIT
+				setDirty();
+
         return node;
     }
 
@@ -478,6 +519,9 @@ function($http, $state, auth) {
 
 				// EMPTY REDO STACK
 				redoStack = [];
+
+				// HANDLE DIRTY BIT
+				setDirty();
     }
 
 		/***** EDIT LABEL *****/
@@ -499,6 +543,9 @@ function($http, $state, auth) {
 
 						// EMPTY REDO STACK
 						redoStack = [];
+
+						// HANDLE DIRTY BIT
+						setDirty();
 				}
 		}
 
@@ -519,6 +566,9 @@ function($http, $state, auth) {
 
 				// EMPTY REDO STACK
 				redoStack = [];
+
+				// HANDLE DIRTY BIT
+				setDirty();
     }
   };
 

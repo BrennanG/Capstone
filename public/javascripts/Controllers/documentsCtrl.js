@@ -6,6 +6,7 @@ function($scope, documents, document, auth) {
 	$scope.isLoggedIn = auth.isLoggedIn;
 	$scope.isTeacher = auth.accountType() == "teacher";
 	$scope.newGrade = "";
+	$scope.dirty = false;
 
 	$scope.updateGrade = function() {
     if ($scope.newGrade === '') { return; }
@@ -15,10 +16,15 @@ function($scope, documents, document, auth) {
 
 	// Warn about unsaved data on back button
 	$scope.$on('$locationChangeStart', function(event) {
+		if (!$scope.dirty) { return; }
 		if (!confirm("Are you sure you want to leave this page? All unsaved changes will be lost.")) {
     	event.preventDefault();
 		}
 	});
 
-	documents.loadCytoScape(document);
+	function setDirtyBit(dirty) {
+		$scope.dirty = dirty;
+	}
+
+	documents.loadCytoScape(document, false, setDirtyBit);
 }]);
