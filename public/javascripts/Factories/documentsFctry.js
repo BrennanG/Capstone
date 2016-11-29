@@ -261,7 +261,7 @@ function($http, $state, auth) {
 	        items: [
 	            { type: 'check',  id: 'item1', caption: 'Add Node', disabled: readOnly},
 	            { type: 'check',  id: 'item2', caption: 'Add Edge', disabled: readOnly},
-	            { type: 'check',  id: 'item3', caption: 'Edit Label', disabled: readOnly},
+	            { type: 'button',  id: 'item3', caption: 'Edit Label', disabled: readOnly},
 	            { type: 'button',  id: 'item4', caption: 'Delete', disabled: readOnly},
 	            { type: 'button',  id: 'item5', caption: 'Undo', disabled: readOnly},
 	            { type: 'button',  id: 'item6', caption: 'Redo', disabled: readOnly},
@@ -281,8 +281,6 @@ function($http, $state, auth) {
         var btn = tb.get('item1');
         if (btn.checked == true) {
             var n = addNode(event.cyRenderedPosition.x, event.cyRenderedPosition.y);
-
-            //tb.uncheck(btn.id);
         }
 				else { cy.off('click', addNodeListener); }
     }
@@ -313,6 +311,14 @@ function($http, $state, auth) {
         source = "";
         dest = "";
     }
+
+		function editLabelHandler() {
+				var selectedElems = cy.$(':selected');
+				if (selectedElems.length == 1) {
+						editLabel(selectedElems[0]);
+				}
+				else if (selectedElems.length > 1) { alert("You can only edit one label at a time!"); }
+		}
 
     function editLabelListener(event) {
         cy.off('click', 'node', editLabelListener);
@@ -355,8 +361,9 @@ function($http, $state, auth) {
                     cy.on('click', 'node', addEdgeListenerSrc);
                     break;
                 case ("item3"): // Edit Label
-                    cy.on('click', 'node', editLabelListener);
-                    cy.on('click', 'edge', editLabelListener);
+                    //cy.on('click', 'node', editLabelListener);
+                    //cy.on('click', 'edge', editLabelListener);
+										editLabelHandler();
                     break;
                 case ("item4"): // Delete Selected
                     deleteSelected();
