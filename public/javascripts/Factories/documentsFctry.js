@@ -287,30 +287,22 @@ function($http, $state, auth) {
 
 		var source;
     var dest;
-    function addEdgeListenerSrc(event) {
-        cy.off('click', 'node', addEdgeListenerSrc);
+		function addEdgeListener(event) {
+				var btn = tb.get('item2');
+				if (btn.checked == true) { // if the toolbar item is checked
+						if (source == "") { // if there isn't a source node yet
+								source = this.id();
+						}
+						else { // else there is already a source node
+								dest = this.id();
+								addEdge(source, dest);
 
-        var btn = tb.get('item2');
-        if (btn.checked == true) {
-            source = this.id();
-
-            cy.on('click', 'node', addEdgeListenerTarg);
-        }
-    }
-
-    function addEdgeListenerTarg(event) {
-        cy.off('click', 'node', addEdgeListenerTarg);
-
-        var btn = tb.get('item2');
-        if (btn.checked == true) {
-            dest = this.id();
-
-            addEdge(source,dest);
-            tb.uncheck(btn.id);
-        }
-        source = "";
-        dest = "";
-    }
+								source = "";
+								dest = "";
+						}
+				} // else if the toolbar item isn't checked
+				else { cy.off('click', 'node', addEdgeListener); }
+		}
 
 		function editLabelHandler() {
 				var selectedElems = cy.$(':selected');
@@ -344,7 +336,7 @@ function($http, $state, auth) {
                 case ("item2"): // Add Edge
 										source = "";
 										dest = "";
-                    cy.on('click', 'node', addEdgeListenerSrc);
+                    cy.on('click', 'node', addEdgeListener);
                     break;
                 case ("item3"): // Edit Label
 										editLabelHandler();
@@ -366,6 +358,11 @@ function($http, $state, auth) {
                     break;
             }
         }
+				else { // if unchecking an item
+					if (event.target == "item2") { // if the item is Add Edge
+						cy.off('click', 'node', addEdgeListener);
+					}
+				}
     });
 
 
