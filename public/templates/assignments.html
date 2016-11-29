@@ -5,10 +5,22 @@
   </div>
 
   <!-- List submissions -->
-  <h3>Submissions</h3>
-  <div ng-repeat="submission in submissions" ng-show="isLoggedIn()">
-    <span>
-      <a href="#/documents/{{submission._id}}">{{submission.title}}</a>
-    </span>
-  </div>
+  <table st-table="submissions" class="table table-striped">
+    <thead>
+      <tr>
+      	<th st-sort="title" st-sort-default="true"><b style="cursor:pointer;">Submission Title</b></th>
+      	<th st-sort="student"><b style="cursor:pointer;">Submission Owner</b></th>
+      	<th st-sort="status"><b style="cursor:pointer;">Submission Status</b></th>
+      	<th st-sort="grade"><b style="cursor:pointer;">Submission Grade</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="submission in submissions">
+      	<td><a href="#/documents/{{submission._id}}">{{submission.title}}</a></td>
+      	<td>{{submission.student}}</td>
+      	<td>{{submission.status}}</td>
+      	<td>{{submission.grade}}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

@@ -2,12 +2,11 @@ angular.module('biologyGraphingApp').controller('TeacherHomeCtrl', ['$scope', 'a
 function($scope, auth, sections) {
 	$scope.sections = sections.sections;
 	$scope.isLoggedIn = auth.isLoggedIn;
-	$scope.newSectionTitle = "";
 
 	$scope.addSection = function() {
-    if ($scope.newSectionTitle === '') { return; }
-    sections.addSection($scope.newSectionTitle);
-    $scope.newSectionTitle = '';
+    var newSectionTitle = prompt("Enter a Title for your Section.", "");
+    if (newSectionTitle === '' || newSectionTitle == null) { return; }
+    sections.addSection(newSectionTitle);
   };
 
   $scope.deleteSection = function(section) {

@@ -2,14 +2,6 @@
   <div class="page-header">
     <h1>{{title}}</h1>
   </div>
-
-  <!-- List teachers -->
-  <h3><u>Teachers</u></h3>
-  <div ng-repeat="teacher in teachers" ng-show="isLoggedIn()">
-    <span>
-      {{teacher.email}}
-    </span>
-  </div>
   <!-- List students -->
   <h3><u>Students</u></h3>
   <div ng-repeat="student in students" ng-show="isLoggedIn()">

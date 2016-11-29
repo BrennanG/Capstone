@@ -1,6 +1,7 @@
 angular.module('biologyGraphingApp').controller('HeaderCtrl', ['$scope', '$state', 'auth',
 function($scope, $state, auth) {
 	$scope.isLoggedIn = auth.isLoggedIn;
+	$scope.email = auth.currentEmail;
 
   $scope.logout = function() {
 		if ($state.current.name == "documents" && $scope.biographObj.dirty) {

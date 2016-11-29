@@ -4,22 +4,14 @@
   </div>
 
 <!-- List Documents -->
-  <style type="text/css">
-  .st-sort-ascent:before{
-    content: '\25B2';
-  }
-
-  .st-sort-descent:before{
-    content: '\25BC';
-  }
-  </style>
   <table st-table="documents" class="table table-striped">
     <thead>
       <tr>
-      	<th st-sort="title"><b style="cursor:pointer;">Document Title</b></th>
+      	<th st-sort="title" st-sort-default="true"><b style="cursor:pointer;">Document Title</b></th>
       	<th st-sort="status"><b style="cursor:pointer;">Document Status</b></th>
       	<th st-sort="submittedTo.title"><b style="cursor:pointer;">Submitted To</b></th>
         <th>Edit Document</th>
+        <th>Clone Document</th>
         <th>Rename Document</th>
       	<th>Delete Document</th>
       </tr>
@@ -27,12 +19,19 @@
     <tbody>
       <tr ng-repeat="document in documents">
       	<td>{{document.title}}</td>
-      	<td>{{document.status}}</td>
+      	<td>{{document.status}}{{ document.grade ? ': ' + document.grade + '%' : '' }}</td>
       	<td>
           <div ng-show="document.submittedTo">{{document.submittedTo.title}}</div>
           <div ng-hide="document.submittedTo"><button type="button" ng-click="submitDocument(document)" class="btn btn-sm">Submit</button></div>
         </td>
-        <td><button type="button" ng-click="editDocument(document)" class="btn btn-sm">Edit</button></td>
+        <td>
+          <button type="button" ng-click="editDocument(document)" class="btn btn-sm">
+            <i class="glyphicon glyphicon-pencil" ng-show="document.status == 'unsubmitted'"></i>
+            <i class="glyphicon glyphicon-search" ng-hide="document.status == 'unsubmitted'"></i>
+            {{ document.status == 'unsubmitted' ? ' Edit' : ' View' }}
+          </button>
+      </td>
+        <td><button type="button" ng-click="cloneDocument(document)" class="btn btn-sm">Clone</button></td>
         <td><button type="button" ng-click="renameDocument(document)" class="btn btn-sm">Rename</button></td>
         <td>
     			<button type="button" ng-click="deleteDocument(document)" class="btn btn-sm btn-danger">
@@ -45,8 +44,7 @@
 
   <!-- Add a Document -->
   <button type="button" ng-click="addDocument()" class="btn btn-sm btn-success">
-			<i class="glyphicon glyphicon-plus">
-			</i> Add Document
+			<i class="glyphicon glyphicon-plus"></i> Add Document
 	</button>
 
   <!-- List sections -->

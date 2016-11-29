@@ -7,12 +7,18 @@ function($scope, $location, $uibModal, documents, sections, assignments, auth) {
   $scope.addDocument = function() {
 		var newDocTitle = prompt("Enter a Title for your new Document.", "");
     if (newDocTitle === '' || newDocTitle == null) { return; }
-    var graph = { nodes: [], edges: [], undoStack: [] };
+    var graph = { elements: [], undoStack: [] };
     documents.addDocument(newDocTitle, graph);
   };
 
 	$scope.editDocument = function(document) {
 		$location.path("documents/" + document._id);
+  };
+
+	$scope.cloneDocument = function(document) {
+		var newDocTitle = prompt("Enter a Title for your new Document.", "");
+    if (newDocTitle === '' || newDocTitle == null) { return; }
+    documents.addDocument(newDocTitle, document.graph);
   };
 
 	$scope.renameDocument = function(document) {

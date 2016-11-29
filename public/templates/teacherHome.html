@@ -1,26 +1,26 @@
 <div>
   <div class="page-header">
-    <h1>Your Classes</h1>
+    <h1>Your Sections</h1>
   </div>
 
   <!-- List sections -->
-  <div ng-repeat="section in sections" ng-show="isLoggedIn()">
+  <table st-table="sections" class="table table-striped">
+    <thead>
+      <tr>
+      	<th st-sort="title" st-sort-default="true"><b style="cursor:pointer;">Section Title</b></th>
+      	<th><b>Delete Section</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="section in sections">
+      	<td><a href="#/sections/{{section._id}}">{{section.title}}</a></td>
+      	<td><button ng-click="deleteSection(section)" class="btn btn-sm btn-danger"><i class="glyphicon glyphicon-remove-circle"></i></button></td>
+      </tr>
+    </tbody>
+  </table>
 
-    <!-- Link to Section -->
-    <span>
-      <a href="#/sections/{{section._id}}">{{section.title}}</a>
-    </span>
-    <span>
-      <button ng-click="deleteSection(section)">Delete</button>
-    </span>
-  </div>
-
-  <form ng-submit="addSection()" style="margin-top:30px;">
-
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="Title" ng-model="newSectionTitle"></input>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Add Section</button>
-  </form>
+  <br/>
+  <button type="button" ng-click="addSection()" class="btn btn-sm">
+			<i class="glyphicon glyphicon-plus"></i> Add Section
+	</button>
 </div>

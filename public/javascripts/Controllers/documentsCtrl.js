@@ -5,12 +5,15 @@ function($scope, documents, document, confirmFunc, auth) {
   $scope.undoStack = document.graph.undoStack;
 	$scope.isLoggedIn = auth.isLoggedIn;
 	$scope.isTeacher = auth.accountType() == "teacher";
-	$scope.newGrade = "";
+	$scope.isReadonly = $scope.document.status != 'unsubmitted'
 
 	$scope.updateGrade = function() {
-    if ($scope.newGrade === '') { return; }
-    documents.updateGrade(document, $scope.newGrade);
-    $scope.newGrade = '';
+    var newGrade = prompt("Enter a Grade", "");
+    if (newGrade === '' || newGrade == null || isNaN(newGrade)) {
+			alert(newGrade + " is an invalid grade.");
+			return;
+		}
+    documents.updateGrade(document, newGrade);
   };
 
 	// Warn about unsaved data on back button
@@ -31,5 +34,5 @@ function($scope, documents, document, confirmFunc, auth) {
 		$scope.biographObj.dirty = dirty;
 	}
 
-	documents.loadCytoScape(document, false, setDirtyBit);
+	documents.loadCytoScape(document, $scope.isReadonly, setDirtyBit);
 }]);

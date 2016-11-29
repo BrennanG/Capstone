@@ -1,6 +1,7 @@
 <div ng-show="isLoggedIn()">
-  <span>
+  <span >
     <button type="button" ng-click="goToHome()" class="btn btn-sm" style="float:left;">Home</button>
+    <span><b>&nbsp;&nbsp;&nbsp;User:</b> {{email()}}</span>
     <button type="button" ng-click="logout()" class="btn btn-sm" style="float:right;">Logout</button>
   </span>
 </div>
