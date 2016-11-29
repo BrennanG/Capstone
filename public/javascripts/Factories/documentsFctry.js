@@ -320,20 +320,6 @@ function($http, $state, auth) {
 				else if (selectedElems.length > 1) { alert("You can only edit one label at a time!"); }
 		}
 
-    function editLabelListener(event) {
-        cy.off('click', 'node', editLabelListener);
-        cy.off('click', 'edge', editLabelListener);
-
-        var btn = tb.get('item3');
-        if (btn.checked == true) {
-            var targ = event.cyTarget;
-						editLabel(targ);
-
-            tb.uncheck(btn.id);
-        }
-
-    }
-
     function editLabelListenerDBL(event) {
         var targ = event.cyTarget;
 				editLabel(targ);
@@ -361,8 +347,6 @@ function($http, $state, auth) {
                     cy.on('click', 'node', addEdgeListenerSrc);
                     break;
                 case ("item3"): // Edit Label
-                    //cy.on('click', 'node', editLabelListener);
-                    //cy.on('click', 'edge', editLabelListener);
 										editLabelHandler();
                     break;
                 case ("item4"): // Delete Selected
@@ -536,8 +520,9 @@ function($http, $state, auth) {
 		    oldLabel = target.data('label');
 		    var newLabel = prompt("Enter new label", target.data('label'));
 
-				// Checking if prompt was cancelled
-				if (newLabel === null || newLabel === false) { // If cancelled
+				// Checking if prompt was cancelled or new label is same as old label
+				if (newLabel === null || newLabel === false || newLabel == oldLabel) { // If cancelled
+						alert("same");
 						return;
 				}
 				else { // If not cancelled
