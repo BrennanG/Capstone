@@ -3,7 +3,7 @@ function($scope, $state, auth) {
 	$scope.isLoggedIn = auth.isLoggedIn;
 
   $scope.logout = function() {
-		if ($state.current.name == "documents") {
+		if ($state.current.name == "documents" && $scope.biographObj.dirty) {
 			if (!confirm("Are you sure you want to leave? All unsaved changes will be lost.")) {
 	    	return;
 	    }
@@ -15,7 +15,7 @@ function($scope, $state, auth) {
 	};
 
 	$scope.goToHome = function() {
-		if ($state.current.name == "documents") {
+		if ($state.current.name == "documents" && $scope.biographObj.dirty) {
 			if (!confirm("Are you sure you want to leave? All unsaved changes will be lost.")) {
 	    	return;
 	    }

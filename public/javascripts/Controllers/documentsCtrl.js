@@ -1,12 +1,11 @@
-angular.module('biologyGraphingApp').controller('DocumentsCtrl', ['$scope', 'documents', 'document', 'auth',
-function($scope, documents, document, auth) {
+angular.module('biologyGraphingApp').controller('DocumentsCtrl', ['$scope', 'documents', 'document', 'confirmFunc', 'auth',
+function($scope, documents, document, confirmFunc, auth) {
 	$scope.document = document;
   $scope.elements = document.graph.elements;
   $scope.undoStack = document.graph.undoStack;
 	$scope.isLoggedIn = auth.isLoggedIn;
 	$scope.isTeacher = auth.accountType() == "teacher";
 	$scope.newGrade = "";
-	$scope.dirty = false;
 
 	$scope.updateGrade = function() {
     if ($scope.newGrade === '') { return; }
@@ -16,14 +15,20 @@ function($scope, documents, document, auth) {
 
 	// Warn about unsaved data on back button
 	$scope.$on('$locationChangeStart', function(event) {
-		if (!$scope.dirty) { return; }
+		if (!$scope.biographObj.dirty) { return; }
 		if (!confirm("Are you sure you want to leave this page? All unsaved changes will be lost.")) {
     	event.preventDefault();
 		}
 	});
 
 	function setDirtyBit(dirty) {
-		$scope.dirty = dirty;
+		if (dirty) {
+			window.addEventListener("beforeunload", confirmFunc);
+		}
+		else {
+			window.removeEventListener("beforeunload", confirmFunc);
+		}
+		$scope.biographObj.dirty = dirty;
 	}
 
 	documents.loadCytoScape(document, false, setDirtyBit);

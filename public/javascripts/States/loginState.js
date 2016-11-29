@@ -4,7 +4,7 @@ angular.module('biologyGraphingApp')
 function($stateProvider) {
 
 	$stateProvider.state('login', {
-		parent: 'biograph',
+		parent: 'page',
 		url : '/login',
 		templateUrl : 'templates/login.html',
 		controller : 'AuthCtrl',

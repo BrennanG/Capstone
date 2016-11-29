@@ -4,7 +4,7 @@ angular.module('biologyGraphingApp')
 function($stateProvider) {
 
 	$stateProvider.state('studentHome', {
-		parent: 'biograph',
+		parent: 'page',
 		url : '/student/home',
 		templateUrl : 'templates/studentHome.html',
 		controller : 'StudentHomeCtrl',

@@ -10,7 +10,7 @@ function($stateProvider) {
 		return confirmationMessage;                            //Webkit, Safari, Chrome
 	};
 	$stateProvider.state('documents', {
-		parent: 'biograph',
+		parent: 'page',
 		url : '/documents/{id}',
 		templateUrl : 'templates/documents.html',
 		controller : 'DocumentsCtrl',
@@ -23,7 +23,10 @@ function($stateProvider) {
 				else if (type == "teacher"){ // teacher
 					return documents.getDocumentForTeacher($stateParams.id);
 				}
-      }]},
+      }],
+		  confirmFunc: [function() {
+				return confirmFunc;
+			}]},
 		onEnter : ['$state', 'auth',
 			function($state, auth) {
 				if (!auth.isLoggedIn()) {
