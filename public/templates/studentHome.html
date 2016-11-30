@@ -10,10 +10,6 @@
       	<th st-sort="title" st-sort-default="true"><b style="cursor:pointer;">Document Title</b></th>
       	<th st-sort="status"><b style="cursor:pointer;">Document Status</b></th>
       	<th st-sort="submittedTo.title"><b style="cursor:pointer;">Submitted To</b></th>
-        <th>Edit Document</th>
-        <th>Clone Document</th>
-        <th>Rename Document</th>
-      	<th>Delete Document</th>
       </tr>
     </thead>
     <tbody>
@@ -22,19 +18,19 @@
       	<td>{{document.status}}{{ document.grade ? ': ' + document.grade + '%' : '' }}</td>
       	<td>
           <div ng-show="document.submittedTo">{{document.submittedTo.title}}</div>
-          <div ng-hide="document.submittedTo"><button type="button" ng-click="submitDocument(document)" class="btn btn-sm">Submit</button></div>
+          <div ng-hide="document.submittedTo"><button type="button" ng-click="submitDocument(document)" class="btn btn-primary">Submit</button></div>
         </td>
         <td>
-          <button type="button" ng-click="editDocument(document)" class="btn btn-sm">
+          <button type="button" ng-click="editDocument(document)" class="btn btn-primary">
             <i class="glyphicon glyphicon-pencil" ng-show="document.status == 'unsubmitted'"></i>
             <i class="glyphicon glyphicon-search" ng-hide="document.status == 'unsubmitted'"></i>
             {{ document.status == 'unsubmitted' ? ' Edit' : ' View' }}
           </button>
       </td>
-        <td><button type="button" ng-click="cloneDocument(document)" class="btn btn-sm">Clone</button></td>
-        <td><button type="button" ng-click="renameDocument(document)" class="btn btn-sm">Rename</button></td>
+        <td><button type="button" ng-click="cloneDocument(document)" class="btn btn-primary">Clone</button></td>
+        <td><button type="button" ng-click="renameDocument(document)" class="btn btn-primary">Rename</button></td>
         <td>
-    			<button type="button" ng-click="deleteDocument(document)" class="btn btn-sm btn-danger">
+    			<button type="button" ng-click="deleteDocument(document)" class="btn btn-danger">
     				<i class="glyphicon glyphicon-remove-circle"></i>
     			</button>
 		    </td>

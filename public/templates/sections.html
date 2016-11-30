@@ -2,41 +2,43 @@
   <div class="page-header">
     <h1>{{title}}</h1>
   </div>
-  <!-- List students -->
-  <h3><u>Students</u></h3>
-  <div ng-repeat="student in students" ng-show="isLoggedIn()">
-    <span>
-      {{student.email}}
-    </span>
-  </div>
   <!-- List assignments -->
-  <h3><u>Assignments</u></h3>
-  <div ng-repeat="assignment in assignments" ng-show="isLoggedIn()">
-    <span>
-      <a href="#/assignments/{{assignment._id}}">{{assignment.title}}</a> - {{assignment.description}}
-    </span>
-  </div>
-  <br/><br/>
-  <!-- Add assignment -->
-  <form ng-submit="addAssignment()" style="margin-top:30px;">
-
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="Title" ng-model="newTitle"></input>
-    </div>
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="Description" ng-model="newDescription"></input>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Add Assignment</button>
-  </form>
-  <br/><br/>
+  <table st-table="assignments" class="table table-striped">
+    <thead>
+      <tr>
+      	<th st-sort="title" st-sort-default="true"><b style="cursor:pointer;">Assignment Title</b></th>
+      	<th><b>Assignment Description</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="assignment in assignments">
+      	<td><a href="#/assignments/{{assignment._id}}">{{assignment.title}}</a></td>
+      	<td>{{assignment.description}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <!-- Create assignment -->
+  <button type="button" ng-click="createAssignment()" class="btn btn-sm btn-success">
+			<i class="glyphicon glyphicon-plus"></i> Create Assignment
+	</button>
+  <br/>
+  <br/>
+  <br/>
+  <!-- List students -->
+  <table st-table="students" class="table table-striped">
+    <thead>
+      <tr>
+      	<th st-sort="email" st-sort-default="true"><b style="cursor:pointer;">Enrolled Students</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="student in students">
+      	<td>{{student.email}}</td>
+      </tr>
+    </tbody>
+  </table>
   <!-- Add student -->
-  <form ng-submit="addStudentToSection()" style="margin-top:30px;">
-
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="Student Email" ng-model="studentEmail"></input>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Add Student</button>
-  </form>
+  <button type="button" ng-click="addStudentToSection()" class="btn btn-sm btn-success">
+			<i class="glyphicon glyphicon-plus"></i> Add Student
+	</button>
 </div>

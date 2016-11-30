@@ -34,7 +34,7 @@ function($scope, $location, $uibModal, documents, sections, assignments, auth) {
         $scope.selected = {assignment: null};
 				$scope.sections = sections;
 
-        $scope.returnSelectedAssignment = function() {
+        $scope.submitSelectedAssignment = function() {
           $uibModalInstance.close($scope.selected.assignment);
         }
 

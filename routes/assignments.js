@@ -42,15 +42,12 @@ router.post('/', auth, function(req, res, next) {
 
 // GET a single assignment by ID
 router.get('/:assignment', auth, function(req, res, next) {
-  Assignment.findOne({teachers: req.payload._id, _id: req.assignment}).exec(function (err, assignment) {
+  Assignment.findOne({teachers: req.payload._id, _id: req.assignment})
+  .populate({path: 'submissions', populate: {path: 'student'}}).exec(function (err, assignment) {
     if (err) { return next(err); }
     if (!assignment) { return next(new Error("can't find assignment")); }
 
-    assignment.populate('submissions', function(err, assignment) {
-      if (err) { return next(err); }
-
-      res.json(assignment);
-    });
+    res.json(assignment);
   });
 });
 
