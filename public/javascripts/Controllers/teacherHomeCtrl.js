@@ -10,7 +10,9 @@ function($scope, auth, sections) {
   };
 
   $scope.deleteSection = function(section) {
-    sections.deleteSection(section);
+    if (confirm("Are you sure you want to delete " + section.title + "?")) {
+			sections.deleteSection(section);
+		}
   };
 
 }]);

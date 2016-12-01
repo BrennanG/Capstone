@@ -89,8 +89,12 @@ router.put('/:section/students/add', auth, function(req, res, next) {
 
     Student.findOne({ email: req.body.email }).exec(function (err, student) {
       if (err) { return next(err); }
-      if (!student) { return res.status(400).json({message: "Can't find student"}); }
-      //if (section.students.indexOf(student) != -1) { return res.status(400).json({message: "Section already contains that student"}); }
+      if (!student) { return res.status(400).json({message: "Student with email '" + req.body.email + "' does not exist."}); }
+
+      var alreadyEnrolled = section.students.some(function(studentId) {
+        return studentId.equals(student._id);
+      });
+      if (alreadyEnrolled) { return res.status(400).json({message: "The section already contains the student with email '" + req.body.email + "'."}); }
 
       section.students.push(student);
       section.save(function(err, section) {

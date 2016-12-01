@@ -58,9 +58,10 @@ function($http, $state, auth) {
 		var dataToSend = { email: studentEmail };
     return $http.put('/teacher/sections/' + section._id + '/students/add', dataToSend, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
-		}).success(function(section) {
-
-			dataToSend = {email: studentEmail, section: section};
+		}).error(function(error) {
+			alert(error.message);
+		}).then(function(section) {
+			dataToSend = {email: studentEmail, section: section.data};
 			return $http.put('/student/sections/add', dataToSend, {
 				headers: {Authorization: 'Bearer '+auth.getToken()}
 			}).success(function(student) {

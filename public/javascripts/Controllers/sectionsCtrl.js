@@ -69,11 +69,13 @@ function($scope, $uibModal, section, auth, assignments, sections) {
 		});
   };
 
-
 	$scope.addStudentToSection = function() {
-    var studentEmail = prompt("Enter the student's email.", "");
+    var studentEmail = prompt("Enter the emails of students you want to add (separate with commas).", "");
     if (studentEmail === '' || studentEmail == null) { return; }
-    sections.addStudentToSection(studentEmail, $scope.section);
+		var students = studentEmail.split(",");
+		students.forEach(function(student) {
+	    sections.addStudentToSection(student.trim(), $scope.section);
+		});
   };
 
 }]);
