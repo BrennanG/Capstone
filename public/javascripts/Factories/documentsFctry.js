@@ -188,10 +188,10 @@ function($http, $state, auth) {
 					items: [
 							{ type: 'check',  id: 'item1', caption: 'Add Node', disabled: readOnly},
 							{ type: 'check',  id: 'item2', caption: 'Add Edge', disabled: readOnly},
-							{ type: 'button',  id: 'item3', caption: 'Edit Label', disabled: readOnly},
-							{ type: 'button',  id: 'item4', caption: 'Delete', disabled: readOnly},
+							{ type: 'button',  id: 'item3', caption: 'Edit Label', disabled: true},
+							{ type: 'button',  id: 'item4', caption: 'Delete', disabled: true},
 							{ type: 'button',  id: 'item5', caption: 'Undo', disabled: readOnly},
-							{ type: 'button',  id: 'item6', caption: 'Redo', disabled: readOnly},
+							{ type: 'button',  id: 'item6', caption: 'Redo', disabled: true},
 							{ type: 'button',  id: 'item7', caption: 'Save', disabled: readOnly},
 							{ type: 'button',  id: 'item8', caption: 'Fit'},
 							{ type: 'button',  id: 'item9', caption: 'Print Undo Stack'},
@@ -270,17 +270,17 @@ function($http, $state, auth) {
 						cy.remove(deletedElems[i]);
 				}
 
+				// disable undo toolbar item if undoStack is empty
 				if (undoStack.length == 0) {
 						tb.disable("item5");
 				}
-				tb.disable("item6");
 
 				// setting global ID's
         globalNodeID = globalNode.concat(cy.nodes().length.toString());
         globalEdgeID = globalEdge.concat(cy.edges().length.toString());
     };
 
-		cy.fit(cy.$('node'), 100);
+		cy.fit(cy.$('node'), 100); // set intial fit
 		if (readOnly) { cy.nodes().ungrabify(); }
 
 
@@ -322,6 +322,25 @@ function($http, $state, auth) {
 
 				alert("Saved");
     };
+
+
+		cy.on("select", toolbarSelectHandler);
+		cy.on("unselect", toolbarUnselectHandler)
+
+		function toolbarSelectHandler(event) {
+				tb.enable("item3");
+				tb.enable("item4");
+		}
+
+		function toolbarUnselectHandler(event) {
+				// if selected elements length is 0, disable
+				//var selectedElements = cy.$('node:selected, edge:selected');
+				//console.log(selectedElements);
+				tb.disable("item3");
+				tb.disable("item4");
+		}
+
+		//unselect all elements on load, disable edit label and delete
 
 
     /*********************************/
