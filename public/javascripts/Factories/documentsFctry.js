@@ -177,23 +177,105 @@ function($http, $state, auth) {
 				}
 		}
 
+		/*******************/
+		/***** TOOLBAR *****/
+		/*******************/
+		if (w2ui.hasOwnProperty('toolbar')) {
+			w2ui['toolbar'].destroy();
+		}
+			$('#toolbar').w2toolbar({
+					name: 'toolbar',
+					items: [
+							{ type: 'check',  id: 'item1', caption: 'Add Node', disabled: readOnly},
+							{ type: 'check',  id: 'item2', caption: 'Add Edge', disabled: readOnly},
+							{ type: 'button',  id: 'item3', caption: 'Edit Label', disabled: readOnly},
+							{ type: 'button',  id: 'item4', caption: 'Delete', disabled: readOnly},
+							{ type: 'button',  id: 'item5', caption: 'Undo', disabled: readOnly},
+							{ type: 'button',  id: 'item6', caption: 'Redo', disabled: readOnly},
+							{ type: 'button',  id: 'item7', caption: 'Save', disabled: readOnly},
+							{ type: 'button',  id: 'item8', caption: 'Fit'},
+							{ type: 'button',  id: 'item9', caption: 'Print Undo Stack'},
+					]
+			});
+
+		var tb = w2ui['toolbar'];
+		var items = tb['items'];
+
 
 		/**********************/
 		/***** LOAD GRAPH *****/
 		/**********************/
 		loadGraph(docArg.graph);
     function loadGraph(graph) {
+				// HANDLE NODES AND EDGES //
 				if (graph.elements != "") {
 					cy.add(JSON.parse(graph.elements));
 				}
 
-        /*var undoItems = graph.undoStack;
-        for (var i = 0; i < undoItems.length; i++) {
-            var undoItem = JSON.parse(undoItems[i]);
-						undoItem.target = cy.json(JSON.parse(undoItem.target));
-            undoStack.push(undoItem);
-        }*/
+				// HANDLE UNDO STACK //
+        var undoItems = graph.undoStack;
+				var deletedElems = [];
 
+				// loop backwards so deleted elements are re-created before other undo
+				// events use them as their target
+				for (var i = undoItems.length-1; i >= 0; i--) {
+						//console.log(undoItems[i]);
+            var undoItemTemp = JSON.parse(undoItems[i]);
+						//targJSON = JSON.parse(undoItemTemp.target);
+
+						var undoItem = {
+								type: undoItemTemp.type,
+								time: undoItemTemp.time,
+						}
+
+						// handling oldlabel for "editLabel"
+						if (undoItem.type == "editLabel") {
+								undoItem.oldLabel = undoItemTemp.oldLabel;
+						}
+
+						// handling "deleteSelected" case
+						if (undoItemTemp.type == "deleteSelected") {
+								targStrings = [];
+								targElems = [];
+
+								// split target string into array of deleteSelected target strings
+								targStrings = undoItemTemp.target.split("<newelem>");
+
+								// loop through deleteSelected target strings
+								for (var j = 0; j < targStrings.length; j++) {
+										// parse deleteSelected target string into JSON
+										var targJSON = JSON.parse(targStrings[j]);
+
+										// add the JSON object
+										cy.add(targJSON);
+
+										// get the element by its ID
+										var elem = cy.getElementById(targJSON.data.id);
+
+										targElems.push(elem);
+										deletedElems.push(elem);
+								}
+								undoItem.target = targElems;
+						}
+						else {
+								targJSON = JSON.parse(undoItemTemp.target);
+								undoItem.target = cy.getElementById(targJSON.data.id);
+						}
+
+						undoStack[i] = undoItem;
+        }
+
+				// removing deletedElems after undo stack is completely loaded
+				for (var i = 0; i < deletedElems.length; i++) {
+						cy.remove(deletedElems[i]);
+				}
+
+				if (undoStack.length == 0) {
+						tb.disable("item5");
+				}
+				tb.disable("item6");
+
+				// setting global ID's
         globalNodeID = globalNode.concat(cy.nodes().length.toString());
         globalEdgeID = globalEdge.concat(cy.edges().length.toString());
     };
@@ -207,15 +289,33 @@ function($http, $state, auth) {
 		/**********************/
     var saveGraph = function() {
         var undoStackJSON = [];
-        /*for (var i = 0; i < undoStack.length; i++) {
+        for (var i = 0; i < undoStack.length; i++) {
 						undoStackJSON[i] = {};
 						undoStackJSON[i].type = undoStack[i].type;
 						undoStackJSON[i].time = undoStack[i].time;
-						undoStackJSON[i].target = JSON.stringify(undoStack[i].target.json());
+
+						if (undoStackJSON[i].type == "deleteSelected") {
+								undoStackJSON[i].target = "";
+								for (var j = 0; j < undoStack[i].target.length; j++) {
+										undoStackJSON[i].target += JSON.stringify(undoStack[i].target[j].json());
+										if (j != undoStack[i].target.length-1) {
+												undoStackJSON[i].target += "<newelem>";
+										}
+								}
+								console.log(undoStackJSON[i].target);
+						}
+						else {
+								undoStackJSON[i].target = JSON.stringify(undoStack[i].target.json());
+						}
+
+						if (undoStack[i].type == 'editLabel') {
+								undoStackJSON[i].oldLabel = undoStack[i].oldLabel;
+						}
+
 						undoStackJSON[i] = JSON.stringify(undoStackJSON[i]);
-        }*/
-				//alert(JSON.stringify(cy.elements().jsons()));
-        o.updateGraph(docArg, { elements: JSON.stringify(cy.elements().jsons()) });
+        }
+
+        o.updateGraph(docArg, { elements: JSON.stringify(cy.elements().jsons()), undoStack: undoStackJSON });
 
 				// HANDLE DIRTY BIT
 				setClean();
@@ -250,33 +350,9 @@ function($http, $state, auth) {
 		}
 
 
-    /*******************/
-    /***** TOOLBAR *****/
-    /*******************/
-		if (w2ui.hasOwnProperty('toolbar')) {
-			w2ui['toolbar'].destroy();
-		}
-	    $('#toolbar').w2toolbar({
-	        name: 'toolbar',
-	        items: [
-	            { type: 'check',  id: 'item1', caption: 'Add Node', disabled: readOnly},
-	            { type: 'check',  id: 'item2', caption: 'Add Edge', disabled: readOnly},
-	            { type: 'button',  id: 'item3', caption: 'Edit Label', disabled: readOnly},
-	            { type: 'button',  id: 'item4', caption: 'Delete', disabled: readOnly},
-	            { type: 'button',  id: 'item5', caption: 'Undo', disabled: readOnly},
-	            { type: 'button',  id: 'item6', caption: 'Redo', disabled: readOnly},
-	            { type: 'button',  id: 'item7', caption: 'Save', disabled: readOnly},
-	            { type: 'button',  id: 'item8', caption: 'Fit'}
-	        ]
-	    });
-
-    var tb = w2ui['toolbar'];
-    var items = tb['items'];
-
-
-		/***********************************/
-		/***** TOOLBAR EVENT LISTENERS *****/
-		/***********************************/
+		/**********************************/
+		/***** TOOLBAR EVENT HANDLERS *****/
+		/**********************************/
     function addNodeListener(event) {
         var btn = tb.get('item1');
         if (btn.checked == true) {
@@ -324,6 +400,9 @@ function($http, $state, auth) {
     w2ui.toolbar.on('click', function(event) {
         var targ = tb.get(event.target);
 
+				cy.off('click', addNodeListener);
+				cy.off('click', 'node', addEdgeListener);
+
         for (var i = 0; i < items.length; i++) {
             if (items[i].id != event.target) { tb.uncheck(items[i].id); }
         }
@@ -356,11 +435,21 @@ function($http, $state, auth) {
                 case ("item8"): // Fit
                     cy.fit(cy.$('node'), 100);
                     break;
+								case ("item9"): // Print Undo stack
+										for (var i = 0; i < undoStack.length; i++) {
+												console.log(undoStack[i]);
+										}
+										break;
             }
         }
 				else { // if unchecking an item
-					if (event.target == "item2") { // if the item is Add Edge
-						cy.off('click', 'node', addEdgeListener);
+					switch (event.target) {
+							case ("item1"): // Add Node
+									cy.off('click', addNodeListener);
+									break;
+							case ("item2"): // Add Edge
+									cy.off('click', 'node', addEdgeListener);
+									break;
 					}
 				}
     });
@@ -384,7 +473,7 @@ function($http, $state, auth) {
 			setDirtyBit(false);
 			tb.disable("item7");
 		}
-		function getDirtyBit() { return dirty;  }
+		function getDirtyBit() { return dirty; }
 
 		cy.on('drag', 'node', setDirty);
 
@@ -399,17 +488,25 @@ function($http, $state, auth) {
         var event = undoStack.pop();
         var targ = event.target;
 
+				if (undoStack.length == 0) {
+						tb.disable("item5");
+				}
+
         // Get current label for redo before undoing
         if (event.type == "editLabel") {
             var lab = event.oldLabel;
             event.oldLabel = targ.data('label');
         }
+				else if (event.type == "moveNode") {
+
+				}
 
 				// HANDLE DIRTY BIT
 				setDirty();
 
         // Push to redo stack
         redoStack.push(event);
+				tb.enable("item6");
 
         switch (event.type) {
             case ("addNode"):
@@ -423,8 +520,13 @@ function($http, $state, auth) {
                 targ.json({ data: { label: lab } });
                 break;
             case ("deleteSelected"):
-                targ.restore();
+								for (var i = 0; i < targ.length; i++) {
+										targ[i].restore();
+								}
                 break;
+						case ("moveNode"):
+
+								break;
         }
     }
 
@@ -440,6 +542,10 @@ function($http, $state, auth) {
         event = redoStack.pop();
         targ = event.target;
 
+				if (redoStack.length == 0) {
+						tb.disable("item6");
+				}
+
         // Get current label for redo before undoing
         if (event.type == "editLabel") {
             var lab = event.oldLabel;
@@ -451,6 +557,7 @@ function($http, $state, auth) {
 
         // Push to undo stack
         undoStack.push(event);
+				tb.enable("item5");
 
         switch (event.type) {
             case ("addNode"):
@@ -464,28 +571,62 @@ function($http, $state, auth) {
                 targ.json({ data: { label: lab } });
                 break;
             case ("deleteSelected"):
-                cy.remove(targ);
+								for (var i = 0; i < targ.length; i++) {
+										cy.remove(targ[i]);
+								}
                 break;
+						case ("moveNode"):
+								break;
         }
 
     }
+
+		///// handle multiple selected and moved
+		/*var originalX;
+		var originalY;
+		function nodeGrabListener(event) {
+				//set original positions
+				originalX = event.cyRenderedPosition.x;
+				originalY = event.cyRenderedPosition.y;
+				cy.on('drag', 'node', nodeMoveListener);
+		}
+
+		function nodeMoveListener(event) {
+				// set undoStack item using original positions
+
+				// UNDO INFO
+				lastEvent = { type: "moveNode", target: event.cyTarget, time: getTimeStamp(), xPos: originalX, yPos: originalY };
+				undoStack.push(lastEvent);
+
+				// EMPTY REDO STACK
+				redoStack = [];
+
+				// HANDLE DIRTY BIT
+				setDirty();
+		}
+
+		cy.on('grab', 'node', nodeGrabListener);*/
 
 
     /***** ADD NODE *****/
     function addNode(posX,posY) {
         incrementNodeID();
-        var node = cy.add({
+
+				cy.add({
 					group: "nodes",
 					data: { id: globalNodeID, label: "", width: 60 },
 					renderedPosition: { x: posX, y: posY }
 				});
+				var node = cy.getElementById(globalNodeID);
 
         // UNDO INFO
         lastEvent = { type: "addNode", target: node, time: getTimeStamp() };
         undoStack.push(lastEvent);
+				tb.enable("item5");
 
 				// EMPTY REDO STACK
 				redoStack = [];
+				tb.disable("item6");
 
 				// HANDLE DIRTY BIT
 				setDirty();
@@ -496,17 +637,21 @@ function($http, $state, auth) {
     /***** ADD EDGE *****/
     function addEdge(src, dst) {
 				incrementEdgeID();
-        var edge = cy.add({
+
+				cy.add({
 					group: "edges",
 					data: { id: globalEdgeID, source: src, target: dst, label: "" }
 				});
+				var edge = cy.getElementById(globalEdgeID);
 
         // UNDO INFO
         lastEvent = { type: "addEdge", target : edge, time: getTimeStamp() };
         undoStack.push(lastEvent);
+				tb.enable("item5");
 
 				// EMPTY REDO STACK
 				redoStack = [];
+				tb.disable("item6");
 
 				// HANDLE DIRTY BIT
 				setDirty();
@@ -519,7 +664,6 @@ function($http, $state, auth) {
 
 				// Checking if prompt was cancelled or new label is same as old label
 				if (newLabel === null || newLabel === false || newLabel == oldLabel) { // If cancelled
-						alert("same");
 						return;
 				}
 				else { // If not cancelled
@@ -529,9 +673,11 @@ function($http, $state, auth) {
 						// UNDO INFO
 						lastEvent = { type: "editLabel", target: target, time: getTimeStamp(), oldLabel: oldLabel };
 						undoStack.push(lastEvent);
+						tb.enable("item5");
 
 						// EMPTY REDO STACK
 						redoStack = [];
+						tb.disable("item6");
 
 						// HANDLE DIRTY BIT
 						setDirty();
@@ -552,9 +698,11 @@ function($http, $state, auth) {
         // UNDO INFO
         lastEvent = { type: "deleteSelected", target: selectedElements, time: getTimeStamp() };
         undoStack.push(lastEvent);
+				tb.enable("item5");
 
 				// EMPTY REDO STACK
 				redoStack = [];
+				tb.disable("item6");
 
 				// HANDLE DIRTY BIT
 				setDirty();
