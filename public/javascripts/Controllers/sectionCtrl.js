@@ -11,7 +11,7 @@ function($scope, $uibModal, section, auth, assignments, sections) {
 	$scope.newDescription = "";
 	$scope.studentEmail = "";
 
-	$scope.createAssignment = function(document) {
+	$scope.createAssignment = function() {
 		// Create a modal (popup) for creating the new assignment
 		var modalInstance = $uibModal.open({
       templateUrl: 'templates/createAssignmentModal.html',

@@ -102,4 +102,32 @@ router.put('/:assignment/submission/grade', auth, function(req, res, next) {
   });
 });
 
+// PUT a new title to an assignment
+router.put('/:assignment/title', auth, function(req, res, next) {
+  Assignment.findOne({teachers: req.payload._id, _id: req.assignment}).exec(function (err, assignment) {
+    if (err) { return next(err); }
+    if (!assignment) { return next(new Error("can't find assignment")); }
+
+    assignment.updateTitle(req.body.title, function(err, assignment) {
+      if (err) { return next(err); }
+
+      res.json(assignment);
+    });
+  });
+});
+
+// PUT a new description to an assignment
+router.put('/:assignment/description', auth, function(req, res, next) {
+  Assignment.findOne({teachers: req.payload._id, _id: req.assignment}).exec(function (err, assignment) {
+    if (err) { return next(err); }
+    if (!assignment) { return next(new Error("can't find assignment")); }
+
+    assignment.updateDescription(req.body.description, function(err, assignment) {
+      if (err) { return next(err); }
+
+      res.json(assignment);
+    });
+  });
+});
+
 module.exports = router;

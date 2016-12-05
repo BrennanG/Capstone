@@ -8,4 +8,14 @@ var AssignmentSchema = new mongoose.Schema({
   submissions: [{type: mongoose.Schema.Types.ObjectId, ref: 'Document'}]
 });
 
+AssignmentSchema.methods.updateTitle = function(title, cb) {
+  this.title = title;
+  this.save(cb);
+};
+
+AssignmentSchema.methods.updateDescription = function(description, cb) {
+  this.description = description;
+  this.save(cb);
+};
+
 mongoose.model('Assignment', AssignmentSchema);

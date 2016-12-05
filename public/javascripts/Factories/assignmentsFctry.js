@@ -23,7 +23,7 @@ function($http, $state, auth) {
       return res.data;
     });
   };
-	
+
 	// Adds a submission to an assignment
   o.addSubmission = function(document, assignmentId) {
     var dataToSend = {document: document};
@@ -34,6 +34,28 @@ function($http, $state, auth) {
         return returnedData;
     });
   };
+
+	// Updates the title of an assignment
+	o.updateTitle = function(assignmentId, title) {
+		var dataToSend = {title: title};
+		return $http.put('/teacher/assignments/' + assignmentId + '/title', dataToSend, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(returnedData) {
+        $state.go($state.current, {}, {reload: true}); // reload the page
+        return returnedData;
+    });
+	}
+
+	// Updates the description of an assignment
+	o.updateDescription = function(assignmentId, description) {
+		var dataToSend = {description: description};
+		return $http.put('/teacher/assignments/' + assignmentId + '/description', dataToSend, {
+			headers: {Authorization: 'Bearer '+auth.getToken()}
+		}).success(function(returnedData) {
+				$state.go($state.current, {}, {reload: true}); // reload the page
+				return returnedData;
+		});
+	}
 
 	return o;
 }]);

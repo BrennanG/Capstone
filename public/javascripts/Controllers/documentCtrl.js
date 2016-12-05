@@ -11,10 +11,11 @@ function($scope, documents, document, confirmFunc, auth) {
 	// Updates the grade for the document
 	$scope.updateGrade = function() {
     var newGrade = prompt("Enter a Grade", "");
-    if (newGrade === '' || newGrade == null || isNaN(newGrade)) {
-			alert(newGrade + " is an invalid grade.");
+    if (newGrade === '' || isNaN(newGrade)) {
+			alert("Invalid grade.");
 			return;
 		}
+		else if (newGrade == null) { return; }
 		// Pass the data to the factory, which interfaces with the backend
     documents.updateGrade(document, newGrade);
   };
