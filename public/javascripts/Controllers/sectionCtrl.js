@@ -1,5 +1,5 @@
 // Controller for a teacher to view a specific section
-angular.module('biologyGraphingApp').controller('SectionsCtrl', ['$scope', '$uibModal', 'section', 'auth', 'assignments', 'sections',
+angular.module('biologyGraphingApp').controller('SectionCtrl', ['$scope', '$uibModal', 'section', 'auth', 'assignments', 'sections',
 function($scope, $uibModal, section, auth, assignments, sections) {
 	$scope.section = section;
   $scope.title = section.title;

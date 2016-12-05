@@ -3,11 +3,11 @@ angular.module('biologyGraphingApp')
 
 function($stateProvider) {
 
-	$stateProvider.state('assignments', {
+	$stateProvider.state('assignment', {
 		parent: 'page',
-		url : '/assignments/{id}',
-		templateUrl : 'templates/assignments.html',
-		controller : 'AssignmentsCtrl',
+		url : '/assignment/{id}',
+		templateUrl : 'templates/assignment.html',
+		controller : 'AssignmentCtrl',
     resolve: {
       assignment: ['$stateParams', 'assignments', function($stateParams, assignments) {
 				// requests data from the factory, which pulls the data from the Database

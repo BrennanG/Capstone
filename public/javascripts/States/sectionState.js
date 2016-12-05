@@ -3,11 +3,11 @@ angular.module('biologyGraphingApp')
 
 function($stateProvider) {
 
-	$stateProvider.state('sections', {
+	$stateProvider.state('section', {
 		parent: 'page',
-		url : '/sections/{id}',
-		templateUrl : 'templates/sections.html',
-		controller : 'SectionsCtrl',
+		url : '/section/{id}',
+		templateUrl : 'templates/section.html',
+		controller : 'SectionCtrl',
     resolve: {
       section: ['$stateParams', 'sections', function($stateParams, sections) {
 				// requests data from the factory, which pulls the data from the Database

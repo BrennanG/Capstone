@@ -1,5 +1,5 @@
 // Controller for the graphing environment
-angular.module('biologyGraphingApp').controller('DocumentsCtrl', ['$scope', 'documents', 'document', 'confirmFunc', 'auth',
+angular.module('biologyGraphingApp').controller('DocumentCtrl', ['$scope', 'documents', 'document', 'confirmFunc', 'auth',
 function($scope, documents, document, confirmFunc, auth) {
 	$scope.document = document;
   $scope.elements = document.graph.elements;

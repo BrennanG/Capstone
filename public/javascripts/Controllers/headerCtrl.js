@@ -6,7 +6,7 @@ function($scope, $state, auth) {
 
   $scope.logout = function() {
 		// Warn before logging out if in the graphing environment page with unsaved progress
-		if ($state.current.name == "documents" && $scope.biographObj.dirty) {
+		if ($state.current.name == "document" && $scope.biographObj.dirty) {
 			if (!confirm("Are you sure you want to leave? All unsaved changes will be lost.")) {
 	    	return;
 	    }
@@ -19,7 +19,7 @@ function($scope, $state, auth) {
 
 	$scope.goToHome = function() {
 		// Warn before leaving the page if in the graphing environment page with unsaved progress
-		if ($state.current.name == "documents" && $scope.biographObj.dirty) {
+		if ($state.current.name == "document" && $scope.biographObj.dirty) {
 			if (!confirm("Are you sure you want to leave? All unsaved changes will be lost.")) {
 	    	return;
 	    }

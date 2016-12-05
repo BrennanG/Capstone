@@ -10,12 +10,12 @@ function($stateProvider) {
 		(e || window.event).returnValue = confirmationMessage; //Gecko + IE
 		return confirmationMessage;                            //Webkit, Safari, Chrome
 	};
-	
-	$stateProvider.state('documents', {
+
+	$stateProvider.state('document', {
 		parent: 'page',
-		url : '/documents/{id}',
-		templateUrl : 'templates/documents.html',
-		controller : 'DocumentsCtrl',
+		url : '/document/{id}',
+		templateUrl : 'templates/document.html',
+		controller : 'DocumentCtrl',
     resolve: {
       document: ['$stateParams', 'documents', 'auth', function($stateParams, documents, auth) {
 				var type = auth.accountType();

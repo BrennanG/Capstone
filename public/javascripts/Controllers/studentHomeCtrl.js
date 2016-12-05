@@ -15,7 +15,7 @@ function($scope, $location, $uibModal, documents, sections, assignments, auth) {
 
 	// Go to the graphing environment to edit the document
 	$scope.editDocument = function(document) {
-		$location.path("documents/" + document._id);
+		$location.path("document/" + document._id);
   };
 
 	$scope.cloneDocument = function(document) {
