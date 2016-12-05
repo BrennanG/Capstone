@@ -1,3 +1,4 @@
+// Controller for the graphing environment
 angular.module('biologyGraphingApp').controller('DocumentsCtrl', ['$scope', 'documents', 'document', 'confirmFunc', 'auth',
 function($scope, documents, document, confirmFunc, auth) {
 	$scope.document = document;
@@ -7,12 +8,14 @@ function($scope, documents, document, confirmFunc, auth) {
 	$scope.isTeacher = auth.accountType() == "teacher";
 	$scope.isReadonly = $scope.document.status != 'unsubmitted'
 
+	// Updates the grade for the document
 	$scope.updateGrade = function() {
     var newGrade = prompt("Enter a Grade", "");
     if (newGrade === '' || newGrade == null || isNaN(newGrade)) {
 			alert(newGrade + " is an invalid grade.");
 			return;
 		}
+		// Pass the data to the factory, which interfaces with the backend
     documents.updateGrade(document, newGrade);
   };
 
@@ -24,6 +27,7 @@ function($scope, documents, document, confirmFunc, auth) {
 		}
 	});
 
+	// Passed into loadCytoScape() to get the dirty bit from it
 	function setDirtyBit(dirty) {
 		if (dirty) {
 			window.addEventListener("beforeunload", confirmFunc);
@@ -34,5 +38,6 @@ function($scope, documents, document, confirmFunc, auth) {
 		$scope.biographObj.dirty = dirty;
 	}
 
+	// Load the cytoscape graphing environment
 	documents.loadCytoScape(document, $scope.isReadonly, setDirtyBit);
 }]);

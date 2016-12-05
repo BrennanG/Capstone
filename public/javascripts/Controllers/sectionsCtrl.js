@@ -1,3 +1,4 @@
+// Controller for a teacher to view a specific section
 angular.module('biologyGraphingApp').controller('SectionsCtrl', ['$scope', '$uibModal', 'section', 'auth', 'assignments', 'sections',
 function($scope, $uibModal, section, auth, assignments, sections) {
 	$scope.section = section;
@@ -10,14 +11,8 @@ function($scope, $uibModal, section, auth, assignments, sections) {
 	$scope.newDescription = "";
 	$scope.studentEmail = "";
 
-	$scope.addAssignment = function() {
-    if ($scope.newTitle === '' || $scope.newDescription === '') { return; }
-    assignments.addAssignment($scope.newTitle, $scope.newDescription, $scope.section);
-    $scope.newTitle = '';
-    $scope.newDescription = '';
-  };
-
 	$scope.createAssignment = function(document) {
+		// Create a modal (popup) for creating the new assignment
 		var modalInstance = $uibModal.open({
       templateUrl: 'templates/createAssignmentModal.html',
       controller: function($scope, $uibModalInstance) {
@@ -26,7 +21,7 @@ function($scope, $uibModal, section, auth, assignments, sections) {
 
         $scope.createAssignment = function() {
 					var assignmentData = { newTitle: $scope.newTitle, newDescription: $scope.newDescription };
-          $uibModalInstance.close(assignmentData);
+          $uibModalInstance.close(assignmentData); // Gives assignmentData to modalInstance.result
         }
 
         $scope.cancel = function() {
@@ -37,43 +32,18 @@ function($scope, $uibModal, section, auth, assignments, sections) {
     });
 
 		modalInstance.result.then(function (assignmentData) {
+			// Pass the data to the factory, which interfaces with the backend
 			assignments.addAssignment(assignmentData.newTitle, assignmentData.newDescription, $scope.section);
 		});
   };
 
-	$scope.submitDocument = function(document) {
-		var modalInstance = $uibModal.open({
-      templateUrl: 'templates/submitDocumentModal.html',
-      controller: function($scope, $uibModalInstance, sections) {
-        $scope.selected = {assignment: null};
-				$scope.sections = sections;
-
-        $scope.submitSelectedAssignment = function() {
-          $uibModalInstance.close($scope.selected.assignment);
-        }
-
-        $scope.cancel = function() {
-          $uibModalInstance.dismiss('cancel');
-        };
-
-      },
-      resolve: {
-        sections: function () {
-          return $scope.sections;
-      	}
-			}
-    });
-
-		modalInstance.result.then(function (selectedAssignment) {
-			assignments.addSubmission(document, selectedAssignment._id);
-		});
-  };
-
+	// Adds students to the section. Splits on commas to add multiple at once
 	$scope.addStudentToSection = function() {
     var studentEmail = prompt("Enter the emails of students you want to add (separate with commas).", "");
     if (studentEmail === '' || studentEmail == null) { return; }
 		var students = studentEmail.split(",");
 		students.forEach(function(student) {
+			// Pass the data to the factory, which interfaces with the backend
 	    sections.addStudentToSection(student.trim(), $scope.section);
 		});
   };

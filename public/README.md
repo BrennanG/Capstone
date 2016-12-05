@@ -1,2 +1,0 @@
-# Capstone
-Students in introductory biology courses must demonstrate their understanding of biological systems by developing graphical models of such systems (e.g., food chains, signaling pathways, metabolic networks). This web-based system will support students’ creation and revision of such diagrams, will support the course staff in reviewing the diagrams and providing embedded feedback, and will provide analytics that might support educational research.

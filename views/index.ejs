@@ -1,11 +1,8 @@
 <html>
   <head>
     <title>Biology Graphing App</title>
-    <!-- import Cytoscape Web stuff-->
+    <!-- import AJAX stuff-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script type="text/javascript" src="json2.min.js"></script>
-    <script type="text/javascript" src="AC_OETags.min.js"></script>
-    <script type="text/javascript" src="cytoscapeweb.min.js"></script>
     <!-- import Cytoscape.js stuff -->
     <script src="cytoscape.js"></script>
     <!-- import Angular js version 1.3.10 -->
@@ -39,11 +36,9 @@
     <script src="/javascripts/Controllers/assignmentsCtrl.js"></script>
     <script src="/javascripts/Controllers/authCtrl.js"></script>
     <script src="/javascripts/Controllers/biographCtrl.js"></script>
-    <script src="/javascripts/Controllers/navCtrl.js"></script>
 
     <!-- import w2ui -->
     <link rel="stylesheet" type="text/css" href="http://w2ui.com/src/w2ui-1.4.3.min.css" />
-    <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
     <script type="text/javascript" src="http://w2ui.com/src/w2ui-1.4.3.min.js"></script>
     <style type="text/css">
     .st-sort-ascent:before{
@@ -55,6 +50,7 @@
     }
     </style>
   </head>
+  <!-- Angular page is loaded into the ui-view div -->
   <body ng-app="biologyGraphingApp">
       <div ui-view></div>
   </body>
