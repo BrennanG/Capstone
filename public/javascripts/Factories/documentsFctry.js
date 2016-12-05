@@ -4,7 +4,9 @@ function($http, $state, auth) {
 		documents: []
 	};
 
-	// Gets all of the logged in student's documents
+	// All $http requests are accessing the routes that are set up in the "routes" folder
+
+	// Gets all of the student's documents
   o.getAll = function() {
 		return $http.get('/student/documents', {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
@@ -12,7 +14,8 @@ function($http, $state, auth) {
 			  angular.copy(data, o.documents);
 		});
 	};
-	// Gets a single one of the logged in student's documents
+
+	// Gets a single one of the student's documents
   o.getDocument = function(id) {
     return $http.get('/student/documents/' + id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
@@ -20,7 +23,8 @@ function($http, $state, auth) {
       return res.data;
     });
   };
-	// Gets a single submitted document to the logged in teacher's assignment
+
+	// Gets a single submitted document to the teacher's assignment
   o.getDocumentForTeacher = function(id) {
     return $http.get('/student/documents/submissions/' + id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
@@ -28,7 +32,8 @@ function($http, $state, auth) {
       return res.data;
     });
   };
-	// Deletes a specific one of the logged in student's documents
+
+	// Deletes a document and removes it from the student's list of documents
   o.deleteDocument = function(document) {
     return $http.delete('/student/documents/' + document._id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
@@ -47,7 +52,8 @@ function($http, $state, auth) {
         return deletedDocument;
       });
   };
-	// Adds a new document to the logged in student's document list
+
+	// Adds a new document to the student's document list
   o.addDocument = function(newDocTitle, graphData) {
     var dataToSend = { title: newDocTitle, graph: graphData };
     return $http.post('/student/documents', dataToSend, {
@@ -59,6 +65,7 @@ function($http, $state, auth) {
         return document;
     });
   };
+
 	// Renames a document
   o.renameDocument = function(document, newTitle) {
     var dataToSend = { title: newTitle };
@@ -68,7 +75,8 @@ function($http, $state, auth) {
       $state.go($state.current, {}, {reload: true}); // reload the page
     });
   };
-	// Updates the grade of single submitted document to the logged in teacher's assignment
+
+	// Updates the grade of single submitted document to the teacher's assignment
 	o.updateGrade = function(document, grade) {
 		var dataToSend = { document: document._id, grade: grade };
 		return $http.put('/teacher/assignments/' + document.submittedTo + '/submission/grade', dataToSend, {
@@ -78,6 +86,7 @@ function($http, $state, auth) {
         return returnedData;
     });
   };
+
 	// Saves changes to a specific graph
   o.updateGraph = function(document, data) {
     return $http.put('/student/documents/' + document._id + '/graph', data, {
@@ -88,7 +97,8 @@ function($http, $state, auth) {
         return returnedData;
       });
   };
-	// Loads the graphing page
+
+	// Loads the graphing page. This is where all of the CytoScape JS logic goes
   o.loadCytoScape = function(docArg, readOnly, setDirtyBit) {
         var cy = cytoscape({
         container: document.getElementById('cy'),

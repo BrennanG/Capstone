@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var Student = mongoose.model('Student');
 var Teacher = mongoose.model('Teacher');
 
+// Used for logging in to a student account
 passport.use('student-local', new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
@@ -22,6 +23,7 @@ passport.use('student-local', new LocalStrategy({
   }
 ));
 
+// Used for logging in to a teacher account
 passport.use('teacher-local', new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'

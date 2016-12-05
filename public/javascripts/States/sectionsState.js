@@ -10,6 +10,7 @@ function($stateProvider) {
 		controller : 'SectionsCtrl',
     resolve: {
       section: ['$stateParams', 'sections', function($stateParams, sections) {
+				// requests data from the factory, which pulls the data from the Database
         return sections.getSection($stateParams.id);
       }]},
 		onEnter : ['$state', 'auth',

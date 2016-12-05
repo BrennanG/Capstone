@@ -5,7 +5,7 @@ var Student = mongoose.model('Student');
 var Teacher = mongoose.model('Teacher');
 var passport = require('passport');
 var jwt = require('express-jwt');
-var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
+var auth = jwt({secret: 'SECRET', userProperty: 'payload'}); // TODO: When deployed, this "SECRET" string should be replaced with an environment variable
 
 router.post('/register', function(req, res, next){
   if(!req.body.email || !req.body.password){

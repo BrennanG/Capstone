@@ -4,6 +4,9 @@ function($http, $state, auth) {
 		sections: []
 	};
 
+	// All $http requests are accessing the routes that are set up in the "routes" folder
+
+	// Gets all of a teacher's sections
   o.getAll = function() {
 		return $http.get('/teacher/sections', {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
@@ -11,6 +14,8 @@ function($http, $state, auth) {
 			  angular.copy(data, o.sections);
 		});
 	};
+
+	// Gets all of the sections that a student is enrolled in
 	o.getAllForStudent = function() {
 		return $http.get('/student/sections', {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
@@ -18,6 +23,8 @@ function($http, $state, auth) {
 			  angular.copy(data, o.sections);
 		});
 	};
+
+	// Adds a new section to a teacher's list of sections
   o.addSection = function(title) {
 		var dataToSend = { title: title };
     return $http.post('/teacher/sections', dataToSend, {
@@ -29,6 +36,8 @@ function($http, $state, auth) {
       return section;
     });
   };
+
+	// Gets a single section
   o.getSection = function(id) {
     return $http.get('/teacher/sections/' + id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
@@ -36,6 +45,8 @@ function($http, $state, auth) {
       return res.data;
     });
   };
+
+	// Deletes a single section and removes it from the teacher's list of section
   o.deleteSection = function(section) {
     return $http.delete('/teacher/sections/' + section._id, {
 			headers: {Authorization: 'Bearer '+auth.getToken()}
@@ -54,6 +65,8 @@ function($http, $state, auth) {
         return deletedSection;
       });
   };
+
+	// Adds a student to a section's list of enrolled students, and adds the section to the student's list of enrolled sections
   o.addStudentToSection = function(studentEmail, section) {
 		var dataToSend = { email: studentEmail };
     return $http.put('/teacher/sections/' + section._id + '/students/add', dataToSend, {

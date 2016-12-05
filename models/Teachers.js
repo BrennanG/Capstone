@@ -21,7 +21,7 @@ TeacherSchema.methods.generateJWT = function() {
     email: this.email,
     exp: parseInt(exp.getTime() / 1000),
     type: "teacher"
-  }, 'SECRET');
+  }, 'SECRET'); // TODO: When deployed, this "SECRET" string should be replaced with an environment variable
 };
 
 TeacherSchema.methods.setPassword = function(password){

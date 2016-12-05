@@ -10,6 +10,7 @@ function($stateProvider) {
 		controller : 'AssignmentsCtrl',
     resolve: {
       assignment: ['$stateParams', 'assignments', function($stateParams, assignments) {
+				// requests data from the factory, which pulls the data from the Database
         return assignments.getAssignment($stateParams.id);
       }]},
 		onEnter : ['$state', 'auth',

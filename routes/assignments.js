@@ -5,9 +5,10 @@ var Assignment = mongoose.model('Assignment');
 var Section = mongoose.model('Section');
 var Document = mongoose.model('Document');
 var jwt = require('express-jwt');
-var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
+var auth = jwt({secret: 'SECRET', userProperty: 'payload'}); // TODO: When deployed, this "SECRET" string should be replaced with an environment variable
 
 // get an assignment by ID
+// This is not a route, but is used by other routes to get parameters from the URL (routes with "/:[some string]")
 router.param('assignment', function(req, res, next, id) {
   var query = Assignment.findById(id);
 
@@ -51,7 +52,7 @@ router.get('/:assignment', auth, function(req, res, next) {
   });
 });
 
-// PUT an new submission
+// PUT a new submission
 router.put('/:assignment/submission', auth, function(req, res, next) {
   Section.findOne({students: req.payload._id, assignments: req.assignment}).exec(function (err, section) {
     if (err) { return next(err); }

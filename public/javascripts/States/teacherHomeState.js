@@ -9,10 +9,11 @@ function($stateProvider) {
 		templateUrl : 'templates/teacherHome.html',
 		controller : 'TeacherHomeCtrl',
     resolve: {
-      postPromise : ['sections', function(sections) {
+      sectionsPromise: ['sections', function(sections) {
+				// requests data from the factory, which pulls the data from the Database
 			  return sections.getAll();
 			}]},
-		onEnter : ['$state', 'auth',
+		onEnter: ['$state', 'auth',
 			function($state, auth) {
 				if (!auth.isLoggedIn() || auth.accountType() != "teacher") {
 					$state.go('login');

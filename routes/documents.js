@@ -5,9 +5,10 @@ var Document = mongoose.model('Document');
 var Student = mongoose.model('Student');
 var Assignment = mongoose.model('Assignment');
 var jwt = require('express-jwt');
-var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
+var auth = jwt({secret: 'SECRET', userProperty: 'payload'}); // TODO: When deployed, this "SECRET" string should be replaced with an environment variable
 
 // get a document by ID
+// This is not a route, but is used by other routes to get parameters from the URL (routes with "/:[some string]")
 router.param('document', function(req, res, next, id) {
   var query = Document.findById(id);
 

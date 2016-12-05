@@ -5,9 +5,10 @@ var Section = mongoose.model('Section');
 var Teacher = mongoose.model('Teacher');
 var Student = mongoose.model('Student');
 var jwt = require('express-jwt');
-var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
+var auth = jwt({secret: 'SECRET', userProperty: 'payload'}); // TODO: When deployed, this "SECRET" string should be replaced with an environment variable
 
 // get a section by ID
+// This is not a route, but is used by other routes to get parameters from the URL (routes with "/:[some string]")
 router.param('section', function(req, res, next, id) {
   var query = Section.findById(id);
 
